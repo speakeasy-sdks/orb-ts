@@ -96,10 +96,7 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 201:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Customer
-            );
+            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
           }
           break;
       }
@@ -153,10 +150,7 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 201:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Customer
-            );
+            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
           }
           break;
       }
@@ -223,7 +217,7 @@ export class Customer {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getCustomersCustomerIdBalanceTransactions200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetCustomersCustomerIdBalanceTransactions200ApplicationJSON
               );
@@ -285,10 +279,7 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Customer
-            );
+            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
           }
           break;
       }
@@ -408,11 +399,10 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.getCustomerCosts200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.GetCustomerCosts200ApplicationJSON
-              );
+            res.getCustomerCosts200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.GetCustomerCosts200ApplicationJSON
+            );
           }
           break;
       }
@@ -467,7 +457,7 @@ export class Customer {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getExternalCustomerCosts200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetExternalCustomerCosts200ApplicationJSON
               );
@@ -515,11 +505,10 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.listCustomers200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.ListCustomers200ApplicationJSON
-              );
+            res.listCustomers200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.ListCustomers200ApplicationJSON
+            );
           }
           break;
       }
@@ -591,10 +580,7 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Customer
-            );
+            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
           }
           break;
       }
@@ -671,10 +657,7 @@ export class Customer {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Customer
-            );
+            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
           }
           break;
       }
@@ -799,7 +782,7 @@ export class Customer {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.patchCustomersCustomerIdUsage200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PatchCustomersCustomerIdUsage200ApplicationJSON
               );
@@ -808,7 +791,7 @@ export class Customer {
         case httpRes?.status == 400:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.patchCustomersCustomerIdUsage400ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PatchCustomersCustomerIdUsage400ApplicationJSON
               );
@@ -883,7 +866,7 @@ export class Customer {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.patchExternalCustomersCustomerIdUsage200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PatchExternalCustomersCustomerIdUsage200ApplicationJSON
               );
@@ -892,7 +875,7 @@ export class Customer {
         case httpRes?.status == 400:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.patchExternalCustomersCustomerIdUsage400ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PatchExternalCustomersCustomerIdUsage400ApplicationJSON
               );

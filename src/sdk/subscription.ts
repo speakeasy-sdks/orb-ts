@@ -94,7 +94,7 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.deserializeJSONResponse(
+            res.subscription = utils.objectToClass(
               httpRes?.data,
               shared.Subscription
             );
@@ -190,7 +190,7 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.deserializeJSONResponse(
+            res.subscription = utils.objectToClass(
               httpRes?.data,
               shared.Subscription
             );
@@ -601,7 +601,7 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.deserializeJSONResponse(
+            res.subscription = utils.objectToClass(
               httpRes?.data,
               shared.Subscription
             );
@@ -656,7 +656,7 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.deserializeJSONResponse(
+            res.subscription = utils.objectToClass(
               httpRes?.data,
               shared.Subscription
             );
@@ -717,7 +717,7 @@ export class Subscription {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getSubscriptionsSubscriptionIdCost200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetSubscriptionsSubscriptionIdCost200ApplicationJSON
               );
@@ -773,7 +773,7 @@ export class Subscription {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getSubscriptionsSubscriptionIdSchedule200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetSubscriptionsSubscriptionIdSchedule200ApplicationJSON
               );
@@ -1001,11 +1001,10 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.listSubscriptions200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.ListSubscriptions200ApplicationJSON
-              );
+            res.listSubscriptions200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.ListSubscriptions200ApplicationJSON
+            );
           }
           break;
       }
@@ -1062,7 +1061,7 @@ export class Subscription {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.deserializeJSONResponse(
+            res.subscription = utils.objectToClass(
               httpRes?.data,
               shared.Subscription
             );

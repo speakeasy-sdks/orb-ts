@@ -92,7 +92,7 @@ export class Event {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.putDeprecateEventsEventId200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PutDeprecateEventsEventId200ApplicationJSON
               );
@@ -101,7 +101,7 @@ export class Event {
         case httpRes?.status == 400:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.putDeprecateEventsEventId400ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.PutDeprecateEventsEventId400ApplicationJSON
               );
@@ -307,20 +307,18 @@ export class Event {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.postIngest200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.PostIngest200ApplicationJSON
-              );
+            res.postIngest200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.PostIngest200ApplicationJSON
+            );
           }
           break;
         case httpRes?.status == 400:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.postIngest400ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.PostIngest400ApplicationJSON
-              );
+            res.postIngest400ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.PostIngest400ApplicationJSON
+            );
           }
           break;
       }
@@ -396,11 +394,10 @@ export class Event {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.postEventsSearch200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.PostEventsSearch200ApplicationJSON
-              );
+            res.postEventsSearch200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.PostEventsSearch200ApplicationJSON
+            );
           }
           break;
       }
@@ -480,20 +477,18 @@ export class Event {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.putEventsEventId200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.PutEventsEventId200ApplicationJSON
-              );
+            res.putEventsEventId200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.PutEventsEventId200ApplicationJSON
+            );
           }
           break;
         case httpRes?.status == 400:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.putEventsEventId400ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.PutEventsEventId400ApplicationJSON
-              );
+            res.putEventsEventId400ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.PutEventsEventId400ApplicationJSON
+            );
           }
           break;
       }

@@ -66,7 +66,7 @@ export class Availability {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.getPing200ApplicationJSONObject = utils.deserializeJSONResponse(
+            res.getPing200ApplicationJSONObject = utils.objectToClass(
               httpRes?.data,
               operations.GetPing200ApplicationJSON
             );

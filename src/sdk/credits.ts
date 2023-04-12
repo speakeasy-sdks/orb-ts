@@ -150,7 +150,7 @@ export class Credits {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.creditLedgerEntry = utils.deserializeJSONResponse(
+            res.creditLedgerEntry = utils.objectToClass(
               httpRes?.data,
               shared.CreditLedgerEntry
             );
@@ -210,7 +210,7 @@ export class Credits {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getCustomersCustomerIdCredits200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetCustomersCustomerIdCredits200ApplicationJSON
               );
@@ -296,7 +296,7 @@ export class Credits {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
             res.getCustomersCustomerIdCreditsLedger200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
+              utils.objectToClass(
                 httpRes?.data,
                 operations.GetCustomersCustomerIdCreditsLedger200ApplicationJSON
               );

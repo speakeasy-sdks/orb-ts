@@ -79,10 +79,7 @@ export class Plan {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.plan = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Plan
-            );
+            res.plan = utils.objectToClass(httpRes?.data, shared.Plan);
           }
           break;
       }

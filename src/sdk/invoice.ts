@@ -77,10 +77,7 @@ export class Invoice {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.invoice = utils.deserializeJSONResponse(
-              httpRes?.data,
-              shared.Invoice
-            );
+            res.invoice = utils.objectToClass(httpRes?.data, shared.Invoice);
           }
           break;
       }
@@ -130,7 +127,7 @@ export class Invoice {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.upcomingInvoice = utils.deserializeJSONResponse(
+            res.upcomingInvoice = utils.objectToClass(
               httpRes?.data,
               shared.UpcomingInvoice
             );
@@ -185,11 +182,10 @@ export class Invoice {
       switch (true) {
         case httpRes?.status == 200:
           if (utils.matchContentType(contentType, `application/json`)) {
-            res.listInvoices200ApplicationJSONObject =
-              utils.deserializeJSONResponse(
-                httpRes?.data,
-                operations.ListInvoices200ApplicationJSON
-              );
+            res.listInvoices200ApplicationJSONObject = utils.objectToClass(
+              httpRes?.data,
+              operations.ListInvoices200ApplicationJSON
+            );
           }
           break;
       }
