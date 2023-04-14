@@ -3,6 +3,7 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { RFCDate } from "../../types";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 import { Expose, Transform } from "class-transformer";
@@ -45,8 +46,8 @@ export class PostCustomersCustomerIdCreditsLedgerEntryRequestBody extends Speake
    */
   @SpeakeasyMetadata()
   @Expose({ name: "expiry_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  expiryDate?: Date;
+  @Transform(({ value }) => new RFCDate(value), { toClassOnly: true })
+  expiryDate?: RFCDate;
 
   /**
    * Can only be specified when `entry_type=increment`. How much, in USD, a customer paid for a single credit in this block
@@ -60,8 +61,8 @@ export class PostCustomersCustomerIdCreditsLedgerEntryRequestBody extends Speake
    */
   @SpeakeasyMetadata()
   @Expose({ name: "target_expiry_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  targetExpiryDate?: Date;
+  @Transform(({ value }) => new RFCDate(value), { toClassOnly: true })
+  targetExpiryDate?: RFCDate;
 }
 
 export class PostCustomersCustomerIdCreditsLedgerEntryRequest extends SpeakeasyBase {

@@ -3,6 +3,7 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { RFCDate } from "../../types";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 import { Expose, Transform, Type } from "class-transformer";
@@ -390,8 +391,8 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBody extend
    */
   @SpeakeasyMetadata()
   @Expose({ name: "change_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  changeDate?: Date;
+  @Transform(({ value }) => new RFCDate(value), { toClassOnly: true })
+  changeDate?: RFCDate;
 
   /**
    * Determines the timing of the plan change

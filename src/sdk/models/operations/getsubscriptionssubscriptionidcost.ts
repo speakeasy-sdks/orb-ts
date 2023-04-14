@@ -25,7 +25,7 @@ export class GetSubscriptionsSubscriptionIdCostRequest extends SpeakeasyBase {
    * Revenue returned is _exclusive_ of `timeframe_end`
    */
   @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=timeframe_end;dateTimeFormat=YYYY-MM-DDThh:mm:ss.sssZ",
+    data: "queryParam, style=form;explode=true;name=timeframe_end",
   })
   timeframeEnd?: Date;
 
@@ -33,7 +33,7 @@ export class GetSubscriptionsSubscriptionIdCostRequest extends SpeakeasyBase {
    * Revenue returned is _inclusive_ of `timeframe_start`
    */
   @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=timeframe_start;dateTimeFormat=YYYY-MM-DDThh:mm:ss.sssZ",
+    data: "queryParam, style=form;explode=true;name=timeframe_start",
   })
   timeframeStart?: Date;
 

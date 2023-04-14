@@ -51,7 +51,7 @@ export class PatchExternalCustomersCustomerIdUsageRequest extends SpeakeasyBase 
    * This bound is exclusive (i.e. events before this timestamp will be updated)
    */
   @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=timeframe_end;dateTimeFormat=YYYY-MM-DDThh:mm:ss.sssZ",
+    data: "queryParam, style=form;explode=true;name=timeframe_end",
   })
   timeframeEnd: Date;
 
@@ -59,7 +59,7 @@ export class PatchExternalCustomersCustomerIdUsageRequest extends SpeakeasyBase 
    * This bound is inclusive (i.e. events with this timestamp onward, inclusive will be updated)
    */
   @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=timeframe_start;dateTimeFormat=YYYY-MM-DDThh:mm:ss.sssZ",
+    data: "queryParam, style=form;explode=true;name=timeframe_start",
   })
   timeframeStart: Date;
 }

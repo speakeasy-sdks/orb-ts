@@ -3,6 +3,7 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { RFCDate } from "../../types";
 import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 import { Expose, Transform, Type } from "class-transformer";
@@ -469,8 +470,8 @@ export class PostSubscriptionsRequestBody extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "start_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  startDate?: Date;
+  @Transform(({ value }) => new RFCDate(value), { toClassOnly: true })
+  startDate?: RFCDate;
 }
 
 export class PostSubscriptionsResponse extends SpeakeasyBase {

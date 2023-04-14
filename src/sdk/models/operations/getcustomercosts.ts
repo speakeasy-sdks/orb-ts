@@ -44,7 +44,7 @@ export class GetCustomerCostsRequest extends SpeakeasyBase {
    * Costs returned are inclusive of `timeframe_start`.
    */
   @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=timeframe_start;dateTimeFormat=YYYY-MM-DDThh:mm:ss.sssZ",
+    data: "queryParam, style=form;explode=true;name=timeframe_start",
   })
   timeframeStart?: Date;
 

@@ -3,6 +3,7 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { RFCDate } from "../../types";
 import { Expose, Transform, Type } from "class-transformer";
 
 /**
@@ -236,6 +237,6 @@ export class UpcomingInvoice extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "target_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  targetDate: Date;
+  @Transform(({ value }) => new RFCDate(value), { toClassOnly: true })
+  targetDate: RFCDate;
 }
