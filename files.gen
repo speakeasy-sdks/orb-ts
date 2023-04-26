@@ -69,4 +69,12 @@ src/sdk/models/shared/planphase.ts
 src/sdk/models/shared/subscription.ts
 src/sdk/models/shared/security.ts
 src/sdk/models/shared/index.ts
+docs/sdk/README.md
+docs/availability/README.md
+docs/credits/README.md
+docs/customer/README.md
+docs/event/README.md
+docs/invoice/README.md
+docs/plan/README.md
+docs/subscription/README.md
 USAGE.md

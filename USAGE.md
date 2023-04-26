@@ -1,13 +1,14 @@
 <!-- Start SDK Example Usage -->
 ```typescript
+import { SDK } from "Orb";
 import {
   PostCustomersRequestBody,
-  PostCustomersResponse,
   PostCustomersRequestBodyPaymentProviderEnum,
+  PostCustomersResponse,
 } from "Orb/dist/sdk/models/operations";
-
+import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 import { AxiosError } from "axios";
-import { SDK } from "Orb";
+
 const sdk = new SDK({
   security: {
     bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
@@ -41,7 +42,9 @@ const req: PostCustomersRequestBody = {
 };
 
 sdk.customer.create(req).then((res: PostCustomersResponse | AxiosError) => {
-   // handle response
+  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+    // handle response
+  }
 });
 ```
 <!-- End SDK Example Usage -->
