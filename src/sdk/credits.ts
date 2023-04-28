@@ -93,7 +93,7 @@ export class Credits {
    * }
    * ```
    */
-  create(
+  async create(
     req: operations.PostCustomersCustomerIdCreditsLedgerEntryRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostCustomersCustomerIdCreditsLedgerEntryResponse> {
@@ -128,7 +128,8 @@ export class Credits {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       headers: headers,
@@ -136,30 +137,30 @@ export class Credits {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostCustomersCustomerIdCreditsLedgerEntryResponse =
-        new operations.PostCustomersCustomerIdCreditsLedgerEntryResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.creditLedgerEntry = utils.objectToClass(
-              httpRes?.data,
-              shared.CreditLedgerEntry
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostCustomersCustomerIdCreditsLedgerEntryResponse =
+      new operations.PostCustomersCustomerIdCreditsLedgerEntryResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.creditLedgerEntry = utils.objectToClass(
+            httpRes?.data,
+            shared.CreditLedgerEntry
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -172,7 +173,7 @@ export class Credits {
    *
    * Orb only returns _unexpired_ credit blocks in this response. For credits that have already expired, you can view this deduction from the customer's balance in the [Credit Ledger](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1credits~1ledger/get) response.
    */
-  getCredits(
+  async getCredits(
     req: operations.GetCustomersCustomerIdCreditsRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomersCustomerIdCreditsResponse> {
@@ -189,37 +190,38 @@ export class Credits {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomersCustomerIdCreditsResponse =
-        new operations.GetCustomersCustomerIdCreditsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getCustomersCustomerIdCredits200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetCustomersCustomerIdCredits200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomersCustomerIdCreditsResponse =
+      new operations.GetCustomersCustomerIdCreditsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getCustomersCustomerIdCredits200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetCustomersCustomerIdCredits200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -256,7 +258,7 @@ export class Credits {
    *
    * When a set of credits expire on pre-set expiration date, the customer's balance automatically reflects this change and adds an entry to the ledger indicating this event. Note that credit expiry should always happen close to a date boundary in the customer's timezone.
    */
-  getCreditsLedger(
+  async getCreditsLedger(
     req: operations.GetCustomersCustomerIdCreditsLedgerRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomersCustomerIdCreditsLedgerResponse> {
@@ -275,36 +277,37 @@ export class Credits {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomersCustomerIdCreditsLedgerResponse =
-        new operations.GetCustomersCustomerIdCreditsLedgerResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getCustomersCustomerIdCreditsLedger200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetCustomersCustomerIdCreditsLedger200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomersCustomerIdCreditsLedgerResponse =
+      new operations.GetCustomersCustomerIdCreditsLedgerResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getCustomersCustomerIdCreditsLedger200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetCustomersCustomerIdCreditsLedger200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 }

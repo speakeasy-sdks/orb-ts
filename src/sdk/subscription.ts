@@ -55,7 +55,7 @@ export class Subscription {
    *
    * Upcoming subscriptions are only eligible for immediate cancellation, which will set the `end_date` equal to the `start_date` upon cancellation.
    */
-  cancel(
+  async cancel(
     req: operations.PostSubscriptionsSubscriptionIdCancelRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostSubscriptionsSubscriptionIdCancelResponse> {
@@ -74,36 +74,37 @@ export class Subscription {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "post",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostSubscriptionsSubscriptionIdCancelResponse =
-        new operations.PostSubscriptionsSubscriptionIdCancelResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.objectToClass(
-              httpRes?.data,
-              shared.Subscription
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostSubscriptionsSubscriptionIdCancelResponse =
+      new operations.PostSubscriptionsSubscriptionIdCancelResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.subscription = utils.objectToClass(
+            httpRes?.data,
+            shared.Subscription
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -130,7 +131,7 @@ export class Subscription {
    * ## Prorations for in-advance fees
    * By default, Orb calculates the prorated difference in any fixed fees when making a plan change, adjusting the customer balance as needed. For details on this behavior, [Subscription management](../docs/Subscription-management.md#prorations-for-in-advance-fees).
    */
-  changeSchedule(
+  async changeSchedule(
     req: operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse> {
@@ -166,7 +167,8 @@ export class Subscription {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       headers: headers,
@@ -174,32 +176,30 @@ export class Subscription {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse =
-        new operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse(
-          {
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-          }
-        );
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.objectToClass(
-              httpRes?.data,
-              shared.Subscription
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse =
+      new operations.PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.subscription = utils.objectToClass(
+            httpRes?.data,
+            shared.Subscription
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -550,7 +550,7 @@ export class Subscription {
    * }
    * ```
    */
-  create(
+  async create(
     req: operations.PostSubscriptionsRequestBody,
     config?: AxiosRequestConfig
   ): Promise<operations.PostSubscriptionsResponse> {
@@ -579,7 +579,8 @@ export class Subscription {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       headers: headers,
@@ -587,30 +588,30 @@ export class Subscription {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostSubscriptionsResponse =
-        new operations.PostSubscriptionsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.objectToClass(
-              httpRes?.data,
-              shared.Subscription
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostSubscriptionsResponse =
+      new operations.PostSubscriptionsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.subscription = utils.objectToClass(
+            httpRes?.data,
+            shared.Subscription
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -619,7 +620,7 @@ export class Subscription {
    * @remarks
    * This endpoint is used to fetch a [Subscription](../reference/Orb-API.json/components/schemas/Subscription) given an identifier.
    */
-  get(
+  async get(
     req: operations.GetSubscriptionsSubscriptionIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetSubscriptionsSubscriptionIdResponse> {
@@ -636,36 +637,37 @@ export class Subscription {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetSubscriptionsSubscriptionIdResponse =
-        new operations.GetSubscriptionsSubscriptionIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.objectToClass(
-              httpRes?.data,
-              shared.Subscription
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetSubscriptionsSubscriptionIdResponse =
+      new operations.GetSubscriptionsSubscriptionIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.subscription = utils.objectToClass(
+            httpRes?.data,
+            shared.Subscription
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -677,7 +679,7 @@ export class Subscription {
    *
    * The semantics of this endpoint exactly mirror those of [fetching a customer's costs](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1costs/get). Use this endpoint to limit your analysis of costs to a specific subscription for the customer (e.g. to de-aggregate costs when a customer's subscription has started and stopped on the same day).
    */
-  getCost(
+  async getCost(
     req: operations.GetSubscriptionsSubscriptionIdCostRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetSubscriptionsSubscriptionIdCostResponse> {
@@ -696,37 +698,38 @@ export class Subscription {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetSubscriptionsSubscriptionIdCostResponse =
-        new operations.GetSubscriptionsSubscriptionIdCostResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getSubscriptionsSubscriptionIdCost200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetSubscriptionsSubscriptionIdCost200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetSubscriptionsSubscriptionIdCostResponse =
+      new operations.GetSubscriptionsSubscriptionIdCostResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getSubscriptionsSubscriptionIdCost200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetSubscriptionsSubscriptionIdCost200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -735,7 +738,7 @@ export class Subscription {
    * @remarks
    * This endpoint returns a [paginated](../docs/Pagination.md) list of all plans associated with a subscription along with their start and end dates. This list contains the subscription's initial plan along with past and future plan changes.
    */
-  getSchedule(
+  async getSchedule(
     req: operations.GetSubscriptionsSubscriptionIdScheduleRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetSubscriptionsSubscriptionIdScheduleResponse> {
@@ -752,37 +755,38 @@ export class Subscription {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetSubscriptionsSubscriptionIdScheduleResponse =
-        new operations.GetSubscriptionsSubscriptionIdScheduleResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getSubscriptionsSubscriptionIdSchedule200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetSubscriptionsSubscriptionIdSchedule200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetSubscriptionsSubscriptionIdScheduleResponse =
+      new operations.GetSubscriptionsSubscriptionIdScheduleResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getSubscriptionsSubscriptionIdSchedule200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetSubscriptionsSubscriptionIdSchedule200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -913,7 +917,7 @@ export class Subscription {
    * - `second_dimension_key`: `provider`
    * - `second_dimension_value`: `aws`
    */
-  getUsage(
+  async getUsage(
     req: operations.GetSubscriptionsSubscriptionIdUsageRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetSubscriptionsSubscriptionIdUsageResponse> {
@@ -932,30 +936,31 @@ export class Subscription {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetSubscriptionsSubscriptionIdUsageResponse =
-        new operations.GetSubscriptionsSubscriptionIdUsageResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetSubscriptionsSubscriptionIdUsageResponse =
+      new operations.GetSubscriptionsSubscriptionIdUsageResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -966,7 +971,7 @@ export class Subscription {
    *
    * Subscriptions can be filtered to a single customer by passing in the `customer_id` query parameter or the `external_customer_id` query parameter.
    */
-  list(
+  async list(
     req: operations.ListSubscriptionsRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.ListSubscriptionsResponse> {
@@ -981,36 +986,37 @@ export class Subscription {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.ListSubscriptionsResponse =
-        new operations.ListSubscriptionsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.listSubscriptions200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.ListSubscriptions200ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.ListSubscriptionsResponse =
+      new operations.ListSubscriptionsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.listSubscriptions200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.ListSubscriptions200ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -1019,7 +1025,7 @@ export class Subscription {
    * @remarks
    * This endpoint can be used to unschedule any pending plan changes on an existing subscription.
    */
-  unschedule(
+  async unschedule(
     req: operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse> {
@@ -1039,37 +1045,38 @@ export class Subscription {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse =
-        new operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse(
-          {
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-          }
-        );
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.subscription = utils.objectToClass(
-              httpRes?.data,
-              shared.Subscription
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse =
+      new operations.PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse(
+        {
+          statusCode: httpRes.status,
+          contentType: contentType,
+          rawResponse: httpRes,
+        }
+      );
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.subscription = utils.objectToClass(
+            httpRes?.data,
+            shared.Subscription
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 }

@@ -72,13 +72,11 @@ The following snippet illustrates a sample request body to extend the expiration
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostCustomersCustomerIdCreditsLedgerEntryRequest,
   PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryTypeEnum,
   PostCustomersCustomerIdCreditsLedgerEntryResponse,
 } from "Orb/dist/sdk/models/operations";
 import { CreditLedgerEntryEntryStatusEnum, CreditLedgerEntryEntryTypeEnum } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -86,7 +84,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostCustomersCustomerIdCreditsLedgerEntryRequest = {
+sdk.credits.create({
   requestBody: {
     amount: 7206.33,
     blockId: "officia",
@@ -97,10 +95,8 @@ const req: PostCustomersCustomerIdCreditsLedgerEntryRequest = {
     targetExpiryDate: new RFCDate("2023-02-01"),
   },
   customerId: "hic",
-};
-
-sdk.credits.create(req).then((res: PostCustomersCustomerIdCreditsLedgerEntryResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostCustomersCustomerIdCreditsLedgerEntryResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -118,8 +114,7 @@ Orb only returns _unexpired_ credit blocks in this response. For credits that ha
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomersCustomerIdCreditsRequest, GetCustomersCustomerIdCreditsResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { GetCustomersCustomerIdCreditsResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -127,12 +122,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomersCustomerIdCreditsRequest = {
+sdk.credits.getCredits({
   customerId: "optio",
-};
-
-sdk.credits.getCredits(req).then((res: GetCustomersCustomerIdCreditsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomersCustomerIdCreditsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -177,11 +170,9 @@ import { SDK } from "Orb";
 import {
   GetCustomersCustomerIdCreditsLedgerEntryStatusEnum,
   GetCustomersCustomerIdCreditsLedgerEntryTypeEnum,
-  GetCustomersCustomerIdCreditsLedgerRequest,
   GetCustomersCustomerIdCreditsLedgerResponse,
 } from "Orb/dist/sdk/models/operations";
 import { CreditLedgerEntryEntryStatusEnum, CreditLedgerEntryEntryTypeEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -189,15 +180,13 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomersCustomerIdCreditsLedgerRequest = {
+sdk.credits.getCreditsLedger({
   customerId: "totam",
   entryStatus: GetCustomersCustomerIdCreditsLedgerEntryStatusEnum.Committed,
   entryType: GetCustomersCustomerIdCreditsLedgerEntryTypeEnum.Decrement,
   minimumAmount: 4736,
-};
-
-sdk.credits.getCreditsLedger(req).then((res: GetCustomersCustomerIdCreditsLedgerResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomersCustomerIdCreditsLedgerResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

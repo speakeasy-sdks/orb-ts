@@ -45,7 +45,7 @@ export class Customer {
    * * [Customer ID Aliases](../docs/Customer-ID-Aliases.md) can be configured by setting `external_customer_id`
    * * [Timezone localization](../docs/Timezone-localization.md) can be configured on a per-customer basis by setting the `timezone` parameter
    */
-  create(
+  async create(
     req: operations.PostCustomersRequestBody,
     config?: AxiosRequestConfig
   ): Promise<operations.PostCustomersResponse> {
@@ -74,7 +74,8 @@ export class Customer {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       headers: headers,
@@ -82,27 +83,27 @@ export class Customer {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostCustomersResponse =
-        new operations.PostCustomersResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 201:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostCustomersResponse =
+      new operations.PostCustomersResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 201:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -113,7 +114,7 @@ export class Customer {
    *
    * See the [Customer resource](Orb-API.json/components/schemas/Customer) for a full discussion of the Customer model.
    */
-  get(
+  async get(
     req: operations.GetCustomersCustomerIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomersCustomerIdResponse> {
@@ -130,33 +131,34 @@ export class Customer {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomersCustomerIdResponse =
-        new operations.GetCustomersCustomerIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 201:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomersCustomerIdResponse =
+      new operations.GetCustomersCustomerIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 201:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -177,7 +179,7 @@ export class Customer {
    *
    * The customer balance can only be applied to invoices or adjusted manually if invoices are not synced to a separate invoicing provider. If a payment gateway such as Stripe is used, the balance will be applied to the invoice before forwarding payment to the gateway.
    */
-  getBalance(
+  async getBalance(
     req: operations.GetCustomersCustomerIdBalanceTransactionsRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomersCustomerIdBalanceTransactionsResponse> {
@@ -196,37 +198,38 @@ export class Customer {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomersCustomerIdBalanceTransactionsResponse =
-        new operations.GetCustomersCustomerIdBalanceTransactionsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getCustomersCustomerIdBalanceTransactions200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetCustomersCustomerIdBalanceTransactions200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomersCustomerIdBalanceTransactionsResponse =
+      new operations.GetCustomersCustomerIdBalanceTransactionsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getCustomersCustomerIdBalanceTransactions200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetCustomersCustomerIdBalanceTransactions200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -237,7 +240,7 @@ export class Customer {
    *
    * Note that the resource and semantics of this endpoint exactly mirror [Get Customer](Orb-API.json/paths/~1customers/get).
    */
-  getByExternalId(
+  async getByExternalId(
     req: operations.GetCustomersExternalCustomerIdExternalCustomerIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse> {
@@ -257,35 +260,34 @@ export class Customer {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse =
-        new operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse(
-          {
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-          }
-        );
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse =
+      new operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -360,7 +362,7 @@ export class Customer {
    * When a price uses matrix pricing, it's important to view costs grouped by those matrix dimensions. Orb will return `price_groups` with the `grouping_key` and `secondary_grouping_key` based on the matrix price definition, for each `grouping_value` and `secondary_grouping_value` available.
    *
    */
-  getCosts(
+  async getCosts(
     req: operations.GetCustomerCostsRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetCustomerCostsResponse> {
@@ -379,36 +381,37 @@ export class Customer {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetCustomerCostsResponse =
-        new operations.GetCustomerCostsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getCustomerCosts200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.GetCustomerCosts200ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetCustomerCostsResponse =
+      new operations.GetCustomerCostsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getCustomerCosts200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.GetCustomerCosts200ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -417,7 +420,7 @@ export class Customer {
    * @remarks
    * This endpoint's resource and semantics exactly mirror [View customer costs](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1costs/get) but operates on an [external customer ID](../docs/Customer-ID-Aliases.md) rather than an Orb issued identifier.
    */
-  getCostsByExternalId(
+  async getCostsByExternalId(
     req: operations.GetExternalCustomerCostsRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetExternalCustomerCostsResponse> {
@@ -436,37 +439,38 @@ export class Customer {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetExternalCustomerCostsResponse =
-        new operations.GetExternalCustomerCostsResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.getExternalCustomerCosts200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.GetExternalCustomerCosts200ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetExternalCustomerCostsResponse =
+      new operations.GetExternalCustomerCostsResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.getExternalCustomerCosts200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.GetExternalCustomerCosts200ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -479,42 +483,45 @@ export class Customer {
    *
    * See [Customer](../reference/Orb-API.json/components/schemas/Customer) for an overview of the customer model.
    */
-  list(config?: AxiosRequestConfig): Promise<operations.ListCustomersResponse> {
+  async list(
+    config?: AxiosRequestConfig
+  ): Promise<operations.ListCustomersResponse> {
     const baseURL: string = this._serverURL;
     const url: string = baseURL.replace(/\/$/, "") + "/customers";
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.ListCustomersResponse =
-        new operations.ListCustomersResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.listCustomers200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.ListCustomers200ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.ListCustomersResponse =
+      new operations.ListCustomersResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.listCustomers200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.ListCustomers200ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -525,7 +532,7 @@ export class Customer {
    *
    * Other fields on a customer are currently immutable.
    */
-  update(
+  async update(
     req: operations.PutCustomersCustomerIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PutCustomersCustomerIdResponse> {
@@ -558,7 +565,8 @@ export class Customer {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "put",
       headers: headers,
@@ -566,27 +574,27 @@ export class Customer {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PutCustomersCustomerIdResponse =
-        new operations.PutCustomersCustomerIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PutCustomersCustomerIdResponse =
+      new operations.PutCustomersCustomerIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -597,7 +605,7 @@ export class Customer {
    *
    * Note that the resource and semantics of this endpoint exactly mirror [Update Customer](Orb-API.json/paths/~1customers~1{customer_id}/put).
    */
-  updateByExternalId(
+  async updateByExternalId(
     req: operations.PutCustomersExternalCustomerIdExternalCustomerIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse> {
@@ -633,7 +641,8 @@ export class Customer {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "put",
       headers: headers,
@@ -641,29 +650,27 @@ export class Customer {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse =
-        new operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse(
-          {
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-          }
-        );
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse =
+      new operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -725,7 +732,7 @@ export class Customer {
    *
    * In order to overwrite timeframes with a very large number of events, we suggest using multiple calls with small adjacent (e.g. every hour) timeframes.
    */
-  updateUsage(
+  async updateUsage(
     req: operations.PatchCustomersCustomerIdUsageRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PatchCustomersCustomerIdUsageResponse> {
@@ -759,7 +766,8 @@ export class Customer {
     const headers = { ...reqBodyHeaders, ...config?.headers };
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "patch",
       headers: headers,
@@ -767,40 +775,40 @@ export class Customer {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PatchCustomersCustomerIdUsageResponse =
-        new operations.PatchCustomersCustomerIdUsageResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.patchCustomersCustomerIdUsage200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PatchCustomersCustomerIdUsage200ApplicationJSON
-              );
-          }
-          break;
-        case httpRes?.status == 400:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.patchCustomersCustomerIdUsage400ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PatchCustomersCustomerIdUsage400ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PatchCustomersCustomerIdUsageResponse =
+      new operations.PatchCustomersCustomerIdUsageResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.patchCustomersCustomerIdUsage200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PatchCustomersCustomerIdUsage200ApplicationJSON
+            );
+        }
+        break;
+      case httpRes?.status == 400:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.patchCustomersCustomerIdUsage400ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PatchCustomersCustomerIdUsage400ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -809,7 +817,7 @@ export class Customer {
    * @remarks
    * This endpoint's resource and semantics exactly mirror [Amend customer usage](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1usage/patch) but operates on an [external customer ID](see (../docs/Customer-ID-Aliases.md)) rather than an Orb issued identifier.
    */
-  updateUsageByExternalId(
+  async updateUsageByExternalId(
     req: operations.PatchExternalCustomersCustomerIdUsageRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PatchExternalCustomersCustomerIdUsageResponse> {
@@ -843,7 +851,8 @@ export class Customer {
     const headers = { ...reqBodyHeaders, ...config?.headers };
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "patch",
       headers: headers,
@@ -851,39 +860,39 @@ export class Customer {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PatchExternalCustomersCustomerIdUsageResponse =
-        new operations.PatchExternalCustomersCustomerIdUsageResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.patchExternalCustomersCustomerIdUsage200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PatchExternalCustomersCustomerIdUsage200ApplicationJSON
-              );
-          }
-          break;
-        case httpRes?.status == 400:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.patchExternalCustomersCustomerIdUsage400ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PatchExternalCustomersCustomerIdUsage400ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PatchExternalCustomersCustomerIdUsageResponse =
+      new operations.PatchExternalCustomersCustomerIdUsageResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.patchExternalCustomersCustomerIdUsage200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PatchExternalCustomersCustomerIdUsage200ApplicationJSON
+            );
+        }
+        break;
+      case httpRes?.status == 400:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.patchExternalCustomersCustomerIdUsage400ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PatchExternalCustomersCustomerIdUsage400ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 }

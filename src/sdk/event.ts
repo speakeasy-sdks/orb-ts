@@ -54,7 +54,7 @@ export class Event {
    * * The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period. Orb does not allow deprecating events for billing periods that have already invoiced customers.
    * * The `customer_id` or the `external_customer_id` of the original event ingestion request must identify a Customer resource within Orb, even if this event was ingested during the initial integration period. We do not allow deprecating events for customers not in the Orb system.
    */
-  deprecate(
+  async deprecate(
     req: operations.PutDeprecateEventsEventIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PutDeprecateEventsEventIdResponse> {
@@ -71,46 +71,47 @@ export class Event {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "put",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PutDeprecateEventsEventIdResponse =
-        new operations.PutDeprecateEventsEventIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.putDeprecateEventsEventId200ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PutDeprecateEventsEventId200ApplicationJSON
-              );
-          }
-          break;
-        case httpRes?.status == 400:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.putDeprecateEventsEventId400ApplicationJSONObject =
-              utils.objectToClass(
-                httpRes?.data,
-                operations.PutDeprecateEventsEventId400ApplicationJSON
-              );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PutDeprecateEventsEventIdResponse =
+      new operations.PutDeprecateEventsEventIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.putDeprecateEventsEventId200ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PutDeprecateEventsEventId200ApplicationJSON
+            );
+        }
+        break;
+      case httpRes?.status == 400:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.putDeprecateEventsEventId400ApplicationJSONObject =
+            utils.objectToClass(
+              httpRes?.data,
+              operations.PutDeprecateEventsEventId400ApplicationJSON
+            );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -255,7 +256,7 @@ export class Event {
    * }
    * ```
    */
-  ingest(
+  async ingest(
     req: operations.PostIngestRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostIngestResponse> {
@@ -285,7 +286,8 @@ export class Event {
     const headers = { ...reqBodyHeaders, ...config?.headers };
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "post",
       headers: headers,
@@ -293,38 +295,38 @@ export class Event {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostIngestResponse =
-        new operations.PostIngestResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.postIngest200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.PostIngest200ApplicationJSON
-            );
-          }
-          break;
-        case httpRes?.status == 400:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.postIngest400ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.PostIngest400ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostIngestResponse =
+      new operations.PostIngestResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.postIngest200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.PostIngest200ApplicationJSON
+          );
+        }
+        break;
+      case httpRes?.status == 400:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.postIngest400ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.PostIngest400ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -343,7 +345,7 @@ export class Event {
    *
    * By default, Orb will not throw a `404` if no events matched, Orb will return an empty array for `data` instead.
    */
-  search(
+  async search(
     req: operations.PostEventsSearchRequestBody,
     config?: AxiosRequestConfig
   ): Promise<operations.PostEventsSearchResponse> {
@@ -372,7 +374,8 @@ export class Event {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "post",
       headers: headers,
@@ -380,30 +383,30 @@ export class Event {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PostEventsSearchResponse =
-        new operations.PostEventsSearchResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.postEventsSearch200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.PostEventsSearch200ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PostEventsSearchResponse =
+      new operations.PostEventsSearchResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.postEventsSearch200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.PostEventsSearch200ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -426,7 +429,7 @@ export class Event {
    * * Orb does not accept an `idempotency_key` with the event in this endpoint, since this request is by design idempotent. On retryable errors, you should retry the request and assume the amendment operation has not succeeded until receipt of a 2xx.
    * * The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period.
    */
-  update(
+  async update(
     req: operations.PutEventsEventIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PutEventsEventIdResponse> {
@@ -455,7 +458,8 @@ export class Event {
 
     const headers = { ...reqBodyHeaders, ...config?.headers };
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "put",
       headers: headers,
@@ -463,37 +467,37 @@ export class Event {
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.PutEventsEventIdResponse =
-        new operations.PutEventsEventIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.putEventsEventId200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.PutEventsEventId200ApplicationJSON
-            );
-          }
-          break;
-        case httpRes?.status == 400:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.putEventsEventId400ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.PutEventsEventId400ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.PutEventsEventIdResponse =
+      new operations.PutEventsEventIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.putEventsEventId200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.PutEventsEventId200ApplicationJSON
+          );
+        }
+        break;
+      case httpRes?.status == 400:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.putEventsEventId400ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.PutEventsEventId400ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 }

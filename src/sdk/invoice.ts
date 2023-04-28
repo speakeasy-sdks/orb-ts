@@ -40,7 +40,7 @@ export class Invoice {
    * @remarks
    * This endpoint is used to fetch an [`Invoice`](../reference/Orb-API.json/components/schemas/Invoice) given an identifier.
    */
-  get(
+  async get(
     req: operations.GetInvoiceInvoiceIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetInvoiceInvoiceIdResponse> {
@@ -57,33 +57,34 @@ export class Invoice {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetInvoiceInvoiceIdResponse =
-        new operations.GetInvoiceInvoiceIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.invoice = utils.objectToClass(httpRes?.data, shared.Invoice);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetInvoiceInvoiceIdResponse =
+      new operations.GetInvoiceInvoiceIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.invoice = utils.objectToClass(httpRes?.data, shared.Invoice);
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -92,7 +93,7 @@ export class Invoice {
    * @remarks
    * This endpoint can be used to fetch the [`UpcomingInvoice`](../reference/Orb-API.json/components/schemas/Upcoming%20Invoice) for the current billing period given a subscription.
    */
-  getUpcoming(
+  async getUpcoming(
     req: operations.GetInvoicesUpcomingRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetInvoicesUpcomingResponse> {
@@ -107,36 +108,37 @@ export class Invoice {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetInvoicesUpcomingResponse =
-        new operations.GetInvoicesUpcomingResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.upcomingInvoice = utils.objectToClass(
-              httpRes?.data,
-              shared.UpcomingInvoice
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetInvoicesUpcomingResponse =
+      new operations.GetInvoicesUpcomingResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.upcomingInvoice = utils.objectToClass(
+            httpRes?.data,
+            shared.UpcomingInvoice
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 
   /**
@@ -147,7 +149,7 @@ export class Invoice {
    *
    * The list of invoices is ordered starting from the most recently issued invoice date. The response also includes `pagination_metadata`, which lets the caller retrieve the next page of results if they exist.
    */
-  list(
+  async list(
     req: operations.ListInvoicesRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.ListInvoicesResponse> {
@@ -162,35 +164,36 @@ export class Invoice {
 
     const queryParams: string = utils.serializeQueryParams(req);
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url + queryParams,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.ListInvoicesResponse =
-        new operations.ListInvoicesResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.listInvoices200ApplicationJSONObject = utils.objectToClass(
-              httpRes?.data,
-              operations.ListInvoices200ApplicationJSON
-            );
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.ListInvoicesResponse =
+      new operations.ListInvoicesResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.listInvoices200ApplicationJSONObject = utils.objectToClass(
+            httpRes?.data,
+            operations.ListInvoices200ApplicationJSON
+          );
+        }
+        break;
+    }
+
+    return res;
   }
 }

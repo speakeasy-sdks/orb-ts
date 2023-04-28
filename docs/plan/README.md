@@ -22,14 +22,13 @@ Orb supports plan phases, also known as contract ramps. For plans with phases, t
 
 ```typescript
 import { SDK } from "Orb";
-import { GetPlansPlanIdRequest, GetPlansPlanIdResponse } from "Orb/dist/sdk/models/operations";
+import { GetPlansPlanIdResponse } from "Orb/dist/sdk/models/operations";
 import {
   PlanPhaseDurationUnitEnum,
   PlanTrialConfigTrialPeriodUnitEnum,
   PriceCadenceEnum,
   PriceModelTypeEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -37,12 +36,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetPlansPlanIdRequest = {
+sdk.plan.get({
   planId: "maxime",
-};
-
-sdk.plan.get(req).then((res: GetPlansPlanIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetPlansPlanIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

@@ -19,7 +19,6 @@ This API does not have any side-effects or return any Orb resources.
 ```typescript
 import { SDK } from "Orb";
 import { GetPingResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -27,8 +26,8 @@ const sdk = new SDK({
   },
 });
 
-sdk.availability.ping().then((res: GetPingResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+sdk.availability.ping().then((res: GetPingResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

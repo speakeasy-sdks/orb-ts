@@ -46,7 +46,7 @@ export class Plan {
    * ## Phases
    * Orb supports plan phases, also known as contract ramps. For plans with phases, the serialized prices refer to all prices across all phases.
    */
-  get(
+  async get(
     req: operations.GetPlansPlanIdRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.GetPlansPlanIdResponse> {
@@ -59,32 +59,33 @@ export class Plan {
 
     const client: AxiosInstance = this._securityClient || this._defaultClient;
 
-    const r = client.request({
+    const httpRes: AxiosResponse = await client.request({
+      validateStatus: () => true,
       url: url,
       method: "get",
       ...config,
     });
 
-    return r.then((httpRes: AxiosResponse) => {
-      const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+    const contentType: string = httpRes?.headers?.["content-type"] ?? "";
 
-      if (httpRes?.status == null)
-        throw new Error(`status code not found in response: ${httpRes}`);
-      const res: operations.GetPlansPlanIdResponse =
-        new operations.GetPlansPlanIdResponse({
-          statusCode: httpRes.status,
-          contentType: contentType,
-          rawResponse: httpRes,
-        });
-      switch (true) {
-        case httpRes?.status == 200:
-          if (utils.matchContentType(contentType, `application/json`)) {
-            res.plan = utils.objectToClass(httpRes?.data, shared.Plan);
-          }
-          break;
-      }
+    if (httpRes?.status == null) {
+      throw new Error(`status code not found in response: ${httpRes}`);
+    }
 
-      return res;
-    });
+    const res: operations.GetPlansPlanIdResponse =
+      new operations.GetPlansPlanIdResponse({
+        statusCode: httpRes.status,
+        contentType: contentType,
+        rawResponse: httpRes,
+      });
+    switch (true) {
+      case httpRes?.status == 200:
+        if (utils.matchContentType(contentType, `application/json`)) {
+          res.plan = utils.objectToClass(httpRes?.data, shared.Plan);
+        }
+        break;
+    }
+
+    return res;
   }
 }

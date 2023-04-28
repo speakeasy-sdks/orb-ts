@@ -18,13 +18,12 @@ This endpoint is used to fetch an [`Invoice`](../reference/Orb-API.json/componen
 
 ```typescript
 import { SDK } from "Orb";
-import { GetInvoiceInvoiceIdRequest, GetInvoiceInvoiceIdResponse } from "Orb/dist/sdk/models/operations";
+import { GetInvoiceInvoiceIdResponse } from "Orb/dist/sdk/models/operations";
 import {
   CustomerBalanceTransactionActionEnum,
   InvoiceLineItemsSubLineItemsTypeEnum,
   InvoiceStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -32,12 +31,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetInvoiceInvoiceIdRequest = {
+sdk.invoice.get({
   invoiceId: "quasi",
-};
-
-sdk.invoice.get(req).then((res: GetInvoiceInvoiceIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetInvoiceInvoiceIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -51,10 +48,9 @@ This endpoint can be used to fetch the [`UpcomingInvoice`](../reference/Orb-API.
 
 ```typescript
 import { SDK } from "Orb";
-import { GetInvoicesUpcomingRequest, GetInvoicesUpcomingResponse } from "Orb/dist/sdk/models/operations";
+import { GetInvoicesUpcomingResponse } from "Orb/dist/sdk/models/operations";
 import { UpcomingInvoiceLineItemsSubLineItemsTypeEnum } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -62,12 +58,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetInvoicesUpcomingRequest = {
+sdk.invoice.getUpcoming({
   subscriptionId: "iure",
-};
-
-sdk.invoice.getUpcoming(req).then((res: GetInvoicesUpcomingResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetInvoicesUpcomingResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -83,13 +77,12 @@ The list of invoices is ordered starting from the most recently issued invoice d
 
 ```typescript
 import { SDK } from "Orb";
-import { ListInvoicesRequest, ListInvoicesResponse } from "Orb/dist/sdk/models/operations";
+import { ListInvoicesResponse } from "Orb/dist/sdk/models/operations";
 import {
   CustomerBalanceTransactionActionEnum,
   InvoiceLineItemsSubLineItemsTypeEnum,
   InvoiceStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -97,14 +90,12 @@ const sdk = new SDK({
   },
 });
 
-const req: ListInvoicesRequest = {
+sdk.invoice.list({
   customerId: "doloribus",
   externalCustomerId: "debitis",
   subscriptionId: "eius",
-};
-
-sdk.invoice.list(req).then((res: ListInvoicesResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: ListInvoicesResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

@@ -41,7 +41,6 @@ Upcoming subscriptions are only eligible for immediate cancellation, which will 
 import { SDK } from "Orb";
 import {
   PostSubscriptionsSubscriptionIdCancelCancelOptionEnum,
-  PostSubscriptionsSubscriptionIdCancelRequest,
   PostSubscriptionsSubscriptionIdCancelResponse,
 } from "Orb/dist/sdk/models/operations";
 import {
@@ -52,7 +51,6 @@ import {
   PriceModelTypeEnum,
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -60,13 +58,11 @@ const sdk = new SDK({
   },
 });
 
-const req: PostSubscriptionsSubscriptionIdCancelRequest = {
+sdk.subscription.cancel({
   cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOptionEnum.Immediate,
   subscriptionId: "facilis",
-};
-
-sdk.subscription.cancel(req).then((res: PostSubscriptionsSubscriptionIdCancelResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostSubscriptionsSubscriptionIdCancelResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -99,7 +95,6 @@ By default, Orb calculates the prorated difference in any fixed fees when making
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequest,
   PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOptionEnum,
   PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelTypeEnum,
   PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelTypeEnum,
@@ -119,7 +114,6 @@ import {
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -127,7 +121,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequest = {
+sdk.subscription.changeSchedule({
   requestBody: {
     alignBillingWithPlanChangeDate: false,
     changeDate: new RFCDate("2022-01-01"),
@@ -168,10 +162,8 @@ const req: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequest = {
     ],
   },
   subscriptionId: "ullam",
-};
-
-sdk.subscription.changeSchedule(req).then((res: PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -528,7 +520,6 @@ Using the plan's discount example
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostSubscriptionsRequestBody,
   PostSubscriptionsRequestBodyExternalMarketplaceEnum,
   PostSubscriptionsRequestBodyPriceOverrides1ModelTypeEnum,
   PostSubscriptionsRequestBodyPriceOverrides2ModelTypeEnum,
@@ -548,7 +539,6 @@ import {
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -556,7 +546,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostSubscriptionsRequestBody = {
+sdk.subscription.create({
   alignBillingWithSubscriptionStartDate: false,
   customerId: "97DPcZE9hxsbb9Y9",
   externalCustomerId: "expedita",
@@ -634,10 +624,8 @@ const req: PostSubscriptionsRequestBody = {
     },
   ],
   startDate: new RFCDate("2022-01-01"),
-};
-
-sdk.subscription.create(req).then((res: PostSubscriptionsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostSubscriptionsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -651,7 +639,7 @@ This endpoint is used to fetch a [Subscription](../reference/Orb-API.json/compon
 
 ```typescript
 import { SDK } from "Orb";
-import { GetSubscriptionsSubscriptionIdRequest, GetSubscriptionsSubscriptionIdResponse } from "Orb/dist/sdk/models/operations";
+import { GetSubscriptionsSubscriptionIdResponse } from "Orb/dist/sdk/models/operations";
 import {
   CustomerPaymentProviderEnum,
   PlanPhaseDurationUnitEnum,
@@ -660,7 +648,6 @@ import {
   PriceModelTypeEnum,
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -668,12 +655,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetSubscriptionsSubscriptionIdRequest = {
+sdk.subscription.get({
   subscriptionId: "necessitatibus",
-};
-
-sdk.subscription.get(req).then((res: GetSubscriptionsSubscriptionIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetSubscriptionsSubscriptionIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -690,12 +675,8 @@ The semantics of this endpoint exactly mirror those of [fetching a customer's co
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  GetSubscriptionsSubscriptionIdCostRequest,
-  GetSubscriptionsSubscriptionIdCostResponse,
-} from "Orb/dist/sdk/models/operations";
+import { GetSubscriptionsSubscriptionIdCostResponse } from "Orb/dist/sdk/models/operations";
 import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -703,16 +684,14 @@ const sdk = new SDK({
   },
 });
 
-const req: GetSubscriptionsSubscriptionIdCostRequest = {
+sdk.subscription.getCost({
   groupBy: "distinctio",
   subscriptionId: "asperiores",
   timeframeEnd: new Date("2022-02-02T05:00:00Z"),
   timeframeStart: new Date("2022-02-02T05:00:00Z"),
   viewMode: "nihil",
-};
-
-sdk.subscription.getCost(req).then((res: GetSubscriptionsSubscriptionIdCostResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetSubscriptionsSubscriptionIdCostResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -726,11 +705,7 @@ This endpoint returns a [paginated](../docs/Pagination.md) list of all plans ass
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  GetSubscriptionsSubscriptionIdScheduleRequest,
-  GetSubscriptionsSubscriptionIdScheduleResponse,
-} from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { GetSubscriptionsSubscriptionIdScheduleResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -738,12 +713,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetSubscriptionsSubscriptionIdScheduleRequest = {
+sdk.subscription.getSchedule({
   subscriptionId: "ipsum",
-};
-
-sdk.subscription.getSchedule(req).then((res: GetSubscriptionsSubscriptionIdScheduleResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetSubscriptionsSubscriptionIdScheduleResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -881,10 +854,8 @@ For example, if your compute metric has a separate unit price (i.e. a matrix pri
 import { SDK } from "Orb";
 import {
   GetSubscriptionsSubscriptionIdUsageGranularityEnum,
-  GetSubscriptionsSubscriptionIdUsageRequest,
   GetSubscriptionsSubscriptionIdUsageResponse,
 } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -892,17 +863,15 @@ const sdk = new SDK({
   },
 });
 
-const req: GetSubscriptionsSubscriptionIdUsageRequest = {
+sdk.subscription.getUsage({
   billableMetricId: "voluptate",
   granularity: GetSubscriptionsSubscriptionIdUsageGranularityEnum.Day,
   groupBy: "id",
   subscriptionId: "saepe",
   timeframeEnd: new Date("2022-02-02T05:00:00Z"),
   timeframeStart: new Date("2022-02-02T05:00:00Z"),
-};
-
-sdk.subscription.getUsage(req).then((res: GetSubscriptionsSubscriptionIdUsageResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetSubscriptionsSubscriptionIdUsageResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -918,7 +887,7 @@ Subscriptions can be filtered to a single customer by passing in the `customer_i
 
 ```typescript
 import { SDK } from "Orb";
-import { ListSubscriptionsRequest, ListSubscriptionsResponse } from "Orb/dist/sdk/models/operations";
+import { ListSubscriptionsResponse } from "Orb/dist/sdk/models/operations";
 import {
   CustomerPaymentProviderEnum,
   PlanPhaseDurationUnitEnum,
@@ -927,7 +896,6 @@ import {
   PriceModelTypeEnum,
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -935,13 +903,11 @@ const sdk = new SDK({
   },
 });
 
-const req: ListSubscriptionsRequest = {
+sdk.subscription.list({
   customerId: "eius",
   externalCustomerId: "aspernatur",
-};
-
-sdk.subscription.list(req).then((res: ListSubscriptionsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: ListSubscriptionsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -955,10 +921,7 @@ This endpoint can be used to unschedule any pending plan changes on an existing 
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesRequest,
-  PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse,
-} from "Orb/dist/sdk/models/operations";
+import { PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse } from "Orb/dist/sdk/models/operations";
 import {
   CustomerPaymentProviderEnum,
   PlanPhaseDurationUnitEnum,
@@ -967,7 +930,6 @@ import {
   PriceModelTypeEnum,
   SubscriptionStatusEnum,
 } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -975,12 +937,10 @@ const sdk = new SDK({
   },
 });
 
-const req: PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesRequest = {
+sdk.subscription.unschedule({
   subscriptionId: "perferendis",
-};
-
-sdk.subscription.unschedule(req).then((res: PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

@@ -31,13 +31,8 @@ This endpoint is critical in the following Orb functionality:
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  PostCustomersRequestBody,
-  PostCustomersRequestBodyPaymentProviderEnum,
-  PostCustomersResponse,
-} from "Orb/dist/sdk/models/operations";
+import { PostCustomersRequestBodyPaymentProviderEnum, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -45,7 +40,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostCustomersRequestBody = {
+sdk.customer.create({
   billingAddress: {
     city: "East Ona",
     country: "US",
@@ -69,10 +64,8 @@ const req: PostCustomersRequestBody = {
     state: "omnis",
   },
   timezone: "Etc/UTC",
-};
-
-sdk.customer.create(req).then((res: PostCustomersResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostCustomersResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -88,9 +81,8 @@ See the [Customer resource](Orb-API.json/components/schemas/Customer) for a full
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomersCustomerIdRequest, GetCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+import { GetCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -98,12 +90,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomersCustomerIdRequest = {
+sdk.customer.get({
   customerId: "nemo",
-};
-
-sdk.customer.get(req).then((res: GetCustomersCustomerIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomersCustomerIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -129,12 +119,8 @@ The customer balance can only be applied to invoices or adjusted manually if inv
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  GetCustomersCustomerIdBalanceTransactionsRequest,
-  GetCustomersCustomerIdBalanceTransactionsResponse,
-} from "Orb/dist/sdk/models/operations";
+import { GetCustomersCustomerIdBalanceTransactionsResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerBalanceTransactionActionEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -142,12 +128,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomersCustomerIdBalanceTransactionsRequest = {
+sdk.customer.getBalance({
   customerId: "minima",
-};
-
-sdk.customer.getBalance(req).then((res: GetCustomersCustomerIdBalanceTransactionsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomersCustomerIdBalanceTransactionsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -163,12 +147,8 @@ Note that the resource and semantics of this endpoint exactly mirror [Get Custom
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  GetCustomersExternalCustomerIdExternalCustomerIdRequest,
-  GetCustomersExternalCustomerIdExternalCustomerIdResponse,
-} from "Orb/dist/sdk/models/operations";
+import { GetCustomersExternalCustomerIdExternalCustomerIdResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -176,12 +156,10 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomersExternalCustomerIdExternalCustomerIdRequest = {
+sdk.customer.getByExternalId({
   externalCustomerId: "excepturi",
-};
-
-sdk.customer.getByExternalId(req).then((res: GetCustomersExternalCustomerIdExternalCustomerIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomersExternalCustomerIdExternalCustomerIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -261,9 +239,8 @@ When a price uses matrix pricing, it's important to view costs grouped by those 
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomerCostsRequest, GetCustomerCostsResponse, GetCustomerCostsViewModeEnum } from "Orb/dist/sdk/models/operations";
+import { GetCustomerCostsResponse, GetCustomerCostsViewModeEnum } from "Orb/dist/sdk/models/operations";
 import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -271,16 +248,14 @@ const sdk = new SDK({
   },
 });
 
-const req: GetCustomerCostsRequest = {
+sdk.customer.getCosts({
   customerId: "accusantium",
   groupBy: "iure",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
   viewMode: GetCustomerCostsViewModeEnum.Cumulative,
-};
-
-sdk.customer.getCosts(req).then((res: GetCustomerCostsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetCustomerCostsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -294,13 +269,8 @@ This endpoint's resource and semantics exactly mirror [View customer costs](../r
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  GetExternalCustomerCostsRequest,
-  GetExternalCustomerCostsResponse,
-  GetExternalCustomerCostsViewModeEnum,
-} from "Orb/dist/sdk/models/operations";
+import { GetExternalCustomerCostsResponse, GetExternalCustomerCostsViewModeEnum } from "Orb/dist/sdk/models/operations";
 import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -308,16 +278,14 @@ const sdk = new SDK({
   },
 });
 
-const req: GetExternalCustomerCostsRequest = {
+sdk.customer.getCostsByExternalId({
   externalCustomerId: "doloribus",
   groupBy: "sapiente",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
   viewMode: GetExternalCustomerCostsViewModeEnum.Periodic,
-};
-
-sdk.customer.getCostsByExternalId(req).then((res: GetExternalCustomerCostsResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: GetExternalCustomerCostsResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -337,7 +305,6 @@ See [Customer](../reference/Orb-API.json/components/schemas/Customer) for an ove
 import { SDK } from "Orb";
 import { ListCustomersResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -345,8 +312,8 @@ const sdk = new SDK({
   },
 });
 
-sdk.customer.list().then((res: ListCustomersResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+sdk.customer.list().then((res: ListCustomersResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -363,12 +330,10 @@ Other fields on a customer are currently immutable.
 ```typescript
 import { SDK } from "Orb";
 import {
-  PutCustomersCustomerIdRequest,
   PutCustomersCustomerIdRequestBodyPaymentProviderEnum,
   PutCustomersCustomerIdResponse,
 } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -376,7 +341,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PutCustomersCustomerIdRequest = {
+sdk.customer.update({
   requestBody: {
     billingAddress: {
       city: "Durganfurt",
@@ -400,10 +365,8 @@ const req: PutCustomersCustomerIdRequest = {
     },
   },
   customerId: "reprehenderit",
-};
-
-sdk.customer.update(req).then((res: PutCustomersCustomerIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PutCustomersCustomerIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -420,12 +383,10 @@ Note that the resource and semantics of this endpoint exactly mirror [Update Cus
 ```typescript
 import { SDK } from "Orb";
 import {
-  PutCustomersExternalCustomerIdExternalCustomerIdRequest,
   PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProviderEnum,
   PutCustomersExternalCustomerIdExternalCustomerIdResponse,
 } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -433,7 +394,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PutCustomersExternalCustomerIdExternalCustomerIdRequest = {
+sdk.customer.updateByExternalId({
   requestBody: {
     billingAddress: {
       city: "Fort Blanche",
@@ -457,10 +418,8 @@ const req: PutCustomersExternalCustomerIdExternalCustomerIdRequest = {
     },
   },
   externalCustomerId: "labore",
-};
-
-sdk.customer.updateByExternalId(req).then((res: PutCustomersExternalCustomerIdExternalCustomerIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PutCustomersExternalCustomerIdExternalCustomerIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -527,8 +486,7 @@ In order to overwrite timeframes with a very large number of events, we suggest 
 
 ```typescript
 import { SDK } from "Orb";
-import { PatchCustomersCustomerIdUsageRequest, PatchCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PatchCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -536,7 +494,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PatchCustomersCustomerIdUsageRequest = {
+sdk.customer.updateUsage({
   requestBody: {
     events: [
       {
@@ -559,10 +517,8 @@ const req: PatchCustomersCustomerIdUsageRequest = {
   customerId: "tempora",
   timeframeEnd: new Date("2022-05-11T17:46:20Z"),
   timeframeStart: new Date("2022-05-11T17:46:20Z"),
-};
-
-sdk.customer.updateUsage(req).then((res: PatchCustomersCustomerIdUsageResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PatchCustomersCustomerIdUsageResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -576,11 +532,7 @@ This endpoint's resource and semantics exactly mirror [Amend customer usage](../
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  PatchExternalCustomersCustomerIdUsageRequest,
-  PatchExternalCustomersCustomerIdUsageResponse,
-} from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PatchExternalCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -588,7 +540,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PatchExternalCustomersCustomerIdUsageRequest = {
+sdk.customer.updateUsageByExternalId({
   requestBody: {
     events: [
       {
@@ -621,10 +573,8 @@ const req: PatchExternalCustomersCustomerIdUsageRequest = {
   externalCustomerId: "cumque",
   timeframeEnd: new Date("2022-05-11T17:46:20Z"),
   timeframeStart: new Date("2022-05-11T17:46:20Z"),
-};
-
-sdk.customer.updateUsageByExternalId(req).then((res: PatchExternalCustomersCustomerIdUsageResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PatchExternalCustomersCustomerIdUsageResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

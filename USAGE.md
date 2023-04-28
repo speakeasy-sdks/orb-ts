@@ -1,13 +1,8 @@
 <!-- Start SDK Example Usage -->
 ```typescript
 import { SDK } from "Orb";
-import {
-  PostCustomersRequestBody,
-  PostCustomersRequestBodyPaymentProviderEnum,
-  PostCustomersResponse,
-} from "Orb/dist/sdk/models/operations";
+import { PostCustomersRequestBodyPaymentProviderEnum, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
-import { AxiosError } from "axios";
 
 const sdk = new SDK({
   security: {
@@ -15,7 +10,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostCustomersRequestBody = {
+sdk.customer.create({
   billingAddress: {
     city: "Laruecester",
     country: "US",
@@ -39,10 +34,8 @@ const req: PostCustomersRequestBody = {
     state: "dicta",
   },
   timezone: "Etc/UTC",
-};
-
-sdk.customer.create(req).then((res: PostCustomersResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostCustomersResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });

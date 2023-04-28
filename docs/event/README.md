@@ -34,8 +34,7 @@ This API is always audit-safe. The process will still retain the deprecated even
 
 ```typescript
 import { SDK } from "Orb";
-import { PutDeprecateEventsEventIdRequest, PutDeprecateEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PutDeprecateEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -43,12 +42,10 @@ const sdk = new SDK({
   },
 });
 
-const req: PutDeprecateEventsEventIdRequest = {
+sdk.event.deprecate({
   eventId: "fQp2wSmK7CF9oPcu",
-};
-
-sdk.event.deprecate(req).then((res: PutDeprecateEventsEventIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PutDeprecateEventsEventIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -198,8 +195,7 @@ We strongly recommend that you only use debug mode as part of testing your initi
 
 ```typescript
 import { SDK } from "Orb";
-import { PostIngestDebugEnum, PostIngestRequest, PostIngestResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PostIngestDebugEnum, PostIngestResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -207,7 +203,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PostIngestRequest = {
+sdk.event.ingest({
   requestBody: {
     events: [
       {
@@ -258,10 +254,8 @@ const req: PostIngestRequest = {
     ],
   },
   debug: PostIngestDebugEnum.True,
-};
-
-sdk.event.ingest(req).then((res: PostIngestResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostIngestResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -285,8 +279,7 @@ By default, Orb will not throw a `404` if no events matched, Orb will return an 
 
 ```typescript
 import { SDK } from "Orb";
-import { PostEventsSearchRequestBody, PostEventsSearchResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PostEventsSearchResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -294,17 +287,15 @@ const sdk = new SDK({
   },
 });
 
-const req: PostEventsSearchRequestBody = {
+sdk.event.search({
   eventIds: [
     "ullam",
     "provident",
     "quos",
   ],
   invoiceId: "sint",
-};
-
-sdk.event.search(req).then((res: PostEventsSearchResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PostEventsSearchResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
@@ -332,8 +323,7 @@ This amendment API is always audit-safe. The process will still retain the origi
 
 ```typescript
 import { SDK } from "Orb";
-import { PutEventsEventIdRequest, PutEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
-import { AxiosError } from "axios";
+import { PutEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -341,7 +331,7 @@ const sdk = new SDK({
   },
 });
 
-const req: PutEventsEventIdRequest = {
+sdk.event.update({
   requestBody: {
     customerId: "accusantium",
     eventName: "mollitia",
@@ -354,10 +344,8 @@ const req: PutEventsEventIdRequest = {
     timestamp: new Date("2020-12-09T16:09:53Z"),
   },
   eventId: "fQp2wSmK7CF9oPcu",
-};
-
-sdk.event.update(req).then((res: PutEventsEventIdResponse | AxiosError) => {
-  if (res instanceof UsageExamplePostResponse && res.statusCode == 200) {
+}).then((res: PutEventsEventIdResponse) => {
+  if (res.statusCode == 200) {
     // handle response
   }
 });
