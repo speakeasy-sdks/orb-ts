@@ -54,7 +54,7 @@ export enum PutCustomersCustomerIdRequestBodyPaymentProviderEnum {
   Quickbooks = "quickbooks",
   BillCom = "bill.com",
   StripeCharge = "stripe_charge",
-  Null = "null",
+  LessThanNilGreaterThan = "<nil>",
 }
 
 /**

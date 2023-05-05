@@ -54,7 +54,7 @@ export enum PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentPr
   StripeCharge = "stripe_charge",
   StripeInvoice = "stripe_invoice",
   BillCom = "bill.com",
-  Null = "null",
+  LessThanNilGreaterThan = "<nil>",
 }
 
 /**

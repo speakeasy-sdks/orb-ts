@@ -49,7 +49,7 @@ export enum CustomerPaymentProviderEnum {
   BillCom = "bill.com",
   StripeCharge = "stripe_charge",
   StripeInvoice = "stripe_invoice",
-  Null = "null",
+  LessThanNilGreaterThan = "<nil>",
 }
 
 /**

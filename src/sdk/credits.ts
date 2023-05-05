@@ -93,7 +93,7 @@ export class Credits {
    * }
    * ```
    */
-  async create(
+  async get(
     req: operations.PostCustomersCustomerIdCreditsLedgerEntryRequest,
     config?: AxiosRequestConfig
   ): Promise<operations.PostCustomersCustomerIdCreditsLedgerEntryResponse> {
