@@ -36,7 +36,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 

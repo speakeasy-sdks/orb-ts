@@ -36,7 +36,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -86,7 +86,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -124,7 +124,7 @@ import { CustomerBalanceTransactionActionEnum } from "Orb/dist/sdk/models/shared
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -152,7 +152,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -244,7 +244,7 @@ import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -274,7 +274,7 @@ import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -308,7 +308,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -337,7 +337,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -390,7 +390,7 @@ import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -490,7 +490,7 @@ import { PatchCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/opera
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -536,7 +536,7 @@ import { PatchExternalCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/mode
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 

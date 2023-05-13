@@ -38,7 +38,7 @@ import { PutDeprecateEventsEventIdResponse } from "Orb/dist/sdk/models/operation
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -199,7 +199,7 @@ import { PostIngestDebugEnum, PostIngestResponse } from "Orb/dist/sdk/models/ope
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -283,7 +283,7 @@ import { PostEventsSearchResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -327,7 +327,7 @@ import { PutEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 

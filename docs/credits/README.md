@@ -80,7 +80,7 @@ import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -118,7 +118,7 @@ import { GetCustomersCustomerIdCreditsResponse } from "Orb/dist/sdk/models/opera
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -176,7 +176,7 @@ import { CreditLedgerEntryEntryStatusEnum, CreditLedgerEntryEntryTypeEnum } from
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 

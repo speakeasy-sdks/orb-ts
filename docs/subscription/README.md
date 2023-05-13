@@ -54,7 +54,7 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -117,7 +117,7 @@ import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -542,7 +542,7 @@ import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -651,7 +651,7 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -680,7 +680,7 @@ import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -709,7 +709,7 @@ import { GetSubscriptionsSubscriptionIdScheduleResponse } from "Orb/dist/sdk/mod
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -859,7 +859,7 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -899,7 +899,7 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -933,7 +933,7 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
