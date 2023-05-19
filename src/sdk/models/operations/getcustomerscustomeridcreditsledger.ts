@@ -10,7 +10,7 @@ import { Expose, Type } from "class-transformer";
 /**
  * Filters to a single status of ledger entry
  */
-export enum GetCustomersCustomerIdCreditsLedgerEntryStatusEnum {
+export enum GetCustomersCustomerIdCreditsLedgerEntryStatus {
   Committed = "committed",
   Pending = "pending",
 }
@@ -18,7 +18,7 @@ export enum GetCustomersCustomerIdCreditsLedgerEntryStatusEnum {
 /**
  * Filter to a single type of ledger entry
  */
-export enum GetCustomersCustomerIdCreditsLedgerEntryTypeEnum {
+export enum GetCustomersCustomerIdCreditsLedgerEntryType {
   Increment = "increment",
   Decrement = "decrement",
   ExpirationChange = "expiration_change",
@@ -37,7 +37,7 @@ export class GetCustomersCustomerIdCreditsLedgerRequest extends SpeakeasyBase {
   @SpeakeasyMetadata({
     data: "queryParam, style=form;explode=true;name=entry_status",
   })
-  entryStatus?: GetCustomersCustomerIdCreditsLedgerEntryStatusEnum;
+  entryStatus?: GetCustomersCustomerIdCreditsLedgerEntryStatus;
 
   /**
    * Filter to a single type of ledger entry
@@ -45,7 +45,7 @@ export class GetCustomersCustomerIdCreditsLedgerRequest extends SpeakeasyBase {
   @SpeakeasyMetadata({
     data: "queryParam, style=form;explode=true;name=entry_type",
   })
-  entryType?: GetCustomersCustomerIdCreditsLedgerEntryTypeEnum;
+  entryType?: GetCustomersCustomerIdCreditsLedgerEntryType;
 
   /**
    * Filter to ledger entries that affect at least this amount

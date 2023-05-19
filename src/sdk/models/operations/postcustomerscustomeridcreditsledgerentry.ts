@@ -8,7 +8,7 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 import { Expose, Transform } from "class-transformer";
 
-export enum PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryTypeEnum {
+export enum PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryType {
   Increment = "increment",
   Decrement = "decrement",
   ExpirationChange = "expiration_change",
@@ -35,7 +35,7 @@ export class PostCustomersCustomerIdCreditsLedgerEntryRequestBody extends Speake
 
   @SpeakeasyMetadata()
   @Expose({ name: "entry_type" })
-  entryType: PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryTypeEnum;
+  entryType: PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryType;
 
   /**
    * A future date (specified in YYYY-MM-DD format) that denotes when this credit balance should expire.

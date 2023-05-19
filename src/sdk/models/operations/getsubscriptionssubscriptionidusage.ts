@@ -8,7 +8,7 @@ import { AxiosResponse } from "axios";
 /**
  * This determines the windowing of usage reporting.
  */
-export enum GetSubscriptionsSubscriptionIdUsageGranularityEnum {
+export enum GetSubscriptionsSubscriptionIdUsageGranularity {
   Day = "day",
 }
 
@@ -27,7 +27,7 @@ export class GetSubscriptionsSubscriptionIdUsageRequest extends SpeakeasyBase {
   @SpeakeasyMetadata({
     data: "queryParam, style=form;explode=true;name=granularity",
   })
-  granularity?: GetSubscriptionsSubscriptionIdUsageGranularityEnum;
+  granularity?: GetSubscriptionsSubscriptionIdUsageGranularity;
 
   /**
    * When specified in conjunction with `billable_metric_id`, this parameter groups by the key provided. Note that both `group_by` and `billable_metric_id` must be specific together.

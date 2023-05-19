@@ -68,7 +68,7 @@ export class PriceBulkConfig extends SpeakeasyBase {
   tiers?: PriceBulkConfigTiers[];
 }
 
-export enum PriceCadenceEnum {
+export enum PriceCadence {
   Annual = "annual",
   Monthly = "monthly",
   Quarterly = "quarterly",
@@ -102,7 +102,7 @@ export class PriceMatrixConfig extends SpeakeasyBase {
   matrixValues?: PriceMatrixConfigMatrixValues[];
 }
 
-export enum PriceModelTypeEnum {
+export enum PriceModelType {
   Unit = "unit",
   Tiered = "tiered",
   Bulk = "bulk",
@@ -400,7 +400,7 @@ export class Price extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "cadence" })
-  cadence?: PriceCadenceEnum;
+  cadence?: PriceCadence;
 
   @SpeakeasyMetadata()
   @Expose({ name: "created_at" })
@@ -443,7 +443,7 @@ export class Price extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType?: PriceModelTypeEnum;
+  modelType?: PriceModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "name" })

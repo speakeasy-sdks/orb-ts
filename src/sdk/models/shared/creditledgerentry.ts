@@ -41,12 +41,12 @@ export class CreditLedgerEntryCustomer extends SpeakeasyBase {
 /**
  * Committed entries are older than the ingestion grace period, and cannot change. Pending entries are newer than the grace period and are subject to updates
  */
-export enum CreditLedgerEntryEntryStatusEnum {
+export enum CreditLedgerEntryEntryStatus {
   Committed = "committed",
   Pending = "pending",
 }
 
-export enum CreditLedgerEntryEntryTypeEnum {
+export enum CreditLedgerEntryEntryType {
   Increment = "increment",
   Decrement = "decrement",
   ExpirationChange = "expiration_change",
@@ -102,11 +102,11 @@ export class CreditLedgerEntry extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "entry_status" })
-  entryStatus: CreditLedgerEntryEntryStatusEnum;
+  entryStatus: CreditLedgerEntryEntryStatus;
 
   @SpeakeasyMetadata()
   @Expose({ name: "entry_type" })
-  entryType: CreditLedgerEntryEntryTypeEnum;
+  entryType: CreditLedgerEntryEntryType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "event_id" })

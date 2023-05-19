@@ -43,7 +43,7 @@ export class CustomerBillingAddress extends SpeakeasyBase {
 /**
  * The external payments or invoicing solution connected to this customer.
  */
-export enum CustomerPaymentProviderEnum {
+export enum CustomerPaymentProvider {
   Stripe = "stripe",
   Quickbooks = "quickbooks",
   BillCom = "bill.com",
@@ -156,7 +156,7 @@ export class Customer extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "payment_provider" })
-  paymentProvider: CustomerPaymentProviderEnum;
+  paymentProvider: CustomerPaymentProvider;
 
   /**
    * The ID of this customer in an external payments solution, such as Stripe. This is used for creating charges or invoices in the external system via Orb.

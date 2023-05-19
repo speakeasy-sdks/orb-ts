@@ -11,7 +11,7 @@ import { Expose, Transform, Type } from "class-transformer";
 /**
  * Optionally provide the name of the external marketplace that the subscription is attached to.
  */
-export enum PostSubscriptionsRequestBodyExternalMarketplaceEnum {
+export enum PostSubscriptionsRequestBodyExternalMarketplace {
   Google = "google",
   Aws = "aws",
   Azure = "azure",
@@ -37,7 +37,7 @@ export class PostSubscriptionsRequestBodyPhaseOverrides extends SpeakeasyBase {
   order?: number;
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides7ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides7ModelType {
   TieredBps = "tiered_bps",
 }
 
@@ -89,7 +89,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides7 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides7ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides7ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "tiered_bps_config" })
@@ -120,7 +120,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides6BulkBpsConfig extends Sp
   tiers?: PostSubscriptionsRequestBodyPriceOverrides6BulkBpsConfigTiers[];
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides6ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides6ModelType {
   BulkBps = "bulk_bps",
 }
 
@@ -150,7 +150,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides6 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides6ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides6ModelType;
 }
 
 export class PostSubscriptionsRequestBodyPriceOverrides5BpsConfig extends SpeakeasyBase {
@@ -163,7 +163,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides5BpsConfig extends Speake
   perUnitMaximum: string;
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides5ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides5ModelType {
   Bps = "bps",
 }
 
@@ -193,10 +193,10 @@ export class PostSubscriptionsRequestBodyPriceOverrides5 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides5ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides5ModelType;
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides4ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides4ModelType {
   Package = "package",
 }
 
@@ -231,7 +231,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides4 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "package_config" })
@@ -258,7 +258,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides3BulkConfig extends Speak
   tiers: PostSubscriptionsRequestBodyPriceOverrides3BulkConfigTiers[];
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides3ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides3ModelType {
   Bulk = "bulk",
 }
 
@@ -288,10 +288,10 @@ export class PostSubscriptionsRequestBodyPriceOverrides3 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides3ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides3ModelType;
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides2ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides2ModelType {
   Unit = "unit",
 }
 
@@ -326,7 +326,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides2 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides2ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides2ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "unit_config" })
@@ -334,7 +334,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides2 extends SpeakeasyBase {
   unitConfig: PostSubscriptionsRequestBodyPriceOverrides2UnitConfig;
 }
 
-export enum PostSubscriptionsRequestBodyPriceOverrides1ModelTypeEnum {
+export enum PostSubscriptionsRequestBodyPriceOverrides1ModelType {
   Tiered = "tiered",
 }
 
@@ -385,7 +385,7 @@ export class PostSubscriptionsRequestBodyPriceOverrides1 extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsRequestBodyPriceOverrides1ModelTypeEnum;
+  modelType: PostSubscriptionsRequestBodyPriceOverrides1ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "tiered_config" })
@@ -420,7 +420,7 @@ export class PostSubscriptionsRequestBody extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "external_marketplace" })
-  externalMarketplace?: PostSubscriptionsRequestBodyExternalMarketplaceEnum;
+  externalMarketplace?: PostSubscriptionsRequestBodyExternalMarketplace;
 
   /**
    * The reporting ID to associate this subscription with the external marketplace. Required if external_marketplace is specified.

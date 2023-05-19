@@ -64,7 +64,7 @@ export class UpcomingInvoiceLineItemsSubLineItemsTierConfig extends SpeakeasyBas
 /**
  * An identifier for a sub line item that is specific to a pricing model.
  */
-export enum UpcomingInvoiceLineItemsSubLineItemsTypeEnum {
+export enum UpcomingInvoiceLineItemsSubLineItemsType {
   Matrix = "matrix",
   Tier = "tier",
 }
@@ -106,7 +106,7 @@ export class UpcomingInvoiceLineItemsSubLineItems extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "type" })
-  type: UpcomingInvoiceLineItemsSubLineItemsTypeEnum;
+  type: UpcomingInvoiceLineItemsSubLineItemsType;
 }
 
 export class UpcomingInvoiceLineItems extends SpeakeasyBase {

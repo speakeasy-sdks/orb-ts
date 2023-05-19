@@ -8,7 +8,7 @@ import { Expose, Transform, Type } from "class-transformer";
 /**
  * Describes the reason that this transaction took place.
  */
-export enum CustomerBalanceTransactionActionEnum {
+export enum CustomerBalanceTransactionAction {
   AppliedToInvoice = "applied_to_invoice",
   ProratedRefund = "prorated_refund",
   ManualAdjustment = "manual_adjustment",
@@ -35,7 +35,7 @@ export class CustomerBalanceTransaction extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "action" })
-  action: CustomerBalanceTransactionActionEnum;
+  action: CustomerBalanceTransactionAction;
 
   /**
    * The value of the amount changed in the transaction.

@@ -49,7 +49,7 @@ export class PostCustomersRequestBodyBillingAddress extends SpeakeasyBase {
  * - the connection must first be configured in the Orb webapp.
  * - if the provider is an invoicing provider (`stripe_invoice`, `quickbooks`, `bill.com`), any product mappings must first be configured with the Orb team.
  */
-export enum PostCustomersRequestBodyPaymentProviderEnum {
+export enum PostCustomersRequestBodyPaymentProvider {
   Quickbooks = "quickbooks",
   BillCom = "bill.com",
   StripeCharge = "stripe_charge",
@@ -138,7 +138,7 @@ export class PostCustomersRequestBody extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "payment_provider" })
-  paymentProvider?: PostCustomersRequestBodyPaymentProviderEnum;
+  paymentProvider?: PostCustomersRequestBodyPaymentProvider;
 
   /**
    * The ID of this customer in an external payments solution, such as Stripe. This is used for creating charges or invoices in the external system via Orb.

@@ -22,7 +22,7 @@ export class PlanProduct extends SpeakeasyBase {
   name: string;
 }
 
-export enum PlanTrialConfigTrialPeriodUnitEnum {
+export enum PlanTrialConfigTrialPeriodUnit {
   Days = "days",
 }
 
@@ -33,7 +33,7 @@ export class PlanTrialConfig extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "trial_period_unit" })
-  trialPeriodUnit: PlanTrialConfigTrialPeriodUnitEnum;
+  trialPeriodUnit: PlanTrialConfigTrialPeriodUnit;
 }
 
 /**

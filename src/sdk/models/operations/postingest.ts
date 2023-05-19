@@ -60,7 +60,7 @@ export class PostIngestRequestBody extends SpeakeasyBase {
 /**
  * Flag to enable additional debug information in the endpoint response
  */
-export enum PostIngestDebugEnum {
+export enum PostIngestDebug {
   True = "true",
   False = "false",
 }
@@ -73,7 +73,7 @@ export class PostIngestRequest extends SpeakeasyBase {
    * Flag to enable additional debug information in the endpoint response
    */
   @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=debug" })
-  debug?: PostIngestDebugEnum;
+  debug?: PostIngestDebug;
 }
 
 /**

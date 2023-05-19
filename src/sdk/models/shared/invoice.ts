@@ -64,7 +64,7 @@ export class InvoiceLineItemsSubLineItemsTierConfig extends SpeakeasyBase {
 /**
  * An identifier for a sub line item that is specific to a pricing model.
  */
-export enum InvoiceLineItemsSubLineItemsTypeEnum {
+export enum InvoiceLineItemsSubLineItemsType {
   Matrix = "matrix",
   Tier = "tier",
 }
@@ -106,7 +106,7 @@ export class InvoiceLineItemsSubLineItems extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "type" })
-  type: InvoiceLineItemsSubLineItemsTypeEnum;
+  type: InvoiceLineItemsSubLineItemsType;
 }
 
 export class InvoiceLineItemsTaxAmounts extends SpeakeasyBase {
@@ -210,7 +210,7 @@ export class InvoiceLineItems extends SpeakeasyBase {
 /**
  * The status of this invoice as known to Orb. Invoices that have been issued for past billing periods are marked `"issued"`. Invoices will be marked `"paid"` upon confirmation of successful automatic payment collection by Orb. Invoices synced to an external billing provider (such as Bill.com, QuickBooks, or Stripe Invoicing) will be marked as `"synced"`.
  */
-export enum InvoiceStatusEnum {
+export enum InvoiceStatus {
   Issued = "issued",
   Paid = "paid",
   Synced = "synced",
@@ -315,7 +315,7 @@ export class Invoice extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "status" })
-  status?: InvoiceStatusEnum;
+  status?: InvoiceStatus;
 
   /**
    * The associated subscription for this invoice.

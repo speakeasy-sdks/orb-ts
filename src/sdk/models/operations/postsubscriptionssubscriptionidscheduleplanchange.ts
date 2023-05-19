@@ -11,13 +11,13 @@ import { Expose, Transform, Type } from "class-transformer";
 /**
  * Determines the timing of the plan change
  */
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOptionEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOption {
   RequestedDate = "requested_date",
   EndOfSubscriptionTerm = "end_of_subscription_term",
   Immediate = "immediate",
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelType {
   TieredBps = "tiered_bps",
 }
 
@@ -69,7 +69,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "tiered_bps_config" })
@@ -107,7 +107,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
   tiers?: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6BulkBpsConfigTiers[];
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelType {
   BulkBps = "bulk_bps",
 }
 
@@ -136,7 +136,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelType;
 }
 
 export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5BpsConfig extends SpeakeasyBase {
@@ -149,7 +149,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
   perUnitMaximum: string;
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelType {
   Bps = "bps",
 }
 
@@ -178,10 +178,10 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelType;
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelType {
   Package = "package",
 }
 
@@ -212,7 +212,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "package_config" })
@@ -246,7 +246,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
   tiers: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3BulkConfigTiers[];
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelType {
   Bulk = "bulk",
 }
 
@@ -275,10 +275,10 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelType;
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelType {
   Unit = "unit",
 }
 
@@ -305,7 +305,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "unit_config" })
@@ -316,7 +316,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
   unitConfig: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2UnitConfig;
 }
 
-export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelTypeEnum {
+export enum PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelType {
   Tiered = "tiered",
 }
 
@@ -367,7 +367,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOv
 
   @SpeakeasyMetadata()
   @Expose({ name: "model_type" })
-  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelTypeEnum;
+  modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelType;
 
   @SpeakeasyMetadata()
   @Expose({ name: "tiered_config" })
@@ -399,7 +399,7 @@ export class PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBody extend
    */
   @SpeakeasyMetadata()
   @Expose({ name: "change_option" })
-  changeOption: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOptionEnum;
+  changeOption: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOption;
 
   /**
    * The external_plan_id of the plan that the given subscription should be switched to. Note that either this property or `plan_id` must be specified.

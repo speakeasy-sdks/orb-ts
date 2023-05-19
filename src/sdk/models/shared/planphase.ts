@@ -8,7 +8,7 @@ import { Expose } from "class-transformer";
 /**
  * Term for this plan, which is the maximum cadence among all component prices
  */
-export enum PlanPhaseDurationUnitEnum {
+export enum PlanPhaseDurationUnit {
   Monthly = "monthly",
   Quarterly = "quarterly",
   Annual = "annual",
@@ -38,7 +38,7 @@ export class PlanPhase extends SpeakeasyBase {
    */
   @SpeakeasyMetadata()
   @Expose({ name: "duration_unit" })
-  durationUnit: PlanPhaseDurationUnitEnum;
+  durationUnit: PlanPhaseDurationUnit;
 
   @SpeakeasyMetadata()
   @Expose({ name: "minimum" })

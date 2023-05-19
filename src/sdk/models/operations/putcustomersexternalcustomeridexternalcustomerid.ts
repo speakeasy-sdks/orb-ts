@@ -49,7 +49,7 @@ export class PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyBillingA
  * - the connection must first be configured in the Orb webapp.
  * - if the provider is an invoicing provider (`stripe_invoice`, `quickbooks`, `bill.com`), any product mappings must first be configured with the Orb team.
  */
-export enum PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProviderEnum {
+export enum PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider {
   Quickbooks = "quickbooks",
   StripeCharge = "stripe_charge",
   StripeInvoice = "stripe_invoice",
@@ -121,7 +121,7 @@ export class PutCustomersExternalCustomerIdExternalCustomerIdRequestBody extends
    */
   @SpeakeasyMetadata()
   @Expose({ name: "payment_provider" })
-  paymentProvider?: PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProviderEnum;
+  paymentProvider?: PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider;
 
   /**
    * The ID of this customer in an external payments solution, such as Stripe. This is used for creating charges or invoices in the external system via Orb.

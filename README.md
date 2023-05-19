@@ -31,8 +31,8 @@ yarn add https://github.com/speakeasy-sdks/orb-ts
 <!-- Start SDK Example Usage -->
 ```typescript
 import { SDK } from "Orb";
-import { PostCustomersRequestBodyPaymentProviderEnum, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { PostCustomersRequestBodyPaymentProvider, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -53,7 +53,7 @@ sdk.customer.create({
   email: "Geraldine_Kreiger52@gmail.com",
   externalCustomerId: "iusto",
   name: "Charlie Walsh II",
-  paymentProvider: PostCustomersRequestBodyPaymentProviderEnum.Quickbooks,
+  paymentProvider: PostCustomersRequestBodyPaymentProvider.Quickbooks,
   paymentProviderId: "deserunt",
   shippingAddress: {
     city: "West Ritaworth",

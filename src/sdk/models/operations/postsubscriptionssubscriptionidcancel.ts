@@ -9,7 +9,7 @@ import { AxiosResponse } from "axios";
 /**
  * Determines the timing of subscription cancellation
  */
-export enum PostSubscriptionsSubscriptionIdCancelCancelOptionEnum {
+export enum PostSubscriptionsSubscriptionIdCancelCancelOption {
   EndOfSubscriptionTerm = "end_of_subscription_term",
   Immediate = "immediate",
 }
@@ -21,7 +21,7 @@ export class PostSubscriptionsSubscriptionIdCancelRequest extends SpeakeasyBase 
   @SpeakeasyMetadata({
     data: "queryParam, style=form;explode=true;name=cancel_option",
   })
-  cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOptionEnum;
+  cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOption;
 
   @SpeakeasyMetadata({
     data: "pathParam, style=simple;explode=false;name=subscription_id",

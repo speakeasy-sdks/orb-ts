@@ -195,7 +195,7 @@ We strongly recommend that you only use debug mode as part of testing your initi
 
 ```typescript
 import { SDK } from "Orb";
-import { PostIngestDebugEnum, PostIngestResponse } from "Orb/dist/sdk/models/operations";
+import { PostIngestDebug, PostIngestResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
@@ -253,7 +253,7 @@ sdk.event.ingest({
       },
     ],
   },
-  debug: PostIngestDebugEnum.True,
+  debug: PostIngestDebug.True,
 }).then((res: PostIngestResponse) => {
   if (res.statusCode == 200) {
     // handle response

@@ -31,8 +31,8 @@ This endpoint is critical in the following Orb functionality:
 
 ```typescript
 import { SDK } from "Orb";
-import { PostCustomersRequestBodyPaymentProviderEnum, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { PostCustomersRequestBodyPaymentProvider, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -53,7 +53,7 @@ sdk.customer.create({
   email: "Lexie_Howe68@gmail.com",
   externalCustomerId: "in",
   name: "Sheryl Kertzmann",
-  paymentProvider: PostCustomersRequestBodyPaymentProviderEnum.Quickbooks,
+  paymentProvider: PostCustomersRequestBodyPaymentProvider.Quickbooks,
   paymentProviderId: "ipsa",
   shippingAddress: {
     city: "Parma",
@@ -82,7 +82,7 @@ See the [Customer resource](Orb-API.json/components/schemas/Customer) for a full
 ```typescript
 import { SDK } from "Orb";
 import { GetCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -120,7 +120,7 @@ The customer balance can only be applied to invoices or adjusted manually if inv
 ```typescript
 import { SDK } from "Orb";
 import { GetCustomersCustomerIdBalanceTransactionsResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerBalanceTransactionActionEnum } from "Orb/dist/sdk/models/shared";
+import { CustomerBalanceTransactionAction } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -148,7 +148,7 @@ Note that the resource and semantics of this endpoint exactly mirror [Get Custom
 ```typescript
 import { SDK } from "Orb";
 import { GetCustomersExternalCustomerIdExternalCustomerIdResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -239,8 +239,8 @@ When a price uses matrix pricing, it's important to view costs grouped by those 
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomerCostsResponse, GetCustomerCostsViewModeEnum } from "Orb/dist/sdk/models/operations";
-import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
+import { GetCustomerCostsResponse, GetCustomerCostsViewMode } from "Orb/dist/sdk/models/operations";
+import { PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -253,7 +253,7 @@ sdk.customer.getCosts({
   groupBy: "iure",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
-  viewMode: GetCustomerCostsViewModeEnum.Cumulative,
+  viewMode: GetCustomerCostsViewMode.Cumulative,
 }).then((res: GetCustomerCostsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -269,8 +269,8 @@ This endpoint's resource and semantics exactly mirror [View customer costs](../r
 
 ```typescript
 import { SDK } from "Orb";
-import { GetExternalCustomerCostsResponse, GetExternalCustomerCostsViewModeEnum } from "Orb/dist/sdk/models/operations";
-import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
+import { GetExternalCustomerCostsResponse, GetExternalCustomerCostsViewMode } from "Orb/dist/sdk/models/operations";
+import { PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -283,7 +283,7 @@ sdk.customer.getCostsByExternalId({
   groupBy: "sapiente",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
-  viewMode: GetExternalCustomerCostsViewModeEnum.Periodic,
+  viewMode: GetExternalCustomerCostsViewMode.Periodic,
 }).then((res: GetExternalCustomerCostsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -304,7 +304,7 @@ See [Customer](../reference/Orb-API.json/components/schemas/Customer) for an ove
 ```typescript
 import { SDK } from "Orb";
 import { ListCustomersResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -329,11 +329,8 @@ Other fields on a customer are currently immutable.
 
 ```typescript
 import { SDK } from "Orb";
-import {
-  PutCustomersCustomerIdRequestBodyPaymentProviderEnum,
-  PutCustomersCustomerIdResponse,
-} from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { PutCustomersCustomerIdRequestBodyPaymentProvider, PutCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -353,7 +350,7 @@ sdk.customer.update({
     },
     email: "Madison77@hotmail.com",
     name: "Mandy Hills",
-    paymentProvider: PutCustomersCustomerIdRequestBodyPaymentProviderEnum.StripeInvoice,
+    paymentProvider: PutCustomersCustomerIdRequestBodyPaymentProvider.StripeInvoice,
     paymentProviderId: "quasi",
     shippingAddress: {
       city: "Smithamchester",
@@ -383,10 +380,10 @@ Note that the resource and semantics of this endpoint exactly mirror [Update Cus
 ```typescript
 import { SDK } from "Orb";
 import {
-  PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProviderEnum,
+  PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider,
   PutCustomersExternalCustomerIdExternalCustomerIdResponse,
 } from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProviderEnum } from "Orb/dist/sdk/models/shared";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -406,7 +403,7 @@ sdk.customer.updateByExternalId({
     },
     email: "Curt_Pouros@gmail.com",
     name: "Joel Lang",
-    paymentProvider: PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProviderEnum.Quickbooks,
+    paymentProvider: PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider.Quickbooks,
     paymentProviderId: "repudiandae",
     shippingAddress: {
       city: "Arnoldoshire",

@@ -7,7 +7,7 @@ import { Customer } from "./customer";
 import { Plan } from "./plan";
 import { Expose, Transform, Type } from "class-transformer";
 
-export enum SubscriptionStatusEnum {
+export enum SubscriptionStatus {
   Active = "active",
   Ended = "ended",
   Upcoming = "upcoming",
@@ -96,5 +96,5 @@ export class Subscription extends SpeakeasyBase {
 
   @SpeakeasyMetadata()
   @Expose({ name: "status" })
-  status: SubscriptionStatusEnum;
+  status: SubscriptionStatus;
 }

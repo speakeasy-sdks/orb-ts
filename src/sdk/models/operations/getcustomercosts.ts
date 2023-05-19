@@ -10,7 +10,7 @@ import { Expose, Transform, Type } from "class-transformer";
 /**
  * Controls whether Orb returns cumulative costs since the start of the billing period, or incremental day-by-day costs. If your customer has minimums or discounts, it's strongly recommended that you use the default cumulative behavior.
  */
-export enum GetCustomerCostsViewModeEnum {
+export enum GetCustomerCostsViewMode {
   Periodic = "periodic",
   Cumulative = "cumulative",
 }
@@ -54,7 +54,7 @@ export class GetCustomerCostsRequest extends SpeakeasyBase {
   @SpeakeasyMetadata({
     data: "queryParam, style=form;explode=true;name=view_mode",
   })
-  viewMode?: GetCustomerCostsViewModeEnum;
+  viewMode?: GetCustomerCostsViewMode;
 }
 
 export class GetCustomerCosts200ApplicationJSONDataPerPriceCostsPriceGroups extends SpeakeasyBase {

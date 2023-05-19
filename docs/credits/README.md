@@ -72,10 +72,10 @@ The following snippet illustrates a sample request body to extend the expiration
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryTypeEnum,
+  PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryType,
   PostCustomersCustomerIdCreditsLedgerEntryResponse,
 } from "Orb/dist/sdk/models/operations";
-import { CreditLedgerEntryEntryStatusEnum, CreditLedgerEntryEntryTypeEnum } from "Orb/dist/sdk/models/shared";
+import { CreditLedgerEntryEntryStatus, CreditLedgerEntryEntryType } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
@@ -89,7 +89,7 @@ sdk.credits.get({
     amount: 7206.33,
     blockId: "officia",
     description: "occaecati",
-    entryType: PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryTypeEnum.Increment,
+    entryType: PostCustomersCustomerIdCreditsLedgerEntryRequestBodyEntryType.Increment,
     expiryDate: new RFCDate("2023-01-01"),
     perUnitCostBasis: "deleniti",
     targetExpiryDate: new RFCDate("2023-02-01"),
@@ -168,11 +168,11 @@ When a set of credits expire on pre-set expiration date, the customer's balance 
 ```typescript
 import { SDK } from "Orb";
 import {
-  GetCustomersCustomerIdCreditsLedgerEntryStatusEnum,
-  GetCustomersCustomerIdCreditsLedgerEntryTypeEnum,
+  GetCustomersCustomerIdCreditsLedgerEntryStatus,
+  GetCustomersCustomerIdCreditsLedgerEntryType,
   GetCustomersCustomerIdCreditsLedgerResponse,
 } from "Orb/dist/sdk/models/operations";
-import { CreditLedgerEntryEntryStatusEnum, CreditLedgerEntryEntryTypeEnum } from "Orb/dist/sdk/models/shared";
+import { CreditLedgerEntryEntryStatus, CreditLedgerEntryEntryType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -182,8 +182,8 @@ const sdk = new SDK({
 
 sdk.credits.getCreditsLedger({
   customerId: "totam",
-  entryStatus: GetCustomersCustomerIdCreditsLedgerEntryStatusEnum.Committed,
-  entryType: GetCustomersCustomerIdCreditsLedgerEntryTypeEnum.Decrement,
+  entryStatus: GetCustomersCustomerIdCreditsLedgerEntryStatus.Committed,
+  entryType: GetCustomersCustomerIdCreditsLedgerEntryType.Decrement,
   minimumAmount: 4736,
 }).then((res: GetCustomersCustomerIdCreditsLedgerResponse) => {
   if (res.statusCode == 200) {

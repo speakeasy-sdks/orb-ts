@@ -20,9 +20,9 @@ This endpoint is used to fetch an [`Invoice`](../reference/Orb-API.json/componen
 import { SDK } from "Orb";
 import { GetInvoiceInvoiceIdResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerBalanceTransactionActionEnum,
-  InvoiceLineItemsSubLineItemsTypeEnum,
-  InvoiceStatusEnum,
+  CustomerBalanceTransactionAction,
+  InvoiceLineItemsSubLineItemsType,
+  InvoiceStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -49,7 +49,7 @@ This endpoint can be used to fetch the [`UpcomingInvoice`](../reference/Orb-API.
 ```typescript
 import { SDK } from "Orb";
 import { GetInvoicesUpcomingResponse } from "Orb/dist/sdk/models/operations";
-import { UpcomingInvoiceLineItemsSubLineItemsTypeEnum } from "Orb/dist/sdk/models/shared";
+import { UpcomingInvoiceLineItemsSubLineItemsType } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
@@ -79,9 +79,9 @@ The list of invoices is ordered starting from the most recently issued invoice d
 import { SDK } from "Orb";
 import { ListInvoicesResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerBalanceTransactionActionEnum,
-  InvoiceLineItemsSubLineItemsTypeEnum,
-  InvoiceStatusEnum,
+  CustomerBalanceTransactionAction,
+  InvoiceLineItemsSubLineItemsType,
+  InvoiceStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({

@@ -24,10 +24,10 @@ Orb supports plan phases, also known as contract ramps. For plans with phases, t
 import { SDK } from "Orb";
 import { GetPlansPlanIdResponse } from "Orb/dist/sdk/models/operations";
 import {
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({

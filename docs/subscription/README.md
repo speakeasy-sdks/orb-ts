@@ -40,16 +40,16 @@ Upcoming subscriptions are only eligible for immediate cancellation, which will 
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostSubscriptionsSubscriptionIdCancelCancelOptionEnum,
+  PostSubscriptionsSubscriptionIdCancelCancelOption,
   PostSubscriptionsSubscriptionIdCancelResponse,
 } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -59,7 +59,7 @@ const sdk = new SDK({
 });
 
 sdk.subscription.cancel({
-  cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOptionEnum.Immediate,
+  cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOption.Immediate,
   subscriptionId: "facilis",
 }).then((res: PostSubscriptionsSubscriptionIdCancelResponse) => {
   if (res.statusCode == 200) {
@@ -95,23 +95,23 @@ By default, Orb calculates the prorated difference in any fixed fees when making
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOptionEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelTypeEnum,
-  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelTypeEnum,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOption,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides2ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides3ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides4ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides5ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides6ModelType,
+  PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides7ModelType,
   PostSubscriptionsSubscriptionIdSchedulePlanChangeResponse,
 } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
 
@@ -125,7 +125,7 @@ sdk.subscription.changeSchedule({
   requestBody: {
     alignBillingWithPlanChangeDate: false,
     changeDate: new RFCDate("2022-01-01"),
-    changeOption: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOptionEnum.EndOfSubscriptionTerm,
+    changeOption: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyChangeOption.EndOfSubscriptionTerm,
     externalPlanId: "ZMwNQefe7J3ecf7W",
     minimumAmount: "1.23",
     planId: "ZMwNQefe7J3ecf7W",
@@ -133,7 +133,7 @@ sdk.subscription.changeSchedule({
       {
         id: "mqBkze6HoCwL4ytV",
         minimumAmount: "1.23",
-        modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelTypeEnum.Tiered,
+        modelType: PostSubscriptionsSubscriptionIdSchedulePlanChangeRequestBodyPriceOverrides1ModelType.Tiered,
         tieredConfig: {
           tiers: [
             {
@@ -520,23 +520,23 @@ Using the plan's discount example
 ```typescript
 import { SDK } from "Orb";
 import {
-  PostSubscriptionsRequestBodyExternalMarketplaceEnum,
-  PostSubscriptionsRequestBodyPriceOverrides1ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides2ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides3ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides4ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides5ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides6ModelTypeEnum,
-  PostSubscriptionsRequestBodyPriceOverrides7ModelTypeEnum,
+  PostSubscriptionsRequestBodyExternalMarketplace,
+  PostSubscriptionsRequestBodyPriceOverrides1ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides2ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides3ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides4ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides5ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides6ModelType,
+  PostSubscriptionsRequestBodyPriceOverrides7ModelType,
   PostSubscriptionsResponse,
 } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 import { RFCDate } from "Orb/dist/sdk/types";
 
@@ -550,7 +550,7 @@ sdk.subscription.create({
   alignBillingWithSubscriptionStartDate: false,
   customerId: "97DPcZE9hxsbb9Y9",
   externalCustomerId: "expedita",
-  externalMarketplace: PostSubscriptionsRequestBodyExternalMarketplaceEnum.Google,
+  externalMarketplace: PostSubscriptionsRequestBodyExternalMarketplace.Google,
   externalMarketplaceReportingId: "project_number:983410661111",
   externalPlanId: "nihil",
   minimumAmount: "1.23",
@@ -603,7 +603,7 @@ sdk.subscription.create({
       },
       id: "02c73d5f-e9b9-40c2-8909-b3fe49a8d9cb",
       minimumAmount: "1.23",
-      modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelTypeEnum.Package,
+      modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelType.Package,
       packageConfig: {
         packageAmount: "delectus",
         packageSize: 3119.45,
@@ -616,7 +616,7 @@ sdk.subscription.create({
       },
       id: "3f9b77f3-a410-4067-8ebf-69280d1ba77a",
       minimumAmount: "1.23",
-      modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelTypeEnum.Package,
+      modelType: PostSubscriptionsRequestBodyPriceOverrides4ModelType.Package,
       packageConfig: {
         packageAmount: "deleniti",
         packageSize: 6070.45,
@@ -641,12 +641,12 @@ This endpoint is used to fetch a [Subscription](../reference/Orb-API.json/compon
 import { SDK } from "Orb";
 import { GetSubscriptionsSubscriptionIdResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -676,7 +676,7 @@ The semantics of this endpoint exactly mirror those of [fetching a customer's co
 ```typescript
 import { SDK } from "Orb";
 import { GetSubscriptionsSubscriptionIdCostResponse } from "Orb/dist/sdk/models/operations";
-import { PriceCadenceEnum, PriceModelTypeEnum } from "Orb/dist/sdk/models/shared";
+import { PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
@@ -853,7 +853,7 @@ For example, if your compute metric has a separate unit price (i.e. a matrix pri
 ```typescript
 import { SDK } from "Orb";
 import {
-  GetSubscriptionsSubscriptionIdUsageGranularityEnum,
+  GetSubscriptionsSubscriptionIdUsageGranularity,
   GetSubscriptionsSubscriptionIdUsageResponse,
 } from "Orb/dist/sdk/models/operations";
 
@@ -865,7 +865,7 @@ const sdk = new SDK({
 
 sdk.subscription.getUsage({
   billableMetricId: "voluptate",
-  granularity: GetSubscriptionsSubscriptionIdUsageGranularityEnum.Day,
+  granularity: GetSubscriptionsSubscriptionIdUsageGranularity.Day,
   groupBy: "id",
   subscriptionId: "saepe",
   timeframeEnd: new Date("2022-02-02T05:00:00Z"),
@@ -889,12 +889,12 @@ Subscriptions can be filtered to a single customer by passing in the `customer_i
 import { SDK } from "Orb";
 import { ListSubscriptionsResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
@@ -923,12 +923,12 @@ This endpoint can be used to unschedule any pending plan changes on an existing 
 import { SDK } from "Orb";
 import { PostSubscriptionsSubscriptionIdUnschedulePendingPlanChangesResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CustomerPaymentProviderEnum,
-  PlanPhaseDurationUnitEnum,
-  PlanTrialConfigTrialPeriodUnitEnum,
-  PriceCadenceEnum,
-  PriceModelTypeEnum,
-  SubscriptionStatusEnum,
+  CustomerPaymentProvider,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+  SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
