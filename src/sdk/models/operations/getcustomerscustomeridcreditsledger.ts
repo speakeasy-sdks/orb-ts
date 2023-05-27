@@ -11,92 +11,81 @@ import { Expose, Type } from "class-transformer";
  * Filters to a single status of ledger entry
  */
 export enum GetCustomersCustomerIdCreditsLedgerEntryStatus {
-  Committed = "committed",
-  Pending = "pending",
+    Committed = "committed",
+    Pending = "pending",
 }
 
 /**
  * Filter to a single type of ledger entry
  */
 export enum GetCustomersCustomerIdCreditsLedgerEntryType {
-  Increment = "increment",
-  Decrement = "decrement",
-  ExpirationChange = "expiration_change",
-  CreditBlockExpiry = "credit_block_expiry",
+    Increment = "increment",
+    Decrement = "decrement",
+    ExpirationChange = "expiration_change",
+    CreditBlockExpiry = "credit_block_expiry",
 }
 
 export class GetCustomersCustomerIdCreditsLedgerRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=customer_id",
-  })
-  customerId: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=customer_id" })
+    customerId: string;
 
-  /**
-   * Filters to a single status of ledger entry
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=entry_status",
-  })
-  entryStatus?: GetCustomersCustomerIdCreditsLedgerEntryStatus;
+    /**
+     * Filters to a single status of ledger entry
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=entry_status" })
+    entryStatus?: GetCustomersCustomerIdCreditsLedgerEntryStatus;
 
-  /**
-   * Filter to a single type of ledger entry
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=entry_type",
-  })
-  entryType?: GetCustomersCustomerIdCreditsLedgerEntryType;
+    /**
+     * Filter to a single type of ledger entry
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=entry_type" })
+    entryType?: GetCustomersCustomerIdCreditsLedgerEntryType;
 
-  /**
-   * Filter to ledger entries that affect at least this amount
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=minimum_amount",
-  })
-  minimumAmount?: number;
+    /**
+     * Filter to ledger entries that affect at least this amount
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=minimum_amount" })
+    minimumAmount?: number;
 }
 
 export class GetCustomersCustomerIdCreditsLedger200ApplicationJSONPaginationMetadata extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "has_more" })
-  hasMore: boolean;
+    @SpeakeasyMetadata()
+    @Expose({ name: "has_more" })
+    hasMore: boolean;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "next_cursor" })
-  nextCursor: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "next_cursor" })
+    nextCursor: string;
 }
 
 /**
  * OK
  */
 export class GetCustomersCustomerIdCreditsLedger200ApplicationJSON extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: shared.CreditLedgerEntry })
-  @Expose({ name: "data" })
-  @Type(() => shared.CreditLedgerEntry)
-  data: shared.CreditLedgerEntry[];
+    @SpeakeasyMetadata({ elemType: shared.CreditLedgerEntry })
+    @Expose({ name: "data" })
+    @Type(() => shared.CreditLedgerEntry)
+    data: shared.CreditLedgerEntry[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "pagination_metadata" })
-  @Type(
-    () =>
-      GetCustomersCustomerIdCreditsLedger200ApplicationJSONPaginationMetadata
-  )
-  paginationMetadata: GetCustomersCustomerIdCreditsLedger200ApplicationJSONPaginationMetadata;
+    @SpeakeasyMetadata()
+    @Expose({ name: "pagination_metadata" })
+    @Type(() => GetCustomersCustomerIdCreditsLedger200ApplicationJSONPaginationMetadata)
+    paginationMetadata: GetCustomersCustomerIdCreditsLedger200ApplicationJSONPaginationMetadata;
 }
 
 export class GetCustomersCustomerIdCreditsLedgerResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  getCustomersCustomerIdCreditsLedger200ApplicationJSONObject?: GetCustomersCustomerIdCreditsLedger200ApplicationJSON;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    getCustomersCustomerIdCreditsLedger200ApplicationJSONObject?: GetCustomersCustomerIdCreditsLedger200ApplicationJSON;
 }

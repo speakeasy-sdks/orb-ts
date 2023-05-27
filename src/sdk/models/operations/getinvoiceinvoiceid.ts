@@ -7,25 +7,23 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetInvoiceInvoiceIdRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=invoice_id",
-  })
-  invoiceId: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=invoice_id" })
+    invoiceId: string;
 }
 
 export class GetInvoiceInvoiceIdResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  invoice?: shared.Invoice;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    invoice?: shared.Invoice;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

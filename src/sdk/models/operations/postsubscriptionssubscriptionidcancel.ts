@@ -10,38 +10,34 @@ import { AxiosResponse } from "axios";
  * Determines the timing of subscription cancellation
  */
 export enum PostSubscriptionsSubscriptionIdCancelCancelOption {
-  EndOfSubscriptionTerm = "end_of_subscription_term",
-  Immediate = "immediate",
+    EndOfSubscriptionTerm = "end_of_subscription_term",
+    Immediate = "immediate",
 }
 
 export class PostSubscriptionsSubscriptionIdCancelRequest extends SpeakeasyBase {
-  /**
-   * Determines the timing of subscription cancellation
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=cancel_option",
-  })
-  cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOption;
+    /**
+     * Determines the timing of subscription cancellation
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=cancel_option" })
+    cancelOption: PostSubscriptionsSubscriptionIdCancelCancelOption;
 
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=subscription_id",
-  })
-  subscriptionId: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=subscription_id" })
+    subscriptionId: string;
 }
 
 export class PostSubscriptionsSubscriptionIdCancelResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  subscription?: shared.Subscription;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    subscription?: shared.Subscription;
 }

@@ -8,44 +8,40 @@ import { AxiosResponse } from "axios";
 import { Expose, Type } from "class-transformer";
 
 export class ListSubscriptionsRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=customer_id",
-  })
-  customerId?: string;
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=customer_id" })
+    customerId?: string;
 
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=external_customer_id",
-  })
-  externalCustomerId?: string;
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=external_customer_id" })
+    externalCustomerId?: string;
 }
 
 /**
  * OK
  */
 export class ListSubscriptions200ApplicationJSON extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: shared.Subscription })
-  @Expose({ name: "data" })
-  @Type(() => shared.Subscription)
-  data?: shared.Subscription[];
+    @SpeakeasyMetadata({ elemType: shared.Subscription })
+    @Expose({ name: "data" })
+    @Type(() => shared.Subscription)
+    data?: shared.Subscription[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "pagination_metadata" })
-  paginationMetadata?: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "pagination_metadata" })
+    paginationMetadata?: Record<string, any>;
 }
 
 export class ListSubscriptionsResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  listSubscriptions200ApplicationJSONObject?: ListSubscriptions200ApplicationJSON;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    listSubscriptions200ApplicationJSONObject?: ListSubscriptions200ApplicationJSON;
 }

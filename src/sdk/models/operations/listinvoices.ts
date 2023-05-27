@@ -8,58 +8,52 @@ import { AxiosResponse } from "axios";
 import { Expose, Type } from "class-transformer";
 
 export class ListInvoicesRequest extends SpeakeasyBase {
-  /**
-   * Filter by a specific customer (cannot be used with `external_customer_id`)
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=customer_id",
-  })
-  customerId?: string;
+    /**
+     * Filter by a specific customer (cannot be used with `external_customer_id`)
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=customer_id" })
+    customerId?: string;
 
-  /**
-   * Filter by a specific customer (cannot be used with `customer_id`)
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=external_customer_id",
-  })
-  externalCustomerId?: string;
+    /**
+     * Filter by a specific customer (cannot be used with `customer_id`)
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=external_customer_id" })
+    externalCustomerId?: string;
 
-  /**
-   * Filter by a specific subscription
-   */
-  @SpeakeasyMetadata({
-    data: "queryParam, style=form;explode=true;name=subscription_id",
-  })
-  subscriptionId?: string;
+    /**
+     * Filter by a specific subscription
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=subscription_id" })
+    subscriptionId?: string;
 }
 
 /**
  * OK
  */
 export class ListInvoices200ApplicationJSON extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: shared.Invoice })
-  @Expose({ name: "data" })
-  @Type(() => shared.Invoice)
-  data?: shared.Invoice[];
+    @SpeakeasyMetadata({ elemType: shared.Invoice })
+    @Expose({ name: "data" })
+    @Type(() => shared.Invoice)
+    data?: shared.Invoice[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "pagination_metadata" })
-  paginationMetadata?: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "pagination_metadata" })
+    paginationMetadata?: Record<string, any>;
 }
 
 export class ListInvoicesResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  listInvoices200ApplicationJSONObject?: ListInvoices200ApplicationJSON;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    listInvoices200ApplicationJSONObject?: ListInvoices200ApplicationJSON;
 }

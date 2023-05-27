@@ -10,24 +10,24 @@ import { Expose } from "class-transformer";
  * OK
  */
 export class GetPing200ApplicationJSON extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "response" })
-  response: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "response" })
+    response: string;
 }
 
 export class GetPingResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  getPing200ApplicationJSONObject?: GetPing200ApplicationJSON;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    getPing200ApplicationJSONObject?: GetPing200ApplicationJSON;
 }

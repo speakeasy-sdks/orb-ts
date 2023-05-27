@@ -7,28 +7,26 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetCustomersCustomerIdRequest extends SpeakeasyBase {
-  /**
-   * Orb customer ID
-   */
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=customer_id",
-  })
-  customerId: string;
+    /**
+     * Orb customer ID
+     */
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=customer_id" })
+    customerId: string;
 }
 
 export class GetCustomersCustomerIdResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * Created
-   */
-  @SpeakeasyMetadata()
-  customer?: shared.Customer;
+    /**
+     * Created
+     */
+    @SpeakeasyMetadata()
+    customer?: shared.Customer;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

@@ -8,48 +8,48 @@ import { AxiosResponse } from "axios";
 import { Expose, Type } from "class-transformer";
 
 export class PostEventsSearchRequestBody extends SpeakeasyBase {
-  /**
-   * This is an explicit array of IDs to filter by. Note that an event's ID is the idempotency_key that was originally used for ingestion. Values in this array will be treated case sensitively.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "event_ids" })
-  eventIds?: string[];
+    /**
+     * This is an explicit array of IDs to filter by. Note that an event's ID is the idempotency_key that was originally used for ingestion. Values in this array will be treated case sensitively.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "event_ids" })
+    eventIds?: string[];
 
-  /**
-   * This is an issued Orb invoice ID (see also List Invoices). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose timestamp property falls within the billing period specified by the invoice.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoice_id" })
-  invoiceId?: string;
+    /**
+     * This is an issued Orb invoice ID (see also List Invoices). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose timestamp property falls within the billing period specified by the invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoice_id" })
+    invoiceId?: string;
 }
 
 /**
  * An array of events matching the specified search_criteria. If no events match, this array will be empty.
  */
 export class PostEventsSearch200ApplicationJSON extends SpeakeasyBase {
-  @SpeakeasyMetadata({ elemType: shared.Event })
-  @Expose({ name: "data" })
-  @Type(() => shared.Event)
-  data?: shared.Event[];
+    @SpeakeasyMetadata({ elemType: shared.Event })
+    @Expose({ name: "data" })
+    @Type(() => shared.Event)
+    data?: shared.Event[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "pagination_metadata" })
-  paginationMetadata?: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "pagination_metadata" })
+    paginationMetadata?: Record<string, any>;
 }
 
 export class PostEventsSearchResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  postEventsSearch200ApplicationJSONObject?: PostEventsSearch200ApplicationJSON;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    postEventsSearch200ApplicationJSONObject?: PostEventsSearch200ApplicationJSON;
 }

@@ -10,332 +10,332 @@ import { Expose, Transform, Type } from "class-transformer";
  * The customer receiving this invoice.
  */
 export class InvoiceCustomer extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "external_customer_id" })
-  externalCustomerId: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "external_customer_id" })
+    externalCustomerId: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 }
 
 /**
  * For configured prices that are split by a grouping key, this will be populated with the key and a value. The `amount` and `subtotal` will be the values for this particular grouping.
  */
 export class InvoiceLineItemsGrouping extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "key" })
-  key: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "key" })
+    key: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "value" })
-  value: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "value" })
+    value: string;
 }
 
 /**
  * Only available if `type` is `matrix`. Contains the values of the matrix that this `sub_line_item` represents.
  */
 export class InvoiceLineItemsSubLineItemsMatrixConfig extends SpeakeasyBase {
-  /**
-   * The ordered dimension values for this line item.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "dimension_values" })
-  dimensionValues: string[];
+    /**
+     * The ordered dimension values for this line item.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "dimension_values" })
+    dimensionValues: string[];
 }
 
 /**
  * Only available if `type` is `tier`. Contains the range of units in this tier and the unit amount.
  */
 export class InvoiceLineItemsSubLineItemsTierConfig extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "first_unit" })
-  firstUnit: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "first_unit" })
+    firstUnit: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "last_unit" })
-  lastUnit: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "last_unit" })
+    lastUnit: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "unit_amount" })
-  unitAmount: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "unit_amount" })
+    unitAmount: string;
 }
 
 /**
  * An identifier for a sub line item that is specific to a pricing model.
  */
 export enum InvoiceLineItemsSubLineItemsType {
-  Matrix = "matrix",
-  Tier = "tier",
+    Matrix = "matrix",
+    Tier = "tier",
 }
 
 export class InvoiceLineItemsSubLineItems extends SpeakeasyBase {
-  /**
-   * The total amount for this sub line item.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: string;
+    /**
+     * The total amount for this sub line item.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: string;
 
-  /**
-   * Only available if `type` is `matrix`. Contains the values of the matrix that this `sub_line_item` represents.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "matrix_config" })
-  @Type(() => InvoiceLineItemsSubLineItemsMatrixConfig)
-  matrixConfig?: InvoiceLineItemsSubLineItemsMatrixConfig;
+    /**
+     * Only available if `type` is `matrix`. Contains the values of the matrix that this `sub_line_item` represents.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "matrix_config" })
+    @Type(() => InvoiceLineItemsSubLineItemsMatrixConfig)
+    matrixConfig?: InvoiceLineItemsSubLineItemsMatrixConfig;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "quantity" })
-  quantity: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "quantity" })
+    quantity: number;
 
-  /**
-   * Only available if `type` is `tier`. Contains the range of units in this tier and the unit amount.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "tier_config" })
-  @Type(() => InvoiceLineItemsSubLineItemsTierConfig)
-  tierConfig?: InvoiceLineItemsSubLineItemsTierConfig;
+    /**
+     * Only available if `type` is `tier`. Contains the range of units in this tier and the unit amount.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "tier_config" })
+    @Type(() => InvoiceLineItemsSubLineItemsTierConfig)
+    tierConfig?: InvoiceLineItemsSubLineItemsTierConfig;
 
-  /**
-   * An identifier for a sub line item that is specific to a pricing model.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "type" })
-  type: InvoiceLineItemsSubLineItemsType;
+    /**
+     * An identifier for a sub line item that is specific to a pricing model.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "type" })
+    type: InvoiceLineItemsSubLineItemsType;
 }
 
 export class InvoiceLineItemsTaxAmounts extends SpeakeasyBase {
-  /**
-   * The amount of additional tax incurred by this tax rate.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: string;
+    /**
+     * The amount of additional tax incurred by this tax rate.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: string;
 
-  /**
-   * The human-readable description of the applied tax rate.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "tax_rate_description" })
-  taxRateDescription: string;
+    /**
+     * The human-readable description of the applied tax rate.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "tax_rate_description" })
+    taxRateDescription: string;
 
-  /**
-   * The tax rate percentage, out of 100.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "tax_rate_percentage" })
-  taxRatePercentage: string;
+    /**
+     * The tax rate percentage, out of 100.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "tax_rate_percentage" })
+    taxRatePercentage: string;
 }
 
 export class InvoiceLineItems extends SpeakeasyBase {
-  /**
-   * The final amount after any discounts or minimums.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: string;
+    /**
+     * The final amount after any discounts or minimums.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "discount" })
-  discount: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "discount" })
+    discount: Record<string, any>;
 
-  /**
-   * The end date of the range of time applied for this line item's price.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "end_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  endDate: Date;
+    /**
+     * The end date of the range of time applied for this line item's price.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "end_date" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    endDate: Date;
 
-  /**
-   * For configured prices that are split by a grouping key, this will be populated with the key and a value. The `amount` and `subtotal` will be the values for this particular grouping.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "grouping" })
-  @Type(() => InvoiceLineItemsGrouping)
-  grouping: InvoiceLineItemsGrouping;
+    /**
+     * For configured prices that are split by a grouping key, this will be populated with the key and a value. The `amount` and `subtotal` will be the values for this particular grouping.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "grouping" })
+    @Type(() => InvoiceLineItemsGrouping)
+    grouping: InvoiceLineItemsGrouping;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "minimum" })
-  minimum: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "minimum" })
+    minimum: Record<string, any>;
 
-  /**
-   * The name of the price associated with this line item.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+    /**
+     * The name of the price associated with this line item.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "quantity" })
-  quantity: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "quantity" })
+    quantity: number;
 
-  /**
-   * The start date of the range of time applied for this line item's price.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "start_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  startDate: Date;
+    /**
+     * The start date of the range of time applied for this line item's price.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "start_date" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    startDate: Date;
 
-  /**
-   * For complex pricing structures, the line item can be broken down further in `sub_line_items`.
-   */
-  @SpeakeasyMetadata({ elemType: InvoiceLineItemsSubLineItems })
-  @Expose({ name: "sub_line_items" })
-  @Type(() => InvoiceLineItemsSubLineItems)
-  subLineItems: InvoiceLineItemsSubLineItems[];
+    /**
+     * For complex pricing structures, the line item can be broken down further in `sub_line_items`.
+     */
+    @SpeakeasyMetadata({ elemType: InvoiceLineItemsSubLineItems })
+    @Expose({ name: "sub_line_items" })
+    @Type(() => InvoiceLineItemsSubLineItems)
+    subLineItems: InvoiceLineItemsSubLineItems[];
 
-  /**
-   * The line amount before any line item-specific discounts or minimums.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "subtotal" })
-  subtotal: string;
+    /**
+     * The line amount before any line item-specific discounts or minimums.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "subtotal" })
+    subtotal: string;
 
-  /**
-   * An array of tax rates and their incurred tax amounts. Empty if no tax integration is configured.
-   */
-  @SpeakeasyMetadata({ elemType: InvoiceLineItemsTaxAmounts })
-  @Expose({ name: "tax_amounts" })
-  @Type(() => InvoiceLineItemsTaxAmounts)
-  taxAmounts: InvoiceLineItemsTaxAmounts[];
+    /**
+     * An array of tax rates and their incurred tax amounts. Empty if no tax integration is configured.
+     */
+    @SpeakeasyMetadata({ elemType: InvoiceLineItemsTaxAmounts })
+    @Expose({ name: "tax_amounts" })
+    @Type(() => InvoiceLineItemsTaxAmounts)
+    taxAmounts: InvoiceLineItemsTaxAmounts[];
 }
 
 /**
  * The status of this invoice as known to Orb. Invoices that have been issued for past billing periods are marked `"issued"`. Invoices will be marked `"paid"` upon confirmation of successful automatic payment collection by Orb. Invoices synced to an external billing provider (such as Bill.com, QuickBooks, or Stripe Invoicing) will be marked as `"synced"`.
  */
 export enum InvoiceStatus {
-  Issued = "issued",
-  Paid = "paid",
-  Synced = "synced",
+    Issued = "issued",
+    Paid = "paid",
+    Synced = "synced",
 }
 
 /**
  * The associated subscription for this invoice.
  */
 export class InvoiceSubscription extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 }
 
 /**
  * An [`Invoice`](../reference/Orb-API.json/components/schemas/Invoice) is a fundamental billing entity, representing the request for payment for a single subscription. This includes a set of line items, which correspond to prices in the subscription's plan and can represent fixed recurring fees or usage-based fees. They are generated at the end of a billing period, or as the result of an action, such as a cancellation.
  */
 export class Invoice extends SpeakeasyBase {
-  /**
-   * This is the final amount required to be charged to the customer and reflects the application of the customer balance to the `total` of the invoice.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount_due" })
-  amountDue: string;
+    /**
+     * This is the final amount required to be charged to the customer and reflects the application of the customer balance to the `total` of the invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount_due" })
+    amountDue: string;
 
-  /**
-   * The creation time of the resource in Orb.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+    /**
+     * The creation time of the resource in Orb.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
 
-  /**
-   * An ISO 4217 currency string or `credits`
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "currency" })
-  currency: string;
+    /**
+     * An ISO 4217 currency string or `credits`
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "currency" })
+    currency: string;
 
-  /**
-   * The customer receiving this invoice.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "customer" })
-  @Type(() => InvoiceCustomer)
-  customer: InvoiceCustomer;
+    /**
+     * The customer receiving this invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "customer" })
+    @Type(() => InvoiceCustomer)
+    customer: InvoiceCustomer;
 
-  /**
-   * A list of Customer balance transactions that may be associated with this invoice.
-   */
-  @SpeakeasyMetadata({ elemType: CustomerBalanceTransaction })
-  @Expose({ name: "customer_balance_transactions" })
-  @Type(() => CustomerBalanceTransaction)
-  customerBalanceTransactions: CustomerBalanceTransaction[];
+    /**
+     * A list of Customer balance transactions that may be associated with this invoice.
+     */
+    @SpeakeasyMetadata({ elemType: CustomerBalanceTransaction })
+    @Expose({ name: "customer_balance_transactions" })
+    @Type(() => CustomerBalanceTransaction)
+    customerBalanceTransactions: CustomerBalanceTransaction[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "discount" })
-  discount: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "discount" })
+    discount: Record<string, any>;
 
-  /**
-   * When the invoice payment is due.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "due_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  dueDate: Date;
+    /**
+     * When the invoice payment is due.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "due_date" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    dueDate: Date;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  /**
-   * Issue date of the invoice
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoice_date" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  invoiceDate: Date;
+    /**
+     * Issue date of the invoice
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoice_date" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    invoiceDate: Date;
 
-  /**
-   * The link to download the PDF representation of the `Invoice`.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoice_pdf" })
-  invoicePdf: string;
+    /**
+     * The link to download the PDF representation of the `Invoice`.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoice_pdf" })
+    invoicePdf: string;
 
-  /**
-   * The breakdown of prices in this invoice.
-   */
-  @SpeakeasyMetadata({ elemType: InvoiceLineItems })
-  @Expose({ name: "line_items" })
-  @Type(() => InvoiceLineItems)
-  lineItems: InvoiceLineItems[];
+    /**
+     * The breakdown of prices in this invoice.
+     */
+    @SpeakeasyMetadata({ elemType: InvoiceLineItems })
+    @Expose({ name: "line_items" })
+    @Type(() => InvoiceLineItems)
+    lineItems: InvoiceLineItems[];
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "minimum" })
-  minimum: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "minimum" })
+    minimum: Record<string, any>;
 
-  /**
-   * The status of this invoice as known to Orb. Invoices that have been issued for past billing periods are marked `"issued"`. Invoices will be marked `"paid"` upon confirmation of successful automatic payment collection by Orb. Invoices synced to an external billing provider (such as Bill.com, QuickBooks, or Stripe Invoicing) will be marked as `"synced"`.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "status" })
-  status?: InvoiceStatus;
+    /**
+     * The status of this invoice as known to Orb. Invoices that have been issued for past billing periods are marked `"issued"`. Invoices will be marked `"paid"` upon confirmation of successful automatic payment collection by Orb. Invoices synced to an external billing provider (such as Bill.com, QuickBooks, or Stripe Invoicing) will be marked as `"synced"`.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "status" })
+    status?: InvoiceStatus;
 
-  /**
-   * The associated subscription for this invoice.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "subscription" })
-  @Type(() => InvoiceSubscription)
-  subscription: InvoiceSubscription;
+    /**
+     * The associated subscription for this invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "subscription" })
+    @Type(() => InvoiceSubscription)
+    subscription: InvoiceSubscription;
 
-  /**
-   * The total before any discounts and minimums are applied.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "subtotal" })
-  subtotal: string;
+    /**
+     * The total before any discounts and minimums are applied.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "subtotal" })
+    subtotal: string;
 
-  /**
-   * The total after any minimums, discounts, and taxes have been applied.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "total" })
-  total: string;
+    /**
+     * The total after any minimums, discounts, and taxes have been applied.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "total" })
+    total: string;
 }

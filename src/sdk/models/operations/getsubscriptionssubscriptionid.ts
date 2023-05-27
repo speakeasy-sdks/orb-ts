@@ -7,25 +7,23 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetSubscriptionsSubscriptionIdRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=subscription_id",
-  })
-  subscriptionId: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=subscription_id" })
+    subscriptionId: string;
 }
 
 export class GetSubscriptionsSubscriptionIdResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  subscription?: shared.Subscription;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    subscription?: shared.Subscription;
 }

@@ -9,82 +9,82 @@ import { Expose, Transform, Type } from "class-transformer";
  * Describes the reason that this transaction took place.
  */
 export enum CustomerBalanceTransactionAction {
-  AppliedToInvoice = "applied_to_invoice",
-  ProratedRefund = "prorated_refund",
-  ManualAdjustment = "manual_adjustment",
+    AppliedToInvoice = "applied_to_invoice",
+    ProratedRefund = "prorated_refund",
+    ManualAdjustment = "manual_adjustment",
 }
 
 /**
  * The Invoice associated with this transaction
  */
 export class CustomerBalanceTransactionInvoice extends SpeakeasyBase {
-  /**
-   * The Invoice id
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    /**
+     * The Invoice id
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 }
 
 /**
  * A single change to the customer balance. All amounts are in the customer's currency.
  */
 export class CustomerBalanceTransaction extends SpeakeasyBase {
-  /**
-   * Describes the reason that this transaction took place.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "action" })
-  action: CustomerBalanceTransactionAction;
+    /**
+     * Describes the reason that this transaction took place.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "action" })
+    action: CustomerBalanceTransactionAction;
 
-  /**
-   * The value of the amount changed in the transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: string;
+    /**
+     * The value of the amount changed in the transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: string;
 
-  /**
-   * The creation time of this transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+    /**
+     * The creation time of this transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
 
-  /**
-   * An optional description provided for manual customer balance adjustments.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "description" })
-  description: string;
+    /**
+     * An optional description provided for manual customer balance adjustments.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "description" })
+    description: string;
 
-  /**
-   * The new value of the customer's balance prior to the transaction, in the customer's currency.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "ending_balance" })
-  endingBalance: string;
+    /**
+     * The new value of the customer's balance prior to the transaction, in the customer's currency.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "ending_balance" })
+    endingBalance: string;
 
-  /**
-   * A unique id for this transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    /**
+     * A unique id for this transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  /**
-   * The Invoice associated with this transaction
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoice" })
-  @Type(() => CustomerBalanceTransactionInvoice)
-  invoice: CustomerBalanceTransactionInvoice;
+    /**
+     * The Invoice associated with this transaction
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoice" })
+    @Type(() => CustomerBalanceTransactionInvoice)
+    invoice: CustomerBalanceTransactionInvoice;
 
-  /**
-   * The original value of the customer's balance prior to the transaction, in the customer's currency.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "starting_balance" })
-  startingBalance: string;
+    /**
+     * The original value of the customer's balance prior to the transaction, in the customer's currency.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "starting_balance" })
+    startingBalance: string;
 }

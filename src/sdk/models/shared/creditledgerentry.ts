@@ -9,48 +9,48 @@ import { Expose, Transform, Type } from "class-transformer";
  * Credit block that the entry affected
  */
 export class CreditLedgerEntryCreditBlock extends SpeakeasyBase {
-  /**
-   * Complete timestamp with date and time for when this block expires
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "expiry_date" })
-  expiryDate: string;
+    /**
+     * Complete timestamp with date and time for when this block expires
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "expiry_date" })
+    expiryDate: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  /**
-   * How much, in USD, a customer paid for a single credit in this block
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "per_unit_cost_basis" })
-  perUnitCostBasis: string;
+    /**
+     * How much, in USD, a customer paid for a single credit in this block
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "per_unit_cost_basis" })
+    perUnitCostBasis: string;
 }
 
 export class CreditLedgerEntryCustomer extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "external_customer_id" })
-  externalCustomerId: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "external_customer_id" })
+    externalCustomerId: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 }
 
 /**
  * Committed entries are older than the ingestion grace period, and cannot change. Pending entries are newer than the grace period and are subject to updates
  */
 export enum CreditLedgerEntryEntryStatus {
-  Committed = "committed",
-  Pending = "pending",
+    Committed = "committed",
+    Pending = "pending",
 }
 
 export enum CreditLedgerEntryEntryType {
-  Increment = "increment",
-  Decrement = "decrement",
-  ExpirationChange = "expiration_change",
-  CreditBlockExpiry = "credit_block_expiry",
+    Increment = "increment",
+    Decrement = "decrement",
+    ExpirationChange = "expiration_change",
+    CreditBlockExpiry = "credit_block_expiry",
 }
 
 /**
@@ -61,73 +61,73 @@ export enum CreditLedgerEntryEntryType {
  * To support late and out-of-order event reporting, ledger entries are marked as either __committed_ or _pending_. Committed entries are finalized and will not change. Pending entries can be updated up until the event reporting grace period.
  */
 export class CreditLedgerEntry extends SpeakeasyBase {
-  /**
-   * Number of credits that were impacted
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: number;
+    /**
+     * Number of credits that were impacted
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
 
-  /**
-   * Credit block that the entry affected
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "credit_block" })
-  @Type(() => CreditLedgerEntryCreditBlock)
-  creditBlock: CreditLedgerEntryCreditBlock;
+    /**
+     * Credit block that the entry affected
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "credit_block" })
+    @Type(() => CreditLedgerEntryCreditBlock)
+    creditBlock: CreditLedgerEntryCreditBlock;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "customer" })
-  @Type(() => CreditLedgerEntryCustomer)
-  customer: CreditLedgerEntryCustomer;
+    @SpeakeasyMetadata()
+    @Expose({ name: "customer" })
+    @Type(() => CreditLedgerEntryCustomer)
+    customer: CreditLedgerEntryCustomer;
 
-  /**
-   * Optional metadata that can be specified when adding ledger results via the API
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "description" })
-  description: string;
+    /**
+     * Optional metadata that can be specified when adding ledger results via the API
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "description" })
+    description: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "ending_balance" })
-  endingBalance: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "ending_balance" })
+    endingBalance: number;
 
-  /**
-   * Committed entries are older than the ingestion grace period, and cannot change. Pending entries are newer than the grace period and are subject to updates
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "entry_status" })
-  entryStatus: CreditLedgerEntryEntryStatus;
+    /**
+     * Committed entries are older than the ingestion grace period, and cannot change. Pending entries are newer than the grace period and are subject to updates
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "entry_status" })
+    entryStatus: CreditLedgerEntryEntryStatus;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "entry_type" })
-  entryType: CreditLedgerEntryEntryType;
+    @SpeakeasyMetadata()
+    @Expose({ name: "entry_type" })
+    entryType: CreditLedgerEntryEntryType;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "event_id" })
-  eventId?: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "event_id" })
+    eventId?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  /**
-   * The position in which this entry appears in the ledger, starting at 0
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "ledger_sequence_number" })
-  ledgerSequenceNumber: number;
+    /**
+     * The position in which this entry appears in the ledger, starting at 0
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "ledger_sequence_number" })
+    ledgerSequenceNumber: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "price_id" })
-  priceId?: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "price_id" })
+    priceId?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "starting_balance" })
-  startingBalance: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "starting_balance" })
+    startingBalance: number;
 }
