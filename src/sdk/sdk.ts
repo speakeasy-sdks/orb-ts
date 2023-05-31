@@ -4,7 +4,9 @@
 
 import * as utils from "../internal/utils";
 import { Availability } from "./availability";
-import { Credits } from "./credits";
+import { Coupon } from "./coupon";
+import { Credit } from "./credit";
+import { CreditNote } from "./creditnote";
 import { Customer } from "./customer";
 import { Event } from "./event";
 import { Invoice } from "./invoice";
@@ -21,7 +23,7 @@ export const ServerList = [
     /**
      * Production server
      */
-    "https://api.billwithorb.com/v1",
+    "https://api.withorb.com/v1",
 ] as const;
 
 /**
@@ -54,31 +56,39 @@ export type SDKProps = {
  */
 export class SDK {
     /**
-     * Actions related to API availability.
+     * The Availability resource represents a customer's availability. Availability is created when a customer's invoice is paid, and is updated when a customer's transaction is refunded.
      */
     public availability: Availability;
     /**
-     * Actions related to credit management.
+     * The Coupon resource represents a discount that can be applied to a customer's invoice. Coupons can be applied to a customer's invoice either by the customer or by the Orb API.
      */
-    public credits: Credits;
+    public coupon: Coupon;
     /**
-     * Actions related to customer management.
+     * The Credits resource represents a customer's credits. Credits are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
+     */
+    public credit: Credit;
+    /**
+     * The Credit Note resource represents a credit note that has been generated for a customer. Credit Notes are generated when a customer's billing interval has elapsed, and are updated when a customer's invoice is paid.
+     */
+    public creditNote: CreditNote;
+    /**
+     * The Customer resource represents a customer of your service. Customers are created when a customer is created in your service, and are updated when a customer's information is updated in your service.
      */
     public customer: Customer;
     /**
-     * Actions related to event management.
+     * The Event resource represents an event that has been created for a customer. Events are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
      */
     public event: Event;
     /**
-     * Actions related to invoice management.
+     * The Invoice resource represents an invoice that has been generated for a customer. Invoices are generated when a customer's billing interval has elapsed, and are updated when a customer's invoice is paid.
      */
     public invoice: Invoice;
     /**
-     * Actions related to plan management.
+     * The Plan resource represents a plan that can be subscribed to by a customer. Plans define the amount of credits that a customer will receive, the price of the plan, and the billing interval.
      */
     public plan: Plan;
     /**
-     * Actions related to subscription mangement.
+     * The Subscription resource represents a customer's subscription to a plan. Subscriptions are created when a customer subscribes to a plan, and are updated when a customer's plan is changed.
      */
     public subscription: Subscription;
 
@@ -86,7 +96,7 @@ export class SDK {
     public _securityClient: AxiosInstance;
     public _serverURL: string;
     private _language = "typescript";
-    private _sdkVersion = "0.15.1";
+    private _sdkVersion = "0.15.2";
     private _genVersion = "2.32.7";
     private _globals: any;
 
@@ -112,7 +122,25 @@ export class SDK {
             this._genVersion
         );
 
-        this.credits = new Credits(
+        this.coupon = new Coupon(
+            this._defaultClient,
+            this._securityClient,
+            this._serverURL,
+            this._language,
+            this._sdkVersion,
+            this._genVersion
+        );
+
+        this.credit = new Credit(
+            this._defaultClient,
+            this._securityClient,
+            this._serverURL,
+            this._language,
+            this._sdkVersion,
+            this._genVersion
+        );
+
+        this.creditNote = new CreditNote(
             this._defaultClient,
             this._securityClient,
             this._serverURL,

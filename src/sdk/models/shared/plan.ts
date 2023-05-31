@@ -3,9 +3,28 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { Discount } from "./discount";
+import { MinimumAmount } from "./minimumamount";
 import { PlanPhase } from "./planphase";
 import { Price } from "./price";
 import { Expose, Transform, Type } from "class-transformer";
+
+/**
+ * The parent plan if the given plan was created by overriding one or more of the parent's prices
+ */
+export class PlanBasePlan extends SpeakeasyBase {
+    @SpeakeasyMetadata()
+    @Expose({ name: "external_plan_id" })
+    externalPlanId?: string;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id?: string;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name?: string;
+}
 
 export class PlanProduct extends SpeakeasyBase {
     @SpeakeasyMetadata()
@@ -41,6 +60,14 @@ export class PlanTrialConfig extends SpeakeasyBase {
  */
 export class Plan extends SpeakeasyBase {
     /**
+     * The parent plan if the given plan was created by overriding one or more of the parent's prices
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "base_plan" })
+    @Type(() => PlanBasePlan)
+    basePlan?: PlanBasePlan;
+
+    /**
      * The parent plan id if the given plan was created by overriding one or more of the parent's prices
      */
     @SpeakeasyMetadata()
@@ -59,13 +86,21 @@ export class Plan extends SpeakeasyBase {
     @Expose({ name: "currency" })
     currency: string;
 
+    /**
+     * The default memo text on the invoices corresponding to subscriptions on this plan. Note that each subscription may configure its own memo.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "default_invoice_memo" })
+    defaultInvoiceMemo?: string;
+
     @SpeakeasyMetadata()
     @Expose({ name: "description" })
     description: string;
 
     @SpeakeasyMetadata()
     @Expose({ name: "discount" })
-    discount: Record<string, any>;
+    @Type(() => Discount)
+    discount: Discount;
 
     /**
      * An optional user-defined ID for this plan resource, used throughout the system as an alias for this Plan. Use this field to identify a plan by an existing identifier in your system.
@@ -87,11 +122,19 @@ export class Plan extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "minimum" })
-    minimum: Record<string, any>;
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
     @SpeakeasyMetadata()
     @Expose({ name: "name" })
     name: string;
+
+    /**
+     * Determines the difference between the invoice issue date and the due date. A value of "0" here signifies that invoices are due on issue, whereas a value of "30" means that the customer has a month to pay the invoice before its overdue. Note that individual subscriptions or invoices may set a different net terms configuration.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "net_terms" })
+    netTerms?: number;
 
     @SpeakeasyMetadata({ elemType: PlanPhase })
     @Expose({ name: "plan_phases" })

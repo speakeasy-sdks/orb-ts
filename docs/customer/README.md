@@ -2,21 +2,166 @@
 
 ## Overview
 
-Actions related to customer management.
+The Customer resource represents a customer of your service. Customers are created when a customer is created in your service, and are updated when a customer's information is updated in your service.
 
 ### Available Operations
 
+* [amend](#amend) - Amend customer usage
+* [amendByExternalId](#amendbyexternalid) - Amend customer usage by external ID
 * [create](#create) - Create customer
-* [get](#get) - Retrieve a customer
-* [getBalance](#getbalance) - Get customer balance transactions
-* [getByExternalId](#getbyexternalid) - Retrieve a customer by external ID
-* [getCosts](#getcosts) - View customer costs
-* [getCostsByExternalId](#getcostsbyexternalid) - View customer costs by external customer ID
+* [createTransaction](#createtransaction) - Create a customer balance transaction
+* [delete](#delete) - Delete a customer
+* [fetch](#fetch) - Retrieve a customer
+* [fetchByExternalId](#fetchbyexternalid) - Retrieve a customer by external ID
+* [fetchCosts](#fetchcosts) - View customer costs
+* [fetchCostsByExternalId](#fetchcostsbyexternalid) - View customer costs by external customer ID
+* [fetchTransactions](#fetchtransactions) - Get customer balance transactions
 * [list](#list) - List customers
-* [update](#update) - Update customer
 * [updateByExternalId](#updatebyexternalid) - Update a customer by external ID
-* [updateUsage](#updateusage) - Amend customer usage
-* [updateUsageByExternalId](#updateusagebyexternalid) - Amend customer usage by external ID
+* [updateCustomer](#updatecustomer) - Update customer
+
+## amend
+
+This endpoint is used to amend usage within a timeframe for a customer that has an active subscription.
+
+This endpoint will mark _all_ existing events within `[timeframe_start, timeframe_end)` as _ignored_  for billing  purposes, and Orb will only use the _new_ events passed in the body of this request as the source of truth for that timeframe moving forwards. Note that a given time period can be amended any number of times, so events can be overwritten in subsequent calls to this endpoint.
+
+This is a powerful and audit-safe mechanism to retroactively change usage data in cases where you need to:
+- decrease historical usage consumption because of degraded service availability in your systems
+- account for gaps from your usage reporting mechanism
+- make point-in-time fixes for specific event records, while retaining the original time of usage and associated metadata
+
+This amendment API is designed with two explicit goals:
+1. Amendments are **always audit-safe**. The amendment process will still retain original events in the timeframe, though they will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
+2. Amendments always preserve data **consistency**. In other words, either an amendment is fully processed by the system (and the new events for the timeframe are honored rather than the existing ones) or the amendment request fails. To maintain this important property, Orb prevents _partial event ingestion_ on this endpoint.
+
+
+## Response semantics
+ - Either all events are ingested successfully, or all fail to ingest (returning a `4xx` or `5xx` response code).
+- Any event that fails schema validation will lead to a `4xx` response. In this case, to maintain data consistency, Orb will not ingest any events and will also not deprecate existing events in the time period.
+- You can assume that the amendment is successful on receipt of a `2xx` response.While a successful response from this endpoint indicates that the new events have been ingested, updating usage totals happens asynchronously and may be delayed by a few minutes. 
+
+As emphasized above, Orb will never show an inconsistent state (e.g. in invoice previews or dashboards); either it will show the existing state (before the amendment) or the new state (with new events in the requested timeframe).
+
+
+## Sample request body
+
+```json
+{
+	"events": [{
+		"event_name": "payment_processed",
+		"timestamp": "2022-03-24T07:15:00Z",
+		"properties": {
+			"amount": 100
+		}
+	}, {
+		"event_name": "payment_failed",
+		"timestamp": "2022-03-24T07:15:00Z",
+		"properties": {
+			"amount": 100
+		}
+	}]
+}
+```
+
+## Request Validation
+- The `timestamp` of each event reported must fall within the bounds of `timeframe_start` and `timeframe_end`. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
+
+- Orb **does not accept an `idempotency_key`** with each event in this endpoint, since the entirety of the event list must be ingested to ensure consistency. On retryable errors, you should retry the request in its entirety, and assume that the amendment operation has not succeeded until receipt of a `2xx`.
+
+- Both `timeframe_start` and `timeframe_end` must be timestamps in the past. Furthermore, Orb will generally validate that the `timeframe_start` and `timeframe_end` fall within the customer's _current_ subscription billing period. However, Orb does allow amendments while in the grace period of the previous billing period; in this instance, the timeframe can start before the current period.
+
+
+## API Limits
+Note that Orb does not currently enforce a hard rate-limit for API usage or a maximum request payload size. Similar to the event ingestion API, this API is architected for high-throughput ingestion. It is also safe to _programmatically_ call this endpoint if your system can automatically detect a need for historical amendment.
+
+In order to overwrite timeframes with a very large number of events, we suggest using multiple calls with small adjacent (e.g. every hour) timeframes.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { AmendUsageResponse } from "Orb/dist/sdk/models/operations";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.amend({
+  requestBody: {
+    events: [
+      {
+        eventName: "ipsa",
+        properties: {
+          "est": "mollitia",
+          "laborum": "dolores",
+          "dolorem": "corporis",
+          "explicabo": "nobis",
+        },
+        timestamp: "enim",
+      },
+    ],
+  },
+  customerId: "omnis",
+  timeframeEnd: new Date("2022-05-11T17:46:20Z"),
+  timeframeStart: new Date("2022-05-11T17:46:20Z"),
+}).then((res: AmendUsageResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## amendByExternalId
+
+This endpoint's resource and semantics exactly mirror [Amend customer usage](amend-usage) but operates on an [external customer ID](../guides/events-and-metrics/customer-aliases) rather than an Orb issued identifier.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { AmendUsageExternalCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.amendByExternalId({
+  requestBody: {
+    events: [
+      {
+        eventName: "minima",
+        properties: {
+          "accusantium": "iure",
+          "culpa": "doloribus",
+          "sapiente": "architecto",
+        },
+        timestamp: "mollitia",
+      },
+      {
+        eventName: "dolorem",
+        properties: {
+          "consequuntur": "repellat",
+          "mollitia": "occaecati",
+          "numquam": "commodi",
+        },
+        timestamp: "quam",
+      },
+    ],
+  },
+  externalCustomerId: "molestiae",
+  timeframeEnd: new Date("2022-05-11T17:46:20Z"),
+  timeframeStart: new Date("2022-05-11T17:46:20Z"),
+}).then((res: AmendUsageExternalCustomerIdResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
 
 ## create
 
@@ -24,155 +169,191 @@ This operation is used to create an Orb customer, who is party to the core billi
 
 This endpoint is critical in the following Orb functionality:
 * Automated charges can be configured by setting `payment_provider` and `payment_provider_id` to automatically issue invoices
-* [Customer ID Aliases](../docs/Customer-ID-Aliases.md) can be configured by setting `external_customer_id`
-* [Timezone localization](../docs/Timezone-localization.md) can be configured on a per-customer basis by setting the `timezone` parameter
+* [Customer ID Aliases](../guides/events-and-metrics/customer-aliases) can be configured by setting `external_customer_id`
+* [Timezone localization](../guides/product-catalog/timezones) can be configured on a per-customer basis by setting the `timezone` parameter
 
 ### Example Usage
 
 ```typescript
 import { SDK } from "Orb";
-import { PostCustomersRequestBodyPaymentProvider, PostCustomersResponse } from "Orb/dist/sdk/models/operations";
+import { CreateCustomerRequestBodyPaymentProvider, CreateCustomerResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
 sdk.customer.create({
+  autoCollection: false,
   billingAddress: {
-    city: "East Ona",
+    city: "New Carmelo",
     country: "US",
-    line1: "cum",
-    line2: "esse",
-    postalCode: "51036",
-    state: "sed",
+    line1: "quis",
+    line2: "vitae",
+    postalCode: "63171-9368",
+    state: "aut",
   },
-  currency: "iste",
-  email: "Lexie_Howe68@gmail.com",
-  externalCustomerId: "in",
-  name: "Sheryl Kertzmann",
-  paymentProvider: PostCustomersRequestBodyPaymentProvider.Quickbooks,
-  paymentProviderId: "ipsa",
+  currency: "quasi",
+  email: "Rodrigo97@yahoo.com",
+  externalCustomerId: "voluptatibus",
+  metadata: {
+    "nihil": "praesentium",
+    "voluptatibus": "ipsa",
+    "omnis": "voluptate",
+    "cum": "perferendis",
+  },
+  name: "Bessie Grady II",
+  paymentProvider: CreateCustomerRequestBodyPaymentProvider.BillCom,
+  paymentProviderId: "iusto",
   shippingAddress: {
-    city: "Parma",
+    city: "Lake Emilieside",
     country: "US",
-    line1: "mollitia",
-    line2: "laborum",
-    postalCode: "23173",
-    state: "omnis",
+    line1: "commodi",
+    line2: "repudiandae",
+    postalCode: "26558",
+    state: "modi",
+  },
+  taxId: {
+    country: "Lithuania",
+    type: "rem",
+    value: "voluptates",
   },
   timezone: "Etc/UTC",
-}).then((res: PostCustomersResponse) => {
+}).then((res: CreateCustomerResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
 });
 ```
 
-## get
+## createTransaction
 
-This endpoint is used to fetch customer details given an identifier.
+Creates an immutable balance transaction that updates the customer's balance and returns back the newly created [transaction](../reference/Orb-API.json/components/schemas/Customer-balance-transaction).
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import {
+  PostCustomersCustomerIdBalanceTransactionsRequestBodyType,
+  PostCustomersCustomerIdBalanceTransactionsResponse,
+} from "Orb/dist/sdk/models/operations";
+import { CustomerBalanceTransactionAction, CustomerBalanceTransactionType } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.createTransaction({
+  requestBody: {
+    amount: "1.00",
+    description: "quasi",
+    type: PostCustomersCustomerIdBalanceTransactionsRequestBodyType.Decrement,
+  },
+  customerId: "sint",
+}).then((res: PostCustomersCustomerIdBalanceTransactionsResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## delete
+
+This performs a deletion of this customer, its subscriptions, and its invoices. This operation is irreversible. Note that this is a _soft_ deletion, but the data will be inaccessible through the API and Orb dashboard. For hard-deletion, please reach out to the Orb team directly.
+
+**Note**: This operation happens asynchronously and can be expected to take a few minutes to propagate to related resources. However, querying for the customer on subsequent GET requests while deletion is in process will reflect its deletion with a `deleted: true` property. Once the customer deletion has been fully processed, the customer will not be returned in the API.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { DeleteCustomerResponse } from "Orb/dist/sdk/models/operations";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.delete({
+  customerId: "veritatis",
+}).then((res: DeleteCustomerResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## fetch
+
+This endpoint is used to fetch customer details given an identifier. If the `Customer` is in the process of being deleted, only the properties `id` and `deleted: true` will be returned.
 
 See the [Customer resource](Orb-API.json/components/schemas/Customer) for a full discussion of the Customer model.
 
+
 ### Example Usage
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+import { FetchCustomerResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.customer.get({
-  customerId: "nemo",
-}).then((res: GetCustomersCustomerIdResponse) => {
+sdk.customer.fetch({
+  customerId: "itaque",
+}).then((res: FetchCustomerResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
 });
 ```
 
-## getBalance
+## fetchByExternalId
 
-# The customer balance
+This endpoint is used to fetch customer details given an `external_customer_id` (see [Customer ID Aliases](../guides/events-and-metrics/customer-aliases)).
 
-The customer balance is an amount in the customer's currency, which Orb automatically applies to subsequent invoices. This balance can be adjusted manually via Orb's webapp on the customer details page. You can use this balance to provide a fixed mid-period credit to the customer. Commonly, this is done due to system downtime/SLA violation, or an adhoc adjustment discussed with the customer.
-
-If the balance is a positive value at the time of invoicing, it represents that the customer has credit that should be used to offset the amount due on the next issued invoice. In this case, Orb will automatically reduce the next invoice by the balance amount, and roll over any remaining balance if the invoice is fully discounted.
-
-If the balance is a negative value at the time of invoicing, Orb will increase the invoice's amount due with a positive adjustment, and reset the balance to 0.
-
-This endpoint retrieves all customer balance transactions in reverse chronological order for a single customer, providing a complete audit trail of all adjustments and invoice applications.
-
-## Eligibility
-
-The customer balance can only be applied to invoices or adjusted manually if invoices are not synced to a separate invoicing provider. If a payment gateway such as Stripe is used, the balance will be applied to the invoice before forwarding payment to the gateway.
+Note that the resource and semantics of this endpoint exactly mirror [Get Customer](fetch-customer).
 
 ### Example Usage
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomersCustomerIdBalanceTransactionsResponse } from "Orb/dist/sdk/models/operations";
-import { CustomerBalanceTransactionAction } from "Orb/dist/sdk/models/shared";
-
-const sdk = new SDK({
-  security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
-  },
-});
-
-sdk.customer.getBalance({
-  customerId: "minima",
-}).then((res: GetCustomersCustomerIdBalanceTransactionsResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-## getByExternalId
-
-This endpoint is used to fetch customer details given an `external_customer_id` (see [Customer ID Aliases](../docs/Customer-ID-Aliases.md)).
-
-Note that the resource and semantics of this endpoint exactly mirror [Get Customer](Orb-API.json/paths/~1customers/get).
-
-### Example Usage
-
-```typescript
-import { SDK } from "Orb";
-import { GetCustomersExternalCustomerIdExternalCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+import { FetchCustomerExternalIdResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.customer.getByExternalId({
-  externalCustomerId: "excepturi",
-}).then((res: GetCustomersExternalCustomerIdExternalCustomerIdResponse) => {
+sdk.customer.fetchByExternalId({
+  externalCustomerId: "incidunt",
+}).then((res: FetchCustomerExternalIdResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
 });
 ```
 
-## getCosts
+## fetchCosts
 
-This endpoint is used to fetch a day-by-day snapshot of a customer's costs in Orb, calculated by applying pricing information to the underlying usage (see the [subscription usage endpoint](../reference/Orb-API.json/paths/~1subscriptions~1{subscription_id}~1usage/get) to fetch usage per metric, in usage units rather than a currency). 
+This endpoint is used to fetch a day-by-day snapshot of a customer's costs in Orb, calculated by applying pricing information to the underlying usage (see the [subscription usage endpoint](gcription-usage) to fetch usage per metric, in usage units rather than a currency). 
 
 This endpoint can be leveraged for internal tooling and to provide a more transparent billing experience for your end users:
 
 1. Understand the cost breakdown per line item historically and in real-time for the current billing period. 
-2. Provide customer visibility into how different services are contributing to the overall invoice with a per-day timeseries (as compared to the [upcoming invoice](../reference/Orb-API.json/paths/~1invoices~1upcoming/get) resource, which represents a snapshot for the current period).
+2. Provide customer visibility into how different services are contributing to the overall invoice with a per-day timeseries (as compared to the [upcoming invoice](fetch-upcoming-invoice) resource, which represents a snapshot for the current period).
 3. Assess how minimums and discounts affect your customers by teasing apart costs directly as a result of usage, as opposed to minimums and discounts at the plan and price level.
 4. Gain insight into key customer health metrics, such as the percent utilization of the minimum committed spend.
 
@@ -239,52 +420,90 @@ When a price uses matrix pricing, it's important to view costs grouped by those 
 
 ```typescript
 import { SDK } from "Orb";
-import { GetCustomerCostsResponse, GetCustomerCostsViewMode } from "Orb/dist/sdk/models/operations";
-import { PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
+import { FetchCustomerCostsResponse, FetchCustomerCostsViewMode } from "Orb/dist/sdk/models/operations";
+import { DiscountDiscountType, PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.customer.getCosts({
-  customerId: "accusantium",
-  groupBy: "iure",
+sdk.customer.fetchCosts({
+  customerId: "enim",
+  groupBy: "consequatur",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
-  viewMode: GetCustomerCostsViewMode.Cumulative,
-}).then((res: GetCustomerCostsResponse) => {
+  viewMode: FetchCustomerCostsViewMode.Cumulative,
+}).then((res: FetchCustomerCostsResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
 });
 ```
 
-## getCostsByExternalId
+## fetchCostsByExternalId
 
-This endpoint's resource and semantics exactly mirror [View customer costs](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1costs/get) but operates on an [external customer ID](../docs/Customer-ID-Aliases.md) rather than an Orb issued identifier.
+This endpoint's resource and semantics exactly mirror [View customer costs](fetch-customer-costs) but operates on an [external customer ID](../guides/events-and-metrics/customer-aliases) rather than an Orb issued identifier.
 
 ### Example Usage
 
 ```typescript
 import { SDK } from "Orb";
-import { GetExternalCustomerCostsResponse, GetExternalCustomerCostsViewMode } from "Orb/dist/sdk/models/operations";
-import { PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
+import { FetchCustomerCostsExternalIdResponse, FetchCustomerCostsExternalIdViewMode } from "Orb/dist/sdk/models/operations";
+import { DiscountDiscountType, PriceCadence, PriceModelType } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.customer.getCostsByExternalId({
-  externalCustomerId: "doloribus",
-  groupBy: "sapiente",
+sdk.customer.fetchCostsByExternalId({
+  externalCustomerId: "quibusdam",
+  groupBy: "explicabo",
   timeframeEnd: "2022-03-01T05:00:00Z",
   timeframeStart: new Date("2022-02-01T05:00:00Z"),
-  viewMode: GetExternalCustomerCostsViewMode.Periodic,
-}).then((res: GetExternalCustomerCostsResponse) => {
+  viewMode: FetchCustomerCostsExternalIdViewMode.Cumulative,
+}).then((res: FetchCustomerCostsExternalIdResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## fetchTransactions
+
+# The customer balance
+
+The customer balance is an amount in the customer's currency, which Orb automatically applies to subsequent invoices. This balance can be adjusted manually via Orb's webapp on the customer details page. You can use this balance to provide a fixed mid-period credit to the customer. Commonly, this is done due to system downtime/SLA violation, or an adhoc adjustment discussed with the customer.
+
+If the balance is a positive value at the time of invoicing, it represents that the customer has credit that should be used to offset the amount due on the next issued invoice. In this case, Orb will automatically reduce the next invoice by the balance amount, and roll over any remaining balance if the invoice is fully discounted.
+
+If the balance is a negative value at the time of invoicing, Orb will increase the invoice's amount due with a positive adjustment, and reset the balance to 0.
+
+This endpoint retrieves all customer balance transactions in reverse chronological order for a single customer, providing a complete audit trail of all adjustments and invoice applications.
+
+## Eligibility
+
+The customer balance can only be applied to invoices or adjusted manually if invoices are not synced to a separate invoicing provider. If a payment gateway such as Stripe is used, the balance will be applied to the invoice before forwarding payment to the gateway.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { ListBalanceTransactionsResponse } from "Orb/dist/sdk/models/operations";
+import { CustomerBalanceTransactionAction, CustomerBalanceTransactionType } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.fetchTransactions({
+  customerId: "distinctio",
+}).then((res: ListBalanceTransactionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -295,7 +514,7 @@ sdk.customer.getCostsByExternalId({
 
 
 
-This endpoint returns a list of all customers for an account. The list of customers is ordered starting from the most recently created customer. This endpoint follows Orb's [standardized pagination format](../docs/Pagination.md).
+This endpoint returns a list of all customers for an account. The list of customers is ordered starting from the most recently created customer. This endpoint follows Orb's [standardized pagination format](../api/pagination).
 
 See [Customer](../reference/Orb-API.json/components/schemas/Customer) for an overview of the customer model.
 
@@ -308,7 +527,7 @@ import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -319,9 +538,62 @@ sdk.customer.list().then((res: ListCustomersResponse) => {
 });
 ```
 
-## update
+## updateByExternalId
 
-This endpoint can be used to update the `payment_provider`, `payment_provider_id`, `name`, `email`, `shipping_address`, and `billing_address` of an existing customer.
+This endpoint is used to update customer details given an `external_customer_id` (see [Customer ID Aliases](../guides/events-and-metrics/customer-aliases)).
+
+Note that the resource and semantics of this endpoint exactly mirror [Update Customer](update-customer).
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import {
+  UpdateCustomerExternalIdRequestBodyPaymentProvider,
+  UpdateCustomerExternalIdResponse,
+} from "Orb/dist/sdk/models/operations";
+import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.customer.updateByExternalId({
+  requestBody: {
+    billingAddress: {
+      city: "Enterprise",
+      country: "US",
+      line1: "modi",
+      line2: "qui",
+      postalCode: "55018",
+      state: "ipsam",
+    },
+    email: "Caden.Pagac@gmail.com",
+    name: "Geoffrey Green",
+    paymentProvider: UpdateCustomerExternalIdRequestBodyPaymentProvider.StripeCharge,
+    paymentProviderId: "eligendi",
+    shippingAddress: {
+      city: "Gracestead",
+      country: "US",
+      line1: "necessitatibus",
+      line2: "sint",
+      postalCode: "28964-4896",
+      state: "dicta",
+    },
+  },
+  externalCustomerId: "magnam",
+}).then((res: UpdateCustomerExternalIdResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## updateCustomer
+
+This endpoint can be used to update the `payment_provider`, `payment_provider_id`, `name`, `email`, `email_delivery`, `auto_collection`, `shipping_address`, and `billing_address` of an existing customer.
 
 Other fields on a customer are currently immutable.
 
@@ -329,248 +601,51 @@ Other fields on a customer are currently immutable.
 
 ```typescript
 import { SDK } from "Orb";
-import { PutCustomersCustomerIdRequestBodyPaymentProvider, PutCustomersCustomerIdResponse } from "Orb/dist/sdk/models/operations";
+import { UpdateCustomerRequestBodyPaymentProvider, UpdateCustomerResponse } from "Orb/dist/sdk/models/operations";
 import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.customer.update({
+sdk.customer.updateCustomer({
   requestBody: {
+    autoCollection: false,
     billingAddress: {
-      city: "Durganfurt",
+      city: "Schulistview",
       country: "US",
-      line1: "consequuntur",
-      line2: "repellat",
-      postalCode: "52444-2613",
-      state: "vitae",
+      line1: "aliquid",
+      line2: "laborum",
+      postalCode: "25389-6576",
+      state: "blanditiis",
     },
-    email: "Madison77@hotmail.com",
-    name: "Mandy Hills",
-    paymentProvider: PutCustomersCustomerIdRequestBodyPaymentProvider.StripeInvoice,
-    paymentProviderId: "quasi",
+    email: "Verlie.Feeney@yahoo.com",
+    emailDelivery: false,
+    metadata: {
+      "natus": "omnis",
+      "molestiae": "perferendis",
+    },
+    name: "Megan Rau",
+    paymentProvider: UpdateCustomerRequestBodyPaymentProvider.Quickbooks,
+    paymentProviderId: "suscipit",
     shippingAddress: {
-      city: "Smithamchester",
+      city: "Rohanview",
       country: "US",
-      line1: "quasi",
-      line2: "reiciendis",
-      postalCode: "84590-6470",
-      state: "doloremque",
+      line1: "vero",
+      line2: "aspernatur",
+      postalCode: "20535",
+      state: "quos",
+    },
+    taxId: {
+      country: "Micronesia",
+      type: "accusantium",
+      value: "mollitia",
     },
   },
-  customerId: "reprehenderit",
-}).then((res: PutCustomersCustomerIdResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-## updateByExternalId
-
-This endpoint is used to update customer details given an `external_customer_id` (see [Customer ID Aliases](../docs/Customer-ID-Aliases.md)).
-
-Note that the resource and semantics of this endpoint exactly mirror [Update Customer](Orb-API.json/paths/~1customers~1{customer_id}/put).
-
-### Example Usage
-
-```typescript
-import { SDK } from "Orb";
-import {
-  PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider,
-  PutCustomersExternalCustomerIdExternalCustomerIdResponse,
-} from "Orb/dist/sdk/models/operations";
-import { CustomerPaymentProvider } from "Orb/dist/sdk/models/shared";
-
-const sdk = new SDK({
-  security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
-  },
-});
-
-sdk.customer.updateByExternalId({
-  requestBody: {
-    billingAddress: {
-      city: "Fort Blanche",
-      country: "US",
-      line1: "corporis",
-      line2: "dolore",
-      postalCode: "16384",
-      state: "repudiandae",
-    },
-    email: "Curt_Pouros@gmail.com",
-    name: "Joel Lang",
-    paymentProvider: PutCustomersExternalCustomerIdExternalCustomerIdRequestBodyPaymentProvider.Quickbooks,
-    paymentProviderId: "repudiandae",
-    shippingAddress: {
-      city: "Arnoldoshire",
-      country: "US",
-      line1: "incidunt",
-      line2: "enim",
-      postalCode: "68167",
-      state: "quibusdam",
-    },
-  },
-  externalCustomerId: "labore",
-}).then((res: PutCustomersExternalCustomerIdExternalCustomerIdResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-## updateUsage
-
-This endpoint is used to amend usage within a timeframe for a customer that has an active subscription.
-
-This endpoint will mark _all_ existing events within `[timeframe_start, timeframe_end)` as _ignored_  for billing  purposes, and Orb will only use the _new_ events passed in the body of this request as the source of truth for that timeframe moving forwards. Note that a given time period can be amended any number of times, so events can be overwritten in subsequent calls to this endpoint.
-
-This is a powerful and audit-safe mechanism to retroactively change usage data in cases where you need to:
-- decrease historical usage consumption because of degraded service availability in your systems
-- account for gaps from your usage reporting mechanism
-- make point-in-time fixes for specific event records, while retaining the original time of usage and associated metadata
-
-This amendment API is designed with two explicit goals:
-1. Amendments are **always audit-safe**. The amendment process will still retain original events in the timeframe, though they will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
-2. Amendments always preserve data **consistency**. In other words, either an amendment is fully processed by the system (and the new events for the timeframe are honored rather than the existing ones) or the amendment request fails. To maintain this important property, Orb prevents _partial event ingestion_ on this endpoint.
-
-
-## Response semantics
- - Either all events are ingested successfully, or all fail to ingest (returning a `4xx` or `5xx` response code).
-- Any event that fails schema validation will lead to a `4xx` response. In this case, to maintain data consistency, Orb will not ingest any events and will also not deprecate existing events in the time period.
-- You can assume that the amendment is successful on receipt of a `2xx` response.While a successful response from this endpoint indicates that the new events have been ingested, updating usage totals happens asynchronously and may be delayed by a few minutes. 
-
-As emphasized above, Orb will never show an inconsistent state (e.g. in invoice previews or dashboards); either it will show the existing state (before the amendment) or the new state (with new events in the requested timeframe).
-
-
-## Sample request body
-
-```json
-{
-	"events": [{
-		"event_name": "payment_processed",
-		"timestamp": "2022-03-24T07:15:00Z",
-		"properties": {
-			"amount": 100
-		}
-	}, {
-		"event_name": "payment_failed",
-		"timestamp": "2022-03-24T07:15:00Z",
-		"properties": {
-			"amount": 100
-		}
-	}]
-}
-```
-
-## Request Validation
-- The `timestamp` of each event reported must fall within the bounds of `timeframe_start` and `timeframe_end`. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
-
-- Orb **does not accept an `idempotency_key`** with each event in this endpoint, since the entirety of the event list must be ingested to ensure consistency. On retryable errors, you should retry the request in its entirety, and assume that the amendment operation has not succeeded until receipt of a `2xx`.
-
-- Both `timeframe_start` and `timeframe_end` must be timestamps in the past. Furthermore, Orb will generally validate that the `timeframe_start` and `timeframe_end` fall within the customer's _current_ subscription billing period. However, Orb does allow amendments while in the grace period of the previous billing period; in this instance, the timeframe can start before the current period.
-
-
-## API Limits
-Note that Orb does not currently enforce a hard rate-limit for API usage or a maximum request payload size. Similar to the event ingestion API, this API is architected for high-throughput ingestion. It is also safe to _programmatically_ call this endpoint if your system can automatically detect a need for historical amendment.
-
-In order to overwrite timeframes with a very large number of events, we suggest using multiple calls with small adjacent (e.g. every hour) timeframes.
-
-### Example Usage
-
-```typescript
-import { SDK } from "Orb";
-import { PatchCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
-  },
-});
-
-sdk.customer.updateUsage({
-  requestBody: {
-    events: [
-      {
-        eventName: "qui",
-        properties: {
-          "cupiditate": "quos",
-          "perferendis": "magni",
-        },
-        timestamp: "assumenda",
-      },
-      {
-        eventName: "ipsam",
-        properties: {
-          "fugit": "dolorum",
-        },
-        timestamp: "excepturi",
-      },
-    ],
-  },
-  customerId: "tempora",
-  timeframeEnd: new Date("2022-05-11T17:46:20Z"),
-  timeframeStart: new Date("2022-05-11T17:46:20Z"),
-}).then((res: PatchCustomersCustomerIdUsageResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-## updateUsageByExternalId
-
-This endpoint's resource and semantics exactly mirror [Amend customer usage](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1usage/patch) but operates on an [external customer ID](see (../docs/Customer-ID-Aliases.md)) rather than an Orb issued identifier.
-
-### Example Usage
-
-```typescript
-import { SDK } from "Orb";
-import { PatchExternalCustomersCustomerIdUsageResponse } from "Orb/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
-  },
-});
-
-sdk.customer.updateUsageByExternalId({
-  requestBody: {
-    events: [
-      {
-        eventName: "tempore",
-        properties: {
-          "delectus": "eum",
-          "non": "eligendi",
-        },
-        timestamp: "sint",
-      },
-      {
-        eventName: "aliquid",
-        properties: {
-          "necessitatibus": "sint",
-          "officia": "dolor",
-          "debitis": "a",
-        },
-        timestamp: "dolorum",
-      },
-      {
-        eventName: "in",
-        properties: {
-          "illum": "maiores",
-          "rerum": "dicta",
-        },
-        timestamp: "magnam",
-      },
-    ],
-  },
-  externalCustomerId: "cumque",
-  timeframeEnd: new Date("2022-05-11T17:46:20Z"),
-  timeframeStart: new Date("2022-05-11T17:46:20Z"),
-}).then((res: PatchExternalCustomersCustomerIdUsageResponse) => {
+  customerId: "reiciendis",
+}).then((res: UpdateCustomerResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }

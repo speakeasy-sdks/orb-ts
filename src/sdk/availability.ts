@@ -7,7 +7,7 @@ import * as operations from "./models/operations";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
- * Actions related to API availability.
+ * The Availability resource represents a customer's availability. Availability is created when a customer's invoice is paid, and is updated when a customer's transaction is refunded.
  */
 export class Availability {
     _defaultClient: AxiosInstance;
@@ -41,7 +41,7 @@ export class Availability {
      *
      * This API does not have any side-effects or return any Orb resources.
      */
-    async ping(config?: AxiosRequestConfig): Promise<operations.GetPingResponse> {
+    async ping(config?: AxiosRequestConfig): Promise<operations.PingResponse> {
         const baseURL: string = this._serverURL;
         const url: string = baseURL.replace(/\/$/, "") + "/ping";
 
@@ -67,7 +67,7 @@ export class Availability {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetPingResponse = new operations.GetPingResponse({
+        const res: operations.PingResponse = new operations.PingResponse({
             statusCode: httpRes.status,
             contentType: contentType,
             rawResponse: httpRes,
@@ -75,9 +75,9 @@ export class Availability {
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.getPing200ApplicationJSONObject = utils.objectToClass(
+                    res.ping200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.GetPing200ApplicationJSON
+                        operations.Ping200ApplicationJSON
                     );
                 }
                 break;

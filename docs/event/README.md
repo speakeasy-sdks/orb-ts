@@ -2,16 +2,137 @@
 
 ## Overview
 
-Actions related to event management.
+The Event resource represents an event that has been created for a customer. Events are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
 
 ### Available Operations
 
-* [deprecate](#deprecate) - Deprecate single event
+* [amend](#amend) - Amend single event
+* [closeBackfill](#closebackfill) - Close a backfill
+* [create](#create) - Create a backfill
+* [deprecateEvent](#deprecateevent) - Deprecate single event
 * [ingest](#ingest) - Ingest events
+* [listBackfills](#listbackfills) - List backfills
+* [revertBackfill](#revertbackfill) - Revert a backfill
 * [search](#search) - Search events
-* [update](#update) - Amend single event
 
-## deprecate
+## amend
+
+This endpoint is used to amend a single usage event with a given `event_id`. `event_id` refers to the `idempotency_key` passed in during ingestion. The event will maintain its existing `event_id` after the amendment.
+
+This endpoint will mark the existing event as ignored, and Orb will only use the new event passed in the body of this request as the source of truth for that `event_id`. Note that a single event can be amended any number of times, so the same event can be overwritten in subsequent calls to this endpoint, or overwritten using the [Amend customer usage](amend-usage) endpoint. Only a single event with a given `event_id` will be considered the source of truth at any given time.
+
+This is a powerful and audit-safe mechanism to retroactively update a single event in cases where you need to:
+* update an event with new metadata as you iterate on your pricing model
+* update an event based on the result of an external API call (ex. call to a payment gateway succeeded or failed)
+
+This amendment API is always audit-safe. The process will still retain the original event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
+
+## Request validation
+* The `timestamp` of the new event must match the `timestamp` of the existing event already ingested. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
+* The `customer_id` or `external_customer_id` of the new event must match the `customer_id` or `external_customer_id` of the existing event already ingested. Exactly one of `customer_id` and `external_customer_id` should be specified, and similar to ingestion, the ID must identify a Customer resource within Orb. Unlike ingestion, for event amendment, we strictly enforce that the Customer must be in the Orb system, even during the initial integration period. We do not allow updating the `Customer` an event is associated with.
+* Orb does not accept an `idempotency_key` with the event in this endpoint, since this request is by design idempotent. On retryable errors, you should retry the request and assume the amendment operation has not succeeded until receipt of a 2xx. 
+* The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { AmendEventResponse } from "Orb/dist/sdk/models/operations";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.event.amend({
+  requestBody: {
+    customerId: "mollitia",
+    eventName: "ad",
+    externalCustomerId: "eum",
+    properties: {
+      "necessitatibus": "odit",
+    },
+    timestamp: new Date("2020-12-09T16:09:53Z"),
+  },
+  eventId: "fQp2wSmK7CF9oPcu",
+}).then((res: AmendEventResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## closeBackfill
+
+Closing a backfill makes the updated usage visible in Orb. Upon closing a backfill, Orb will asynchronously reflect the updated usage in invoice amounts and usage graphs. Once all of the updates are complete, the backfill's status will transition to `reflected`.
+
+
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { CloseBackfillResponse } from "Orb/dist/sdk/models/operations";
+import { BackfillStatus } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.event.closeBackfill({
+  backfillId: "nemo",
+}).then((res: CloseBackfillResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## create
+
+Creating the backfill enables adding or replacing past events, even those that are older than the ingestion grace period. Performing a backfill in Orb involves 3 steps:
+
+1. Create the backfill, specifying its parameters.
+2. [Ingest](ingest) usage events, referencing the backfill (query parameter `backfill_id`).
+3. [Close](close-backfill) the backfill, propagating the update in past usage throughout Orb.
+
+Changes from a backfill are not reflected until the backfill is closed, so you won’t need to worry about your customers seeing partially updated usage data. Backfills are also reversible, so you’ll be able to revert a backfill if you’ve made a mistake.
+
+This endpoint will return a backfill object, which contains an `id`. That `id` can then be used as the `backfill_id` query parameter to the event ingestion endpoint to associate ingested events with this backfill. The effects (e.g. updated usage graphs) of this backfill will not take place until the backfill is closed.
+
+If the `replace_existing_events` is `true`, existing events in the backfill's timeframe will be replaced with the newly ingested events associated with the backfill. If `false`, newly ingested events will be added to the existing events.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { CreateBackfillResponse } from "Orb/dist/sdk/models/operations";
+import { BackfillStatus } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.event.create({
+  closeTime: new Date("2022-07-25T21:49:23.340Z"),
+  customerId: "doloribus",
+  externalCustomerId: "debitis",
+  replaceExistingEvents: false,
+  timeframeEnd: new Date("2022-03-12T17:44:26.081Z"),
+  timeframeStart: new Date("2021-08-05T03:52:18.835Z"),
+}).then((res: CreateBackfillResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## deprecateEvent
 
 This endpoint is used to deprecate a single usage event with a given `event_id`. `event_id` refers to the `idempotency_key` passed in during ingestion. 
 
@@ -21,7 +142,7 @@ This is a powerful and audit-safe mechanism to retroactively deprecate a single 
 * no longer bill for an event that was improperly reported
 * no longer bill for an event based on the result of an external API call (ex. call to a payment gateway failed and the user should not be billed)
 
-If you want to only change specific properties of an event, but keep the event as part of the billing calculation, use the [Amend single event](../reference/Orb-API.json/paths/~1events~1{event_id}/put) endpoint instead.
+If you want to only change specific properties of an event, but keep the event as part of the billing calculation, use the [Amend single event](amend-event) endpoint instead.
 
 This API is always audit-safe. The process will still retain the deprecated event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
 
@@ -34,17 +155,17 @@ This API is always audit-safe. The process will still retain the deprecated even
 
 ```typescript
 import { SDK } from "Orb";
-import { PutDeprecateEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
+import { DeprecateEventResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.event.deprecate({
+sdk.event.deprecateEvent({
   eventId: "fQp2wSmK7CF9oPcu",
-}).then((res: PutDeprecateEventsEventIdResponse) => {
+}).then((res: DeprecateEventResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -195,11 +316,11 @@ We strongly recommend that you only use debug mode as part of testing your initi
 
 ```typescript
 import { SDK } from "Orb";
-import { PostIngestDebug, PostIngestResponse } from "Orb/dist/sdk/models/operations";
+import { IngestDebug, IngestResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
@@ -207,54 +328,86 @@ sdk.event.ingest({
   requestBody: {
     events: [
       {
-        customerId: "ea",
-        eventName: "aliquid",
-        externalCustomerId: "laborum",
-        idempotencyKey: "accusamus",
+        customerId: "architecto",
+        eventName: "architecto",
+        externalCustomerId: "repudiandae",
+        idempotencyKey: "ullam",
         properties: {
-          "occaecati": "enim",
+          "nihil": "repellat",
+          "quibusdam": "sed",
+          "saepe": "pariatur",
         },
         timestamp: "2020-12-09T16:09:53Z",
       },
       {
-        customerId: "accusamus",
-        eventName: "delectus",
-        externalCustomerId: "quidem",
-        idempotencyKey: "provident",
+        customerId: "accusantium",
+        eventName: "consequuntur",
+        externalCustomerId: "praesentium",
+        idempotencyKey: "natus",
         properties: {
-          "id": "blanditiis",
-          "deleniti": "sapiente",
-          "amet": "deserunt",
-        },
-        timestamp: "2020-12-09T16:09:53Z",
-      },
-      {
-        customerId: "nisi",
-        eventName: "vel",
-        externalCustomerId: "natus",
-        idempotencyKey: "omnis",
-        properties: {
-          "perferendis": "nihil",
-          "magnam": "distinctio",
-        },
-        timestamp: "2020-12-09T16:09:53Z",
-      },
-      {
-        customerId: "id",
-        eventName: "labore",
-        externalCustomerId: "labore",
-        idempotencyKey: "suscipit",
-        properties: {
-          "nobis": "eum",
-          "vero": "aspernatur",
-          "architecto": "magnam",
+          "sunt": "quo",
         },
         timestamp: "2020-12-09T16:09:53Z",
       },
     ],
   },
-  debug: PostIngestDebug.True,
-}).then((res: PostIngestResponse) => {
+  backfillId: "illum",
+  debug: IngestDebug.False,
+}).then((res: IngestResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## listBackfills
+
+This endpoint returns a list of all [backfills](../reference/Orb-API.json/components/schemas/Backfill) in a list format. 
+
+The list of backfills is ordered starting from the most recently created backfill. The response also includes [`pagination_metadata`](../api/pagination), which lets the caller retrieve the next page of results if they exist. More information about pagination can be found in the [Pagination-metadata schema](../reference/Orb-API.json/components/schemas/Pagination-metadata).
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { ListBackfillsResponse } from "Orb/dist/sdk/models/operations";
+import { BackfillStatus } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.event.listBackfills().then((res: ListBackfillsResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## revertBackfill
+
+Reverting a backfill undoes all the effects of closing the backfill. If the backfill is reflected, the status will transition to `pending_revert` while the effects of the backfill are undone. Once all effects are undone, the backfill will transition to `reverted`.
+
+If a backfill is reverted before its closed, no usage will be updated as a result of the backfill and it will immediately transition to `reverted`.
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { RevertBackfillResponse } from "Orb/dist/sdk/models/operations";
+import { BackfillStatus } from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.event.revertBackfill({
+  backfillId: "maxime",
+}).then((res: RevertBackfillResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -263,13 +416,13 @@ sdk.event.ingest({
 
 ## search
 
-This endpoint returns a filtered set of events for an account in a paginated list format. 
+This endpoint returns a filtered set of events for an account in a [paginated list format](../api/pagination). 
 
 Note that this is a `POST` endpoint rather than a `GET` endpoint because it employs a JSON body for search criteria rather than query parameters, allowing for a more flexible search syntax.
 
 Note that a search criteria _must_ be specified. Currently, Orb supports the following criteria:
 - `event_ids`: This is an explicit array of IDs to filter by. Note that an event's ID is the `idempotency_key` that was originally used for ingestion.
-- `invoice_id`: This is an issued Orb invoice ID (see also [List Invoices](../reference/Orb-API.json/paths/~1invoices/get)). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose `timestamp` property falls within the billing period specified by the invoice.
+- `invoice_id`: This is an issued Orb invoice ID (see also [List Invoices](list-invoices)). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose `timestamp` property falls within the billing period specified by the invoice.
 
 By default, Orb does not return _deprecated_ events in this endpoint.
 
@@ -279,72 +432,21 @@ By default, Orb will not throw a `404` if no events matched, Orb will return an 
 
 ```typescript
 import { SDK } from "Orb";
-import { PostEventsSearchResponse } from "Orb/dist/sdk/models/operations";
+import { SearchEventsResponse } from "Orb/dist/sdk/models/operations";
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
 sdk.event.search({
   eventIds: [
-    "ullam",
-    "provident",
-    "quos",
+    "excepturi",
+    "odit",
   ],
-  invoiceId: "sint",
-}).then((res: PostEventsSearchResponse) => {
-  if (res.statusCode == 200) {
-    // handle response
-  }
-});
-```
-
-## update
-
-This endpoint is used to amend a single usage event with a given `event_id`. `event_id` refers to the `idempotency_key` passed in during ingestion. The event will maintain its existing `event_id` after the amendment.
-
-This endpoint will mark the existing event as ignored, and Orb will only use the new event passed in the body of this request as the source of truth for that `event_id`. Note that a single event can be amended any number of times, so the same event can be overwritten in subsequent calls to this endpoint, or overwritten using the [Amend customer usage](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1usage/patch) endpoint. Only a single event with a given `event_id` will be considered the source of truth at any given time.
-
-This is a powerful and audit-safe mechanism to retroactively update a single event in cases where you need to:
-* update an event with new metadata as you iterate on your pricing model
-* update an event based on the result of an external API call (ex. call to a payment gateway succeeded or failed)
-
-This amendment API is always audit-safe. The process will still retain the original event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
-
-## Request validation
-* The `timestamp` of the new event must match the `timestamp` of the existing event already ingested. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
-* The `customer_id` or `external_customer_id` of the new event must match the `customer_id` or `external_customer_id` of the existing event already ingested. Exactly one of `customer_id` and `external_customer_id` should be specified, and similar to ingestion, the ID must identify a Customer resource within Orb. Unlike ingestion, for event amendment, we strictly enforce that the Customer must be in the Orb system, even during the initial integration period. We do not allow updating the `Customer` an event is associated with.
-* Orb does not accept an `idempotency_key` with the event in this endpoint, since this request is by design idempotent. On retryable errors, you should retry the request and assume the amendment operation has not succeeded until receipt of a 2xx. 
-* The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period.
-
-### Example Usage
-
-```typescript
-import { SDK } from "Orb";
-import { PutEventsEventIdResponse } from "Orb/dist/sdk/models/operations";
-
-const sdk = new SDK({
-  security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
-  },
-});
-
-sdk.event.update({
-  requestBody: {
-    customerId: "accusantium",
-    eventName: "mollitia",
-    externalCustomerId: "reiciendis",
-    properties: {
-      "ad": "eum",
-      "dolor": "necessitatibus",
-      "odit": "nemo",
-    },
-    timestamp: new Date("2020-12-09T16:09:53Z"),
-  },
-  eventId: "fQp2wSmK7CF9oPcu",
-}).then((res: PutEventsEventIdResponse) => {
+  invoiceId: "ea",
+}).then((res: SearchEventsResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }

@@ -3,6 +3,8 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { Discount } from "./discount";
+import { MinimumAmount } from "./minimumamount";
 import { Expose, Transform, Type } from "class-transformer";
 
 export class PriceBillableMetric extends SpeakeasyBase {
@@ -416,7 +418,8 @@ export class Price extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "discount" })
-    discount: Record<string, any>;
+    @Type(() => Discount)
+    discount: Discount;
 
     /**
      * If the Price represents a fixed cost, this represents the quantity of units applied. Mutually exclusive with billable_metric.
@@ -439,7 +442,8 @@ export class Price extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "minimum" })
-    minimum: Record<string, any>;
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
     @SpeakeasyMetadata()
     @Expose({ name: "model_type" })

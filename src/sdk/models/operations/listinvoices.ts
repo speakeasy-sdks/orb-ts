@@ -21,6 +21,12 @@ export class ListInvoicesRequest extends SpeakeasyBase {
     externalCustomerId?: string;
 
     /**
+     * Filter to invoices of a particular status (`draft`, `issued`, `paid`, `void`, `synced`); this param can be used to filter to a single status (`?status="draft"`) or a set of statuses (`?status[]=paid&status[]=void`)
+     */
+    @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=status" })
+    status?: any;
+
+    /**
      * Filter by a specific subscription
      */
     @SpeakeasyMetadata({ data: "queryParam, style=form;explode=true;name=subscription_id" })
@@ -38,7 +44,8 @@ export class ListInvoices200ApplicationJSON extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "pagination_metadata" })
-    paginationMetadata?: Record<string, any>;
+    @Type(() => shared.PaginationMetadata)
+    paginationMetadata?: shared.PaginationMetadata;
 }
 
 export class ListInvoicesResponse extends SpeakeasyBase {

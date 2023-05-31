@@ -8,7 +8,7 @@ import * as shared from "./models/shared";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
- * Actions related to plan management.
+ * The Plan resource represents a plan that can be subscribed to by a customer. Plans define the amount of credits that a customer will receive, the price of the plan, and the billing interval.
  */
 export class Plan {
     _defaultClient: AxiosInstance;
@@ -46,7 +46,7 @@ export class Plan {
      * ## Phases
      * Orb supports plan phases, also known as contract ramps. For plans with phases, the serialized prices refer to all prices across all phases.
      */
-    async get(
+    async fetch(
         req: operations.GetPlansPlanIdRequest,
         config?: AxiosRequestConfig
     ): Promise<operations.GetPlansPlanIdResponse> {
@@ -88,6 +88,60 @@ export class Plan {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
                     res.plan = utils.objectToClass(httpRes?.data, shared.Plan);
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * List plans
+     *
+     * @remarks
+     * This endpoint returns a list of all [plans](../reference/Orb-API.json/components/schemas/Plan) for an account in a list format.
+     *
+     * The list of plans is ordered starting from the most recently created plan. The response also includes [`pagination_metadata`](../api/pagination), which lets the caller retrieve the next page of results if they exist.
+     *
+     */
+    async list(config?: AxiosRequestConfig): Promise<operations.ListPlansResponse> {
+        const baseURL: string = this._serverURL;
+        const url: string = baseURL.replace(/\/$/, "") + "/plans";
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "get",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.ListPlansResponse = new operations.ListPlansResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.listPlans200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.ListPlans200ApplicationJSON
+                    );
                 }
                 break;
         }

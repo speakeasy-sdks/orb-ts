@@ -8,7 +8,7 @@ import * as shared from "./models/shared";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
- * Actions related to customer management.
+ * The Customer resource represents a customer of your service. Customers are created when a customer is created in your service, and are updated when a customer's information is updated in your service.
  */
 export class Customer {
     _defaultClient: AxiosInstance;
@@ -35,6 +35,220 @@ export class Customer {
     }
 
     /**
+     * Amend customer usage
+     *
+     * @remarks
+     * This endpoint is used to amend usage within a timeframe for a customer that has an active subscription.
+     *
+     * This endpoint will mark _all_ existing events within `[timeframe_start, timeframe_end)` as _ignored_  for billing  purposes, and Orb will only use the _new_ events passed in the body of this request as the source of truth for that timeframe moving forwards. Note that a given time period can be amended any number of times, so events can be overwritten in subsequent calls to this endpoint.
+     *
+     * This is a powerful and audit-safe mechanism to retroactively change usage data in cases where you need to:
+     * - decrease historical usage consumption because of degraded service availability in your systems
+     * - account for gaps from your usage reporting mechanism
+     * - make point-in-time fixes for specific event records, while retaining the original time of usage and associated metadata
+     *
+     * This amendment API is designed with two explicit goals:
+     * 1. Amendments are **always audit-safe**. The amendment process will still retain original events in the timeframe, though they will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
+     * 2. Amendments always preserve data **consistency**. In other words, either an amendment is fully processed by the system (and the new events for the timeframe are honored rather than the existing ones) or the amendment request fails. To maintain this important property, Orb prevents _partial event ingestion_ on this endpoint.
+     *
+     *
+     * ## Response semantics
+     *  - Either all events are ingested successfully, or all fail to ingest (returning a `4xx` or `5xx` response code).
+     * - Any event that fails schema validation will lead to a `4xx` response. In this case, to maintain data consistency, Orb will not ingest any events and will also not deprecate existing events in the time period.
+     * - You can assume that the amendment is successful on receipt of a `2xx` response.While a successful response from this endpoint indicates that the new events have been ingested, updating usage totals happens asynchronously and may be delayed by a few minutes.
+     *
+     * As emphasized above, Orb will never show an inconsistent state (e.g. in invoice previews or dashboards); either it will show the existing state (before the amendment) or the new state (with new events in the requested timeframe).
+     *
+     *
+     * ## Sample request body
+     *
+     * ```json
+     * {
+     * 	"events": [{
+     * 		"event_name": "payment_processed",
+     * 		"timestamp": "2022-03-24T07:15:00Z",
+     * 		"properties": {
+     * 			"amount": 100
+     * 		}
+     * 	}, {
+     * 		"event_name": "payment_failed",
+     * 		"timestamp": "2022-03-24T07:15:00Z",
+     * 		"properties": {
+     * 			"amount": 100
+     * 		}
+     * 	}]
+     * }
+     * ```
+     *
+     * ## Request Validation
+     * - The `timestamp` of each event reported must fall within the bounds of `timeframe_start` and `timeframe_end`. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
+     *
+     * - Orb **does not accept an `idempotency_key`** with each event in this endpoint, since the entirety of the event list must be ingested to ensure consistency. On retryable errors, you should retry the request in its entirety, and assume that the amendment operation has not succeeded until receipt of a `2xx`.
+     *
+     * - Both `timeframe_start` and `timeframe_end` must be timestamps in the past. Furthermore, Orb will generally validate that the `timeframe_start` and `timeframe_end` fall within the customer's _current_ subscription billing period. However, Orb does allow amendments while in the grace period of the previous billing period; in this instance, the timeframe can start before the current period.
+     *
+     *
+     * ## API Limits
+     * Note that Orb does not currently enforce a hard rate-limit for API usage or a maximum request payload size. Similar to the event ingestion API, this API is architected for high-throughput ingestion. It is also safe to _programmatically_ call this endpoint if your system can automatically detect a need for historical amendment.
+     *
+     * In order to overwrite timeframes with a very large number of events, we suggest using multiple calls with small adjacent (e.g. every hour) timeframes.
+     */
+    async amend(
+        req: operations.AmendUsageRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.AmendUsageResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.AmendUsageRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(baseURL, "/customers/{customer_id}/usage", req);
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        const queryParams: string = utils.serializeQueryParams(req);
+        headers["Accept"] = "application/json;q=1, application/json;q=0";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url + queryParams,
+            method: "patch",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.AmendUsageResponse = new operations.AmendUsageResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendUsage200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendUsage200ApplicationJSON
+                    );
+                }
+                break;
+            case httpRes?.status == 400:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendUsage400ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendUsage400ApplicationJSON
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Amend customer usage by external ID
+     *
+     * @remarks
+     * This endpoint's resource and semantics exactly mirror [Amend customer usage](amend-usage) but operates on an [external customer ID](../guides/events-and-metrics/customer-aliases) rather than an Orb issued identifier.
+     */
+    async amendByExternalId(
+        req: operations.AmendUsageExternalCustomerIdRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.AmendUsageExternalCustomerIdResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.AmendUsageExternalCustomerIdRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(
+            baseURL,
+            "/customers/external_customer_id/{external_customer_id}/usage",
+            req
+        );
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        const queryParams: string = utils.serializeQueryParams(req);
+        headers["Accept"] = "application/json;q=1, application/json;q=0";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url + queryParams,
+            method: "patch",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.AmendUsageExternalCustomerIdResponse =
+            new operations.AmendUsageExternalCustomerIdResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendUsageExternalCustomerId200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendUsageExternalCustomerId200ApplicationJSON
+                    );
+                }
+                break;
+            case httpRes?.status == 400:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendUsageExternalCustomerId400ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendUsageExternalCustomerId400ApplicationJSON
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
      * Create customer
      *
      * @remarks
@@ -42,15 +256,15 @@ export class Customer {
      *
      * This endpoint is critical in the following Orb functionality:
      * * Automated charges can be configured by setting `payment_provider` and `payment_provider_id` to automatically issue invoices
-     * * [Customer ID Aliases](../docs/Customer-ID-Aliases.md) can be configured by setting `external_customer_id`
-     * * [Timezone localization](../docs/Timezone-localization.md) can be configured on a per-customer basis by setting the `timezone` parameter
+     * * [Customer ID Aliases](../guides/events-and-metrics/customer-aliases) can be configured by setting `external_customer_id`
+     * * [Timezone localization](../guides/product-catalog/timezones) can be configured on a per-customer basis by setting the `timezone` parameter
      */
     async create(
-        req: operations.PostCustomersRequestBody,
+        req: operations.CreateCustomerRequestBody,
         config?: AxiosRequestConfig
-    ): Promise<operations.PostCustomersResponse> {
+    ): Promise<operations.CreateCustomerResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PostCustomersRequestBody(req);
+            req = new operations.CreateCustomerRequestBody(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -89,7 +303,7 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PostCustomersResponse = new operations.PostCustomersResponse({
+        const res: operations.CreateCustomerResponse = new operations.CreateCustomerResponse({
             statusCode: httpRes.status,
             contentType: contentType,
             rawResponse: httpRes,
@@ -106,19 +320,148 @@ export class Customer {
     }
 
     /**
+     * Create a customer balance transaction
+     *
+     * @remarks
+     * Creates an immutable balance transaction that updates the customer's balance and returns back the newly created [transaction](../reference/Orb-API.json/components/schemas/Customer-balance-transaction).
+     */
+    async createTransaction(
+        req: operations.PostCustomersCustomerIdBalanceTransactionsRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.PostCustomersCustomerIdBalanceTransactionsResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.PostCustomersCustomerIdBalanceTransactionsRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(
+            baseURL,
+            "/customers/{customer_id}/balance_transactions",
+            req
+        );
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.PostCustomersCustomerIdBalanceTransactionsResponse =
+            new operations.PostCustomersCustomerIdBalanceTransactionsResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.customerBalanceTransaction = utils.objectToClass(
+                        httpRes?.data,
+                        shared.CustomerBalanceTransaction
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Delete a customer
+     *
+     * @remarks
+     * This performs a deletion of this customer, its subscriptions, and its invoices. This operation is irreversible. Note that this is a _soft_ deletion, but the data will be inaccessible through the API and Orb dashboard. For hard-deletion, please reach out to the Orb team directly.
+     *
+     * **Note**: This operation happens asynchronously and can be expected to take a few minutes to propagate to related resources. However, querying for the customer on subsequent GET requests while deletion is in process will reflect its deletion with a `deleted: true` property. Once the customer deletion has been fully processed, the customer will not be returned in the API.
+     */
+    async delete(
+        req: operations.DeleteCustomerRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.DeleteCustomerResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.DeleteCustomerRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(baseURL, "/customers/{customer_id}", req);
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "*/*";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "delete",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.DeleteCustomerResponse = new operations.DeleteCustomerResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 204:
+                break;
+        }
+
+        return res;
+    }
+
+    /**
      * Retrieve a customer
      *
      * @remarks
-     * This endpoint is used to fetch customer details given an identifier.
+     * This endpoint is used to fetch customer details given an identifier. If the `Customer` is in the process of being deleted, only the properties `id` and `deleted: true` will be returned.
      *
      * See the [Customer resource](Orb-API.json/components/schemas/Customer) for a full discussion of the Customer model.
+     *
      */
-    async get(
-        req: operations.GetCustomersCustomerIdRequest,
+    async fetch(
+        req: operations.FetchCustomerRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetCustomersCustomerIdResponse> {
+    ): Promise<operations.FetchCustomerResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetCustomersCustomerIdRequest(req);
+            req = new operations.FetchCustomerRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -146,12 +489,11 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetCustomersCustomerIdResponse =
-            new operations.GetCustomersCustomerIdResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
+        const res: operations.FetchCustomerResponse = new operations.FetchCustomerResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
         switch (true) {
             case httpRes?.status == 201:
                 if (utils.matchContentType(contentType, `application/json`)) {
@@ -164,95 +506,19 @@ export class Customer {
     }
 
     /**
-     * Get customer balance transactions
-     *
-     * @remarks
-     * # The customer balance
-     *
-     * The customer balance is an amount in the customer's currency, which Orb automatically applies to subsequent invoices. This balance can be adjusted manually via Orb's webapp on the customer details page. You can use this balance to provide a fixed mid-period credit to the customer. Commonly, this is done due to system downtime/SLA violation, or an adhoc adjustment discussed with the customer.
-     *
-     * If the balance is a positive value at the time of invoicing, it represents that the customer has credit that should be used to offset the amount due on the next issued invoice. In this case, Orb will automatically reduce the next invoice by the balance amount, and roll over any remaining balance if the invoice is fully discounted.
-     *
-     * If the balance is a negative value at the time of invoicing, Orb will increase the invoice's amount due with a positive adjustment, and reset the balance to 0.
-     *
-     * This endpoint retrieves all customer balance transactions in reverse chronological order for a single customer, providing a complete audit trail of all adjustments and invoice applications.
-     *
-     * ## Eligibility
-     *
-     * The customer balance can only be applied to invoices or adjusted manually if invoices are not synced to a separate invoicing provider. If a payment gateway such as Stripe is used, the balance will be applied to the invoice before forwarding payment to the gateway.
-     */
-    async getBalance(
-        req: operations.GetCustomersCustomerIdBalanceTransactionsRequest,
-        config?: AxiosRequestConfig
-    ): Promise<operations.GetCustomersCustomerIdBalanceTransactionsResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetCustomersCustomerIdBalanceTransactionsRequest(req);
-        }
-
-        const baseURL: string = this._serverURL;
-        const url: string = utils.generateURL(
-            baseURL,
-            "/customers/{customer_id}/balance_transactions",
-            req
-        );
-
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-        const headers = { ...config?.headers };
-        headers["Accept"] = "application/json";
-        headers[
-            "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-        const httpRes: AxiosResponse = await client.request({
-            validateStatus: () => true,
-            url: url,
-            method: "get",
-            headers: headers,
-            ...config,
-        });
-
-        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-        if (httpRes?.status == null) {
-            throw new Error(`status code not found in response: ${httpRes}`);
-        }
-
-        const res: operations.GetCustomersCustomerIdBalanceTransactionsResponse =
-            new operations.GetCustomersCustomerIdBalanceTransactionsResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
-        switch (true) {
-            case httpRes?.status == 200:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.getCustomersCustomerIdBalanceTransactions200ApplicationJSONObject =
-                        utils.objectToClass(
-                            httpRes?.data,
-                            operations.GetCustomersCustomerIdBalanceTransactions200ApplicationJSON
-                        );
-                }
-                break;
-        }
-
-        return res;
-    }
-
-    /**
      * Retrieve a customer by external ID
      *
      * @remarks
-     * This endpoint is used to fetch customer details given an `external_customer_id` (see [Customer ID Aliases](../docs/Customer-ID-Aliases.md)).
+     * This endpoint is used to fetch customer details given an `external_customer_id` (see [Customer ID Aliases](../guides/events-and-metrics/customer-aliases)).
      *
-     * Note that the resource and semantics of this endpoint exactly mirror [Get Customer](Orb-API.json/paths/~1customers/get).
+     * Note that the resource and semantics of this endpoint exactly mirror [Get Customer](fetch-customer).
      */
-    async getByExternalId(
-        req: operations.GetCustomersExternalCustomerIdExternalCustomerIdRequest,
+    async fetchByExternalId(
+        req: operations.FetchCustomerExternalIdRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse> {
+    ): Promise<operations.FetchCustomerExternalIdResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetCustomersExternalCustomerIdExternalCustomerIdRequest(req);
+            req = new operations.FetchCustomerExternalIdRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -284,8 +550,8 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse =
-            new operations.GetCustomersExternalCustomerIdExternalCustomerIdResponse({
+        const res: operations.FetchCustomerExternalIdResponse =
+            new operations.FetchCustomerExternalIdResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -305,12 +571,12 @@ export class Customer {
      * View customer costs
      *
      * @remarks
-     * This endpoint is used to fetch a day-by-day snapshot of a customer's costs in Orb, calculated by applying pricing information to the underlying usage (see the [subscription usage endpoint](../reference/Orb-API.json/paths/~1subscriptions~1{subscription_id}~1usage/get) to fetch usage per metric, in usage units rather than a currency).
+     * This endpoint is used to fetch a day-by-day snapshot of a customer's costs in Orb, calculated by applying pricing information to the underlying usage (see the [subscription usage endpoint](gcription-usage) to fetch usage per metric, in usage units rather than a currency).
      *
      * This endpoint can be leveraged for internal tooling and to provide a more transparent billing experience for your end users:
      *
      * 1. Understand the cost breakdown per line item historically and in real-time for the current billing period.
-     * 2. Provide customer visibility into how different services are contributing to the overall invoice with a per-day timeseries (as compared to the [upcoming invoice](../reference/Orb-API.json/paths/~1invoices~1upcoming/get) resource, which represents a snapshot for the current period).
+     * 2. Provide customer visibility into how different services are contributing to the overall invoice with a per-day timeseries (as compared to the [upcoming invoice](fetch-upcoming-invoice) resource, which represents a snapshot for the current period).
      * 3. Assess how minimums and discounts affect your customers by teasing apart costs directly as a result of usage, as opposed to minimums and discounts at the plan and price level.
      * 4. Gain insight into key customer health metrics, such as the percent utilization of the minimum committed spend.
      *
@@ -373,12 +639,12 @@ export class Customer {
      * When a price uses matrix pricing, it's important to view costs grouped by those matrix dimensions. Orb will return `price_groups` with the `grouping_key` and `secondary_grouping_key` based on the matrix price definition, for each `grouping_value` and `secondary_grouping_value` available.
      *
      */
-    async getCosts(
-        req: operations.GetCustomerCostsRequest,
+    async fetchCosts(
+        req: operations.FetchCustomerCostsRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetCustomerCostsResponse> {
+    ): Promise<operations.FetchCustomerCostsResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetCustomerCostsRequest(req);
+            req = new operations.FetchCustomerCostsRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -407,17 +673,18 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetCustomerCostsResponse = new operations.GetCustomerCostsResponse({
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-        });
+        const res: operations.FetchCustomerCostsResponse =
+            new operations.FetchCustomerCostsResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.getCustomerCosts200ApplicationJSONObject = utils.objectToClass(
+                    res.fetchCustomerCosts200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.GetCustomerCosts200ApplicationJSON
+                        operations.FetchCustomerCosts200ApplicationJSON
                     );
                 }
                 break;
@@ -430,14 +697,14 @@ export class Customer {
      * View customer costs by external customer ID
      *
      * @remarks
-     * This endpoint's resource and semantics exactly mirror [View customer costs](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1costs/get) but operates on an [external customer ID](../docs/Customer-ID-Aliases.md) rather than an Orb issued identifier.
+     * This endpoint's resource and semantics exactly mirror [View customer costs](fetch-customer-costs) but operates on an [external customer ID](../guides/events-and-metrics/customer-aliases) rather than an Orb issued identifier.
      */
-    async getCostsByExternalId(
-        req: operations.GetExternalCustomerCostsRequest,
+    async fetchCostsByExternalId(
+        req: operations.FetchCustomerCostsExternalIdRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetExternalCustomerCostsResponse> {
+    ): Promise<operations.FetchCustomerCostsExternalIdResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetExternalCustomerCostsRequest(req);
+            req = new operations.FetchCustomerCostsExternalIdRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -470,8 +737,8 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetExternalCustomerCostsResponse =
-            new operations.GetExternalCustomerCostsResponse({
+        const res: operations.FetchCustomerCostsExternalIdResponse =
+            new operations.FetchCustomerCostsExternalIdResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -479,9 +746,84 @@ export class Customer {
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.getExternalCustomerCosts200ApplicationJSONObject = utils.objectToClass(
+                    res.fetchCustomerCostsExternalId200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.GetExternalCustomerCosts200ApplicationJSON
+                        operations.FetchCustomerCostsExternalId200ApplicationJSON
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Get customer balance transactions
+     *
+     * @remarks
+     * # The customer balance
+     *
+     * The customer balance is an amount in the customer's currency, which Orb automatically applies to subsequent invoices. This balance can be adjusted manually via Orb's webapp on the customer details page. You can use this balance to provide a fixed mid-period credit to the customer. Commonly, this is done due to system downtime/SLA violation, or an adhoc adjustment discussed with the customer.
+     *
+     * If the balance is a positive value at the time of invoicing, it represents that the customer has credit that should be used to offset the amount due on the next issued invoice. In this case, Orb will automatically reduce the next invoice by the balance amount, and roll over any remaining balance if the invoice is fully discounted.
+     *
+     * If the balance is a negative value at the time of invoicing, Orb will increase the invoice's amount due with a positive adjustment, and reset the balance to 0.
+     *
+     * This endpoint retrieves all customer balance transactions in reverse chronological order for a single customer, providing a complete audit trail of all adjustments and invoice applications.
+     *
+     * ## Eligibility
+     *
+     * The customer balance can only be applied to invoices or adjusted manually if invoices are not synced to a separate invoicing provider. If a payment gateway such as Stripe is used, the balance will be applied to the invoice before forwarding payment to the gateway.
+     */
+    async fetchTransactions(
+        req: operations.ListBalanceTransactionsRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.ListBalanceTransactionsResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.ListBalanceTransactionsRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(
+            baseURL,
+            "/customers/{customer_id}/balance_transactions",
+            req
+        );
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "get",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.ListBalanceTransactionsResponse =
+            new operations.ListBalanceTransactionsResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.listBalanceTransactions200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.ListBalanceTransactions200ApplicationJSON
                     );
                 }
                 break;
@@ -496,7 +838,7 @@ export class Customer {
      * @remarks
      *
      *
-     * This endpoint returns a list of all customers for an account. The list of customers is ordered starting from the most recently created customer. This endpoint follows Orb's [standardized pagination format](../docs/Pagination.md).
+     * This endpoint returns a list of all customers for an account. The list of customers is ordered starting from the most recently created customer. This endpoint follows Orb's [standardized pagination format](../api/pagination).
      *
      * See [Customer](../reference/Orb-API.json/components/schemas/Customer) for an overview of the customer model.
      */
@@ -546,88 +888,19 @@ export class Customer {
     }
 
     /**
-     * Update customer
-     *
-     * @remarks
-     * This endpoint can be used to update the `payment_provider`, `payment_provider_id`, `name`, `email`, `shipping_address`, and `billing_address` of an existing customer.
-     *
-     * Other fields on a customer are currently immutable.
-     */
-    async update(
-        req: operations.PutCustomersCustomerIdRequest,
-        config?: AxiosRequestConfig
-    ): Promise<operations.PutCustomersCustomerIdResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PutCustomersCustomerIdRequest(req);
-        }
-
-        const baseURL: string = this._serverURL;
-        const url: string = utils.generateURL(baseURL, "/customers/{customer_id}", req);
-
-        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
-
-        try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
-        } catch (e: unknown) {
-            if (e instanceof Error) {
-                throw new Error(`Error serializing request body, cause: ${e.message}`);
-            }
-        }
-
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-        const headers = { ...reqBodyHeaders, ...config?.headers };
-        headers["Accept"] = "application/json";
-        headers[
-            "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-        const httpRes: AxiosResponse = await client.request({
-            validateStatus: () => true,
-            url: url,
-            method: "put",
-            headers: headers,
-            data: reqBody,
-            ...config,
-        });
-
-        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-        if (httpRes?.status == null) {
-            throw new Error(`status code not found in response: ${httpRes}`);
-        }
-
-        const res: operations.PutCustomersCustomerIdResponse =
-            new operations.PutCustomersCustomerIdResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
-        switch (true) {
-            case httpRes?.status == 200:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
-                }
-                break;
-        }
-
-        return res;
-    }
-
-    /**
      * Update a customer by external ID
      *
      * @remarks
-     * This endpoint is used to update customer details given an `external_customer_id` (see [Customer ID Aliases](../docs/Customer-ID-Aliases.md)).
+     * This endpoint is used to update customer details given an `external_customer_id` (see [Customer ID Aliases](../guides/events-and-metrics/customer-aliases)).
      *
-     * Note that the resource and semantics of this endpoint exactly mirror [Update Customer](Orb-API.json/paths/~1customers~1{customer_id}/put).
+     * Note that the resource and semantics of this endpoint exactly mirror [Update Customer](update-customer).
      */
     async updateByExternalId(
-        req: operations.PutCustomersExternalCustomerIdExternalCustomerIdRequest,
+        req: operations.UpdateCustomerExternalIdRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse> {
+    ): Promise<operations.UpdateCustomerExternalIdResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PutCustomersExternalCustomerIdExternalCustomerIdRequest(req);
+            req = new operations.UpdateCustomerExternalIdRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -670,8 +943,8 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse =
-            new operations.PutCustomersExternalCustomerIdExternalCustomerIdResponse({
+        const res: operations.UpdateCustomerExternalIdResponse =
+            new operations.UpdateCustomerExternalIdResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -688,74 +961,23 @@ export class Customer {
     }
 
     /**
-     * Amend customer usage
+     * Update customer
      *
      * @remarks
-     * This endpoint is used to amend usage within a timeframe for a customer that has an active subscription.
+     * This endpoint can be used to update the `payment_provider`, `payment_provider_id`, `name`, `email`, `email_delivery`, `auto_collection`, `shipping_address`, and `billing_address` of an existing customer.
      *
-     * This endpoint will mark _all_ existing events within `[timeframe_start, timeframe_end)` as _ignored_  for billing  purposes, and Orb will only use the _new_ events passed in the body of this request as the source of truth for that timeframe moving forwards. Note that a given time period can be amended any number of times, so events can be overwritten in subsequent calls to this endpoint.
-     *
-     * This is a powerful and audit-safe mechanism to retroactively change usage data in cases where you need to:
-     * - decrease historical usage consumption because of degraded service availability in your systems
-     * - account for gaps from your usage reporting mechanism
-     * - make point-in-time fixes for specific event records, while retaining the original time of usage and associated metadata
-     *
-     * This amendment API is designed with two explicit goals:
-     * 1. Amendments are **always audit-safe**. The amendment process will still retain original events in the timeframe, though they will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
-     * 2. Amendments always preserve data **consistency**. In other words, either an amendment is fully processed by the system (and the new events for the timeframe are honored rather than the existing ones) or the amendment request fails. To maintain this important property, Orb prevents _partial event ingestion_ on this endpoint.
-     *
-     *
-     * ## Response semantics
-     *  - Either all events are ingested successfully, or all fail to ingest (returning a `4xx` or `5xx` response code).
-     * - Any event that fails schema validation will lead to a `4xx` response. In this case, to maintain data consistency, Orb will not ingest any events and will also not deprecate existing events in the time period.
-     * - You can assume that the amendment is successful on receipt of a `2xx` response.While a successful response from this endpoint indicates that the new events have been ingested, updating usage totals happens asynchronously and may be delayed by a few minutes.
-     *
-     * As emphasized above, Orb will never show an inconsistent state (e.g. in invoice previews or dashboards); either it will show the existing state (before the amendment) or the new state (with new events in the requested timeframe).
-     *
-     *
-     * ## Sample request body
-     *
-     * ```json
-     * {
-     * 	"events": [{
-     * 		"event_name": "payment_processed",
-     * 		"timestamp": "2022-03-24T07:15:00Z",
-     * 		"properties": {
-     * 			"amount": 100
-     * 		}
-     * 	}, {
-     * 		"event_name": "payment_failed",
-     * 		"timestamp": "2022-03-24T07:15:00Z",
-     * 		"properties": {
-     * 			"amount": 100
-     * 		}
-     * 	}]
-     * }
-     * ```
-     *
-     * ## Request Validation
-     * - The `timestamp` of each event reported must fall within the bounds of `timeframe_start` and `timeframe_end`. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
-     *
-     * - Orb **does not accept an `idempotency_key`** with each event in this endpoint, since the entirety of the event list must be ingested to ensure consistency. On retryable errors, you should retry the request in its entirety, and assume that the amendment operation has not succeeded until receipt of a `2xx`.
-     *
-     * - Both `timeframe_start` and `timeframe_end` must be timestamps in the past. Furthermore, Orb will generally validate that the `timeframe_start` and `timeframe_end` fall within the customer's _current_ subscription billing period. However, Orb does allow amendments while in the grace period of the previous billing period; in this instance, the timeframe can start before the current period.
-     *
-     *
-     * ## API Limits
-     * Note that Orb does not currently enforce a hard rate-limit for API usage or a maximum request payload size. Similar to the event ingestion API, this API is architected for high-throughput ingestion. It is also safe to _programmatically_ call this endpoint if your system can automatically detect a need for historical amendment.
-     *
-     * In order to overwrite timeframes with a very large number of events, we suggest using multiple calls with small adjacent (e.g. every hour) timeframes.
+     * Other fields on a customer are currently immutable.
      */
-    async updateUsage(
-        req: operations.PatchCustomersCustomerIdUsageRequest,
+    async updateCustomer(
+        req: operations.UpdateCustomerRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.PatchCustomersCustomerIdUsageResponse> {
+    ): Promise<operations.UpdateCustomerResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PatchCustomersCustomerIdUsageRequest(req);
+            req = new operations.UpdateCustomerRequest(req);
         }
 
         const baseURL: string = this._serverURL;
-        const url: string = utils.generateURL(baseURL, "/customers/{customer_id}/usage", req);
+        const url: string = utils.generateURL(baseURL, "/customers/{customer_id}", req);
 
         let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
 
@@ -770,16 +992,15 @@ export class Customer {
         const client: AxiosInstance = this._securityClient || this._defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
-        const queryParams: string = utils.serializeQueryParams(req);
-        headers["Accept"] = "application/json;q=1, application/json;q=0";
+        headers["Accept"] = "application/json";
         headers[
             "user-agent"
         ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
-            url: url + queryParams,
-            method: "patch",
+            url: url,
+            method: "put",
             headers: headers,
             data: reqBody,
             ...config,
@@ -791,112 +1012,15 @@ export class Customer {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PatchCustomersCustomerIdUsageResponse =
-            new operations.PatchCustomersCustomerIdUsageResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
-        switch (true) {
-            case httpRes?.status == 200:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.patchCustomersCustomerIdUsage200ApplicationJSONObject = utils.objectToClass(
-                        httpRes?.data,
-                        operations.PatchCustomersCustomerIdUsage200ApplicationJSON
-                    );
-                }
-                break;
-            case httpRes?.status == 400:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.patchCustomersCustomerIdUsage400ApplicationJSONObject = utils.objectToClass(
-                        httpRes?.data,
-                        operations.PatchCustomersCustomerIdUsage400ApplicationJSON
-                    );
-                }
-                break;
-        }
-
-        return res;
-    }
-
-    /**
-     * Amend customer usage by external ID
-     *
-     * @remarks
-     * This endpoint's resource and semantics exactly mirror [Amend customer usage](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1usage/patch) but operates on an [external customer ID](see (../docs/Customer-ID-Aliases.md)) rather than an Orb issued identifier.
-     */
-    async updateUsageByExternalId(
-        req: operations.PatchExternalCustomersCustomerIdUsageRequest,
-        config?: AxiosRequestConfig
-    ): Promise<operations.PatchExternalCustomersCustomerIdUsageResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PatchExternalCustomersCustomerIdUsageRequest(req);
-        }
-
-        const baseURL: string = this._serverURL;
-        const url: string = utils.generateURL(
-            baseURL,
-            "/customers/external_customer_id/{external_customer_id}/usage",
-            req
-        );
-
-        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
-
-        try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
-        } catch (e: unknown) {
-            if (e instanceof Error) {
-                throw new Error(`Error serializing request body, cause: ${e.message}`);
-            }
-        }
-
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-        const headers = { ...reqBodyHeaders, ...config?.headers };
-        const queryParams: string = utils.serializeQueryParams(req);
-        headers["Accept"] = "application/json;q=1, application/json;q=0";
-        headers[
-            "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-        const httpRes: AxiosResponse = await client.request({
-            validateStatus: () => true,
-            url: url + queryParams,
-            method: "patch",
-            headers: headers,
-            data: reqBody,
-            ...config,
+        const res: operations.UpdateCustomerResponse = new operations.UpdateCustomerResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
         });
-
-        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-        if (httpRes?.status == null) {
-            throw new Error(`status code not found in response: ${httpRes}`);
-        }
-
-        const res: operations.PatchExternalCustomersCustomerIdUsageResponse =
-            new operations.PatchExternalCustomersCustomerIdUsageResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.patchExternalCustomersCustomerIdUsage200ApplicationJSONObject =
-                        utils.objectToClass(
-                            httpRes?.data,
-                            operations.PatchExternalCustomersCustomerIdUsage200ApplicationJSON
-                        );
-                }
-                break;
-            case httpRes?.status == 400:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.patchExternalCustomersCustomerIdUsage400ApplicationJSONObject =
-                        utils.objectToClass(
-                            httpRes?.data,
-                            operations.PatchExternalCustomersCustomerIdUsage400ApplicationJSON
-                        );
+                    res.customer = utils.objectToClass(httpRes?.data, shared.Customer);
                 }
                 break;
         }

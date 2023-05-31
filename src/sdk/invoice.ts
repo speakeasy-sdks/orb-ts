@@ -8,7 +8,7 @@ import * as shared from "./models/shared";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
- * Actions related to invoice management.
+ * The Invoice resource represents an invoice that has been generated for a customer. Invoices are generated when a customer's billing interval has elapsed, and are updated when a customer's invoice is paid.
  */
 export class Invoice {
     _defaultClient: AxiosInstance;
@@ -35,17 +35,87 @@ export class Invoice {
     }
 
     /**
+     * Create invoice line item
+     *
+     * @remarks
+     * This creates a one-off fixed fee [Invoice line item](../reference/Orb-API.json/components/schemas/Invoice-line-item) on an [Invoice](../reference/Orb-API.json/components/schemas/Invoice). This can only be done for invoices that are in a `draft` status.
+     */
+    async create(
+        req: operations.CreateInvoiceLineItemRequestBody,
+        config?: AxiosRequestConfig
+    ): Promise<operations.CreateInvoiceLineItemResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.CreateInvoiceLineItemRequestBody(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = baseURL.replace(/\/$/, "") + "/invoice_line_items";
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.CreateInvoiceLineItemResponse =
+            new operations.CreateInvoiceLineItemResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
+        switch (true) {
+            case httpRes?.status == 201:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.invoiceLineItem = utils.objectToClass(
+                        httpRes?.data,
+                        shared.InvoiceLineItem
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
      * Retrieve an Invoice
      *
      * @remarks
      * This endpoint is used to fetch an [`Invoice`](../reference/Orb-API.json/components/schemas/Invoice) given an identifier.
      */
-    async get(
-        req: operations.GetInvoiceInvoiceIdRequest,
+    async fetch(
+        req: operations.FetchInvoiceRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetInvoiceInvoiceIdResponse> {
+    ): Promise<operations.FetchInvoiceResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetInvoiceInvoiceIdRequest(req);
+            req = new operations.FetchInvoiceRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -73,12 +143,11 @@ export class Invoice {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetInvoiceInvoiceIdResponse =
-            new operations.GetInvoiceInvoiceIdResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
+        const res: operations.FetchInvoiceResponse = new operations.FetchInvoiceResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
@@ -94,14 +163,14 @@ export class Invoice {
      * Retrieve upcoming invoice
      *
      * @remarks
-     * This endpoint can be used to fetch the [`UpcomingInvoice`](../reference/Orb-API.json/components/schemas/Upcoming%20Invoice) for the current billing period given a subscription.
+     * This endpoint can be used to fetch the [`Upcoming Invoice`](../reference/Orb-API.json/components/schemas/UpcomingInvoice) for the current billing period given a subscription.
      */
-    async getUpcoming(
-        req: operations.GetInvoicesUpcomingRequest,
+    async fetchUpcoming(
+        req: operations.FetchUpcomingInvoiceRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.GetInvoicesUpcomingResponse> {
+    ): Promise<operations.FetchUpcomingInvoiceResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.GetInvoicesUpcomingRequest(req);
+            req = new operations.FetchUpcomingInvoiceRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -130,8 +199,8 @@ export class Invoice {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.GetInvoicesUpcomingResponse =
-            new operations.GetInvoicesUpcomingResponse({
+        const res: operations.FetchUpcomingInvoiceResponse =
+            new operations.FetchUpcomingInvoiceResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -156,7 +225,9 @@ export class Invoice {
      * @remarks
      * This endpoint returns a list of all [`Invoice`](../reference/Orb-API.json/components/schemas/Invoice)s for an account in a list format.
      *
-     * The list of invoices is ordered starting from the most recently issued invoice date. The response also includes `pagination_metadata`, which lets the caller retrieve the next page of results if they exist.
+     * The list of invoices is ordered starting from the most recently issued invoice date. The response also includes [`pagination_metadata`](../api/pagination), which lets the caller retrieve the next page of results if they exist.
+     *
+     * By default, this only returns invoices that are `issued`, `paid`, or `synced`.
      */
     async list(
         req: operations.ListInvoicesRequest,
@@ -205,6 +276,66 @@ export class Invoice {
                         operations.ListInvoices200ApplicationJSON
                     );
                 }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Void an invoice
+     *
+     * @remarks
+     * This endpoint allows an invoice's status to be set the `void` status. This can only be done to invoices that are in the `issued` status.
+     *
+     * If the associated invoice has used the customer balance to change the amount due, the customer balance operation will be reverted. For example, if the invoice used $10 of customer balance, that amount will be added back to the customer balance upon voiding.
+     */
+    async void(
+        req: operations.PostInvoicesInvoiceIdVoidRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.PostInvoicesInvoiceIdVoidResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.PostInvoicesInvoiceIdVoidRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(baseURL, "/invoices/{invoice_id}/void", req);
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.PostInvoicesInvoiceIdVoidResponse =
+            new operations.PostInvoicesInvoiceIdVoidResponse({
+                statusCode: httpRes.status,
+                contentType: contentType,
+                rawResponse: httpRes,
+            });
+        switch (true) {
+            case httpRes?.status == 201:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.invoice = utils.objectToClass(httpRes?.data, shared.Invoice);
+                }
+                break;
+            case httpRes?.status == 400:
                 break;
         }
 

@@ -4,10 +4,11 @@
 
 import * as utils from "../internal/utils";
 import * as operations from "./models/operations";
+import * as shared from "./models/shared";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
- * Actions related to event management.
+ * The Event resource represents an event that has been created for a customer. Events are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
  */
 export class Event {
     _defaultClient: AxiosInstance;
@@ -34,6 +35,234 @@ export class Event {
     }
 
     /**
+     * Amend single event
+     *
+     * @remarks
+     * This endpoint is used to amend a single usage event with a given `event_id`. `event_id` refers to the `idempotency_key` passed in during ingestion. The event will maintain its existing `event_id` after the amendment.
+     *
+     * This endpoint will mark the existing event as ignored, and Orb will only use the new event passed in the body of this request as the source of truth for that `event_id`. Note that a single event can be amended any number of times, so the same event can be overwritten in subsequent calls to this endpoint, or overwritten using the [Amend customer usage](amend-usage) endpoint. Only a single event with a given `event_id` will be considered the source of truth at any given time.
+     *
+     * This is a powerful and audit-safe mechanism to retroactively update a single event in cases where you need to:
+     * * update an event with new metadata as you iterate on your pricing model
+     * * update an event based on the result of an external API call (ex. call to a payment gateway succeeded or failed)
+     *
+     * This amendment API is always audit-safe. The process will still retain the original event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
+     *
+     * ## Request validation
+     * * The `timestamp` of the new event must match the `timestamp` of the existing event already ingested. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
+     * * The `customer_id` or `external_customer_id` of the new event must match the `customer_id` or `external_customer_id` of the existing event already ingested. Exactly one of `customer_id` and `external_customer_id` should be specified, and similar to ingestion, the ID must identify a Customer resource within Orb. Unlike ingestion, for event amendment, we strictly enforce that the Customer must be in the Orb system, even during the initial integration period. We do not allow updating the `Customer` an event is associated with.
+     * * Orb does not accept an `idempotency_key` with the event in this endpoint, since this request is by design idempotent. On retryable errors, you should retry the request and assume the amendment operation has not succeeded until receipt of a 2xx.
+     * * The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period.
+     */
+    async amend(
+        req: operations.AmendEventRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.AmendEventResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.AmendEventRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(baseURL, "/events/{event_id}", req);
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        headers["Accept"] = "application/json;q=1, application/json;q=0";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "put",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.AmendEventResponse = new operations.AmendEventResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendEvent200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendEvent200ApplicationJSON
+                    );
+                }
+                break;
+            case httpRes?.status == 400:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.amendEvent400ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.AmendEvent400ApplicationJSON
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Close a backfill
+     *
+     * @remarks
+     * Closing a backfill makes the updated usage visible in Orb. Upon closing a backfill, Orb will asynchronously reflect the updated usage in invoice amounts and usage graphs. Once all of the updates are complete, the backfill's status will transition to `reflected`.
+     *
+     *
+     */
+    async closeBackfill(
+        req: operations.CloseBackfillRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.CloseBackfillResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.CloseBackfillRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(
+            baseURL,
+            "/events/backfills/{backfill_id}/close",
+            req
+        );
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.CloseBackfillResponse = new operations.CloseBackfillResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.backfill = utils.objectToClass(httpRes?.data, shared.Backfill);
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Create a backfill
+     *
+     * @remarks
+     * Creating the backfill enables adding or replacing past events, even those that are older than the ingestion grace period. Performing a backfill in Orb involves 3 steps:
+     *
+     * 1. Create the backfill, specifying its parameters.
+     * 2. [Ingest](ingest) usage events, referencing the backfill (query parameter `backfill_id`).
+     * 3. [Close](close-backfill) the backfill, propagating the update in past usage throughout Orb.
+     *
+     * Changes from a backfill are not reflected until the backfill is closed, so you won’t need to worry about your customers seeing partially updated usage data. Backfills are also reversible, so you’ll be able to revert a backfill if you’ve made a mistake.
+     *
+     * This endpoint will return a backfill object, which contains an `id`. That `id` can then be used as the `backfill_id` query parameter to the event ingestion endpoint to associate ingested events with this backfill. The effects (e.g. updated usage graphs) of this backfill will not take place until the backfill is closed.
+     *
+     * If the `replace_existing_events` is `true`, existing events in the backfill's timeframe will be replaced with the newly ingested events associated with the backfill. If `false`, newly ingested events will be added to the existing events.
+     */
+    async create(
+        req: operations.CreateBackfillRequestBody,
+        config?: AxiosRequestConfig
+    ): Promise<operations.CreateBackfillResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.CreateBackfillRequestBody(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = baseURL.replace(/\/$/, "") + "/events/backfills";
+
+        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
+
+        try {
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
+        } catch (e: unknown) {
+            if (e instanceof Error) {
+                throw new Error(`Error serializing request body, cause: ${e.message}`);
+            }
+        }
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...reqBodyHeaders, ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            data: reqBody,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.CreateBackfillResponse = new operations.CreateBackfillResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.backfill = utils.objectToClass(httpRes?.data, shared.Backfill);
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
      * Deprecate single event
      *
      * @remarks
@@ -45,7 +274,7 @@ export class Event {
      * * no longer bill for an event that was improperly reported
      * * no longer bill for an event based on the result of an external API call (ex. call to a payment gateway failed and the user should not be billed)
      *
-     * If you want to only change specific properties of an event, but keep the event as part of the billing calculation, use the [Amend single event](../reference/Orb-API.json/paths/~1events~1{event_id}/put) endpoint instead.
+     * If you want to only change specific properties of an event, but keep the event as part of the billing calculation, use the [Amend single event](amend-event) endpoint instead.
      *
      * This API is always audit-safe. The process will still retain the deprecated event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
      *
@@ -54,12 +283,12 @@ export class Event {
      * * The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period. Orb does not allow deprecating events for billing periods that have already invoiced customers.
      * * The `customer_id` or the `external_customer_id` of the original event ingestion request must identify a Customer resource within Orb, even if this event was ingested during the initial integration period. We do not allow deprecating events for customers not in the Orb system.
      */
-    async deprecate(
-        req: operations.PutDeprecateEventsEventIdRequest,
+    async deprecateEvent(
+        req: operations.DeprecateEventRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.PutDeprecateEventsEventIdResponse> {
+    ): Promise<operations.DeprecateEventResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PutDeprecateEventsEventIdRequest(req);
+            req = new operations.DeprecateEventRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -87,26 +316,25 @@ export class Event {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PutDeprecateEventsEventIdResponse =
-            new operations.PutDeprecateEventsEventIdResponse({
-                statusCode: httpRes.status,
-                contentType: contentType,
-                rawResponse: httpRes,
-            });
+        const res: operations.DeprecateEventResponse = new operations.DeprecateEventResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.putDeprecateEventsEventId200ApplicationJSONObject = utils.objectToClass(
+                    res.deprecateEvent200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.PutDeprecateEventsEventId200ApplicationJSON
+                        operations.DeprecateEvent200ApplicationJSON
                     );
                 }
                 break;
             case httpRes?.status == 400:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.putDeprecateEventsEventId400ApplicationJSONObject = utils.objectToClass(
+                    res.deprecateEvent400ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.PutDeprecateEventsEventId400ApplicationJSON
+                        operations.DeprecateEvent400ApplicationJSON
                     );
                 }
                 break;
@@ -258,11 +486,11 @@ export class Event {
      * ```
      */
     async ingest(
-        req: operations.PostIngestRequest,
+        req: operations.IngestRequest,
         config?: AxiosRequestConfig
-    ): Promise<operations.PostIngestResponse> {
+    ): Promise<operations.IngestResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PostIngestRequest(req);
+            req = new operations.IngestRequest(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -302,7 +530,7 @@ export class Event {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PostIngestResponse = new operations.PostIngestResponse({
+        const res: operations.IngestResponse = new operations.IngestResponse({
             statusCode: httpRes.status,
             contentType: contentType,
             rawResponse: httpRes,
@@ -310,18 +538,132 @@ export class Event {
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.postIngest200ApplicationJSONObject = utils.objectToClass(
+                    res.ingest200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.PostIngest200ApplicationJSON
+                        operations.Ingest200ApplicationJSON
                     );
                 }
                 break;
             case httpRes?.status == 400:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.postIngest400ApplicationJSONObject = utils.objectToClass(
+                    res.ingest400ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.PostIngest400ApplicationJSON
+                        operations.Ingest400ApplicationJSON
                     );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * List backfills
+     *
+     * @remarks
+     * This endpoint returns a list of all [backfills](../reference/Orb-API.json/components/schemas/Backfill) in a list format.
+     *
+     * The list of backfills is ordered starting from the most recently created backfill. The response also includes [`pagination_metadata`](../api/pagination), which lets the caller retrieve the next page of results if they exist. More information about pagination can be found in the [Pagination-metadata schema](../reference/Orb-API.json/components/schemas/Pagination-metadata).
+     */
+    async listBackfills(config?: AxiosRequestConfig): Promise<operations.ListBackfillsResponse> {
+        const baseURL: string = this._serverURL;
+        const url: string = baseURL.replace(/\/$/, "") + "/events/backfills";
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "get",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.ListBackfillsResponse = new operations.ListBackfillsResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.listBackfills200ApplicationJSONObject = utils.objectToClass(
+                        httpRes?.data,
+                        operations.ListBackfills200ApplicationJSON
+                    );
+                }
+                break;
+        }
+
+        return res;
+    }
+
+    /**
+     * Revert a backfill
+     *
+     * @remarks
+     * Reverting a backfill undoes all the effects of closing the backfill. If the backfill is reflected, the status will transition to `pending_revert` while the effects of the backfill are undone. Once all effects are undone, the backfill will transition to `reverted`.
+     *
+     * If a backfill is reverted before its closed, no usage will be updated as a result of the backfill and it will immediately transition to `reverted`.
+     */
+    async revertBackfill(
+        req: operations.RevertBackfillRequest,
+        config?: AxiosRequestConfig
+    ): Promise<operations.RevertBackfillResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.RevertBackfillRequest(req);
+        }
+
+        const baseURL: string = this._serverURL;
+        const url: string = utils.generateURL(
+            baseURL,
+            "/events/backfills/{backfill_id}/revert",
+            req
+        );
+
+        const client: AxiosInstance = this._securityClient || this._defaultClient;
+
+        const headers = { ...config?.headers };
+        headers["Accept"] = "application/json";
+        headers[
+            "user-agent"
+        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+
+        const httpRes: AxiosResponse = await client.request({
+            validateStatus: () => true,
+            url: url,
+            method: "post",
+            headers: headers,
+            ...config,
+        });
+
+        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
+
+        if (httpRes?.status == null) {
+            throw new Error(`status code not found in response: ${httpRes}`);
+        }
+
+        const res: operations.RevertBackfillResponse = new operations.RevertBackfillResponse({
+            statusCode: httpRes.status,
+            contentType: contentType,
+            rawResponse: httpRes,
+        });
+        switch (true) {
+            case httpRes?.status == 200:
+                if (utils.matchContentType(contentType, `application/json`)) {
+                    res.backfill = utils.objectToClass(httpRes?.data, shared.Backfill);
                 }
                 break;
         }
@@ -333,24 +675,24 @@ export class Event {
      * Search events
      *
      * @remarks
-     * This endpoint returns a filtered set of events for an account in a paginated list format.
+     * This endpoint returns a filtered set of events for an account in a [paginated list format](../api/pagination).
      *
      * Note that this is a `POST` endpoint rather than a `GET` endpoint because it employs a JSON body for search criteria rather than query parameters, allowing for a more flexible search syntax.
      *
      * Note that a search criteria _must_ be specified. Currently, Orb supports the following criteria:
      * - `event_ids`: This is an explicit array of IDs to filter by. Note that an event's ID is the `idempotency_key` that was originally used for ingestion.
-     * - `invoice_id`: This is an issued Orb invoice ID (see also [List Invoices](../reference/Orb-API.json/paths/~1invoices/get)). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose `timestamp` property falls within the billing period specified by the invoice.
+     * - `invoice_id`: This is an issued Orb invoice ID (see also [List Invoices](list-invoices)). Orb will fetch all events that were used to calculate the invoice. In the common case, this will be a list of events whose `timestamp` property falls within the billing period specified by the invoice.
      *
      * By default, Orb does not return _deprecated_ events in this endpoint.
      *
      * By default, Orb will not throw a `404` if no events matched, Orb will return an empty array for `data` instead.
      */
     async search(
-        req: operations.PostEventsSearchRequestBody,
+        req: operations.SearchEventsRequestBody,
         config?: AxiosRequestConfig
-    ): Promise<operations.PostEventsSearchResponse> {
+    ): Promise<operations.SearchEventsResponse> {
         if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PostEventsSearchRequestBody(req);
+            req = new operations.SearchEventsRequestBody(req);
         }
 
         const baseURL: string = this._serverURL;
@@ -389,7 +731,7 @@ export class Event {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.PostEventsSearchResponse = new operations.PostEventsSearchResponse({
+        const res: operations.SearchEventsResponse = new operations.SearchEventsResponse({
             statusCode: httpRes.status,
             contentType: contentType,
             rawResponse: httpRes,
@@ -397,100 +739,9 @@ export class Event {
         switch (true) {
             case httpRes?.status == 200:
                 if (utils.matchContentType(contentType, `application/json`)) {
-                    res.postEventsSearch200ApplicationJSONObject = utils.objectToClass(
+                    res.searchEvents200ApplicationJSONObject = utils.objectToClass(
                         httpRes?.data,
-                        operations.PostEventsSearch200ApplicationJSON
-                    );
-                }
-                break;
-        }
-
-        return res;
-    }
-
-    /**
-     * Amend single event
-     *
-     * @remarks
-     * This endpoint is used to amend a single usage event with a given `event_id`. `event_id` refers to the `idempotency_key` passed in during ingestion. The event will maintain its existing `event_id` after the amendment.
-     *
-     * This endpoint will mark the existing event as ignored, and Orb will only use the new event passed in the body of this request as the source of truth for that `event_id`. Note that a single event can be amended any number of times, so the same event can be overwritten in subsequent calls to this endpoint, or overwritten using the [Amend customer usage](../reference/Orb-API.json/paths/~1customers~1{customer_id}~1usage/patch) endpoint. Only a single event with a given `event_id` will be considered the source of truth at any given time.
-     *
-     * This is a powerful and audit-safe mechanism to retroactively update a single event in cases where you need to:
-     * * update an event with new metadata as you iterate on your pricing model
-     * * update an event based on the result of an external API call (ex. call to a payment gateway succeeded or failed)
-     *
-     * This amendment API is always audit-safe. The process will still retain the original event, though it will be ignored for billing calculations. For auditing and data fidelity purposes, Orb never overwrites or permanently deletes ingested usage data.
-     *
-     * ## Request validation
-     * * The `timestamp` of the new event must match the `timestamp` of the existing event already ingested. As with ingestion, all timestamps must be sent in ISO8601 format with UTC timezone offset.
-     * * The `customer_id` or `external_customer_id` of the new event must match the `customer_id` or `external_customer_id` of the existing event already ingested. Exactly one of `customer_id` and `external_customer_id` should be specified, and similar to ingestion, the ID must identify a Customer resource within Orb. Unlike ingestion, for event amendment, we strictly enforce that the Customer must be in the Orb system, even during the initial integration period. We do not allow updating the `Customer` an event is associated with.
-     * * Orb does not accept an `idempotency_key` with the event in this endpoint, since this request is by design idempotent. On retryable errors, you should retry the request and assume the amendment operation has not succeeded until receipt of a 2xx.
-     * * The event's `timestamp` must fall within the customer's current subscription's billing period, or within the grace period of the customer's current subscription's previous billing period.
-     */
-    async update(
-        req: operations.PutEventsEventIdRequest,
-        config?: AxiosRequestConfig
-    ): Promise<operations.PutEventsEventIdResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.PutEventsEventIdRequest(req);
-        }
-
-        const baseURL: string = this._serverURL;
-        const url: string = utils.generateURL(baseURL, "/events/{event_id}", req);
-
-        let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
-
-        try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "requestBody", "json");
-        } catch (e: unknown) {
-            if (e instanceof Error) {
-                throw new Error(`Error serializing request body, cause: ${e.message}`);
-            }
-        }
-
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
-
-        const headers = { ...reqBodyHeaders, ...config?.headers };
-        headers["Accept"] = "application/json;q=1, application/json;q=0";
-        headers[
-            "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
-
-        const httpRes: AxiosResponse = await client.request({
-            validateStatus: () => true,
-            url: url,
-            method: "put",
-            headers: headers,
-            data: reqBody,
-            ...config,
-        });
-
-        const contentType: string = httpRes?.headers?.["content-type"] ?? "";
-
-        if (httpRes?.status == null) {
-            throw new Error(`status code not found in response: ${httpRes}`);
-        }
-
-        const res: operations.PutEventsEventIdResponse = new operations.PutEventsEventIdResponse({
-            statusCode: httpRes.status,
-            contentType: contentType,
-            rawResponse: httpRes,
-        });
-        switch (true) {
-            case httpRes?.status == 200:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.putEventsEventId200ApplicationJSONObject = utils.objectToClass(
-                        httpRes?.data,
-                        operations.PutEventsEventId200ApplicationJSON
-                    );
-                }
-                break;
-            case httpRes?.status == 400:
-                if (utils.matchContentType(contentType, `application/json`)) {
-                    res.putEventsEventId400ApplicationJSONObject = utils.objectToClass(
-                        httpRes?.data,
-                        operations.PutEventsEventId400ApplicationJSON
+                        operations.SearchEvents200ApplicationJSON
                     );
                 }
                 break;

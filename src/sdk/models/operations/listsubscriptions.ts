@@ -26,7 +26,8 @@ export class ListSubscriptions200ApplicationJSON extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "pagination_metadata" })
-    paginationMetadata?: Record<string, any>;
+    @Type(() => shared.PaginationMetadata)
+    paginationMetadata?: shared.PaginationMetadata;
 }
 
 export class ListSubscriptionsResponse extends SpeakeasyBase {

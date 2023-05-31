@@ -54,7 +54,7 @@ export enum CreditLedgerEntryEntryType {
 }
 
 /**
- * A credit ledger entry is a single entry in the customer balance ledger. More details about working with real-time balances are [here](../docs/Credits.md).
+ * A credit ledger entry is a single entry in the customer balance ledger. More details about working with real-time balances are [here](../guides/product-catalog/prepurchase).
  *
  * @remarks
  *
@@ -62,11 +62,11 @@ export enum CreditLedgerEntryEntryType {
  */
 export class CreditLedgerEntry extends SpeakeasyBase {
     /**
-     * Number of credits that were impacted
+     * Number of credits that were impacted. Required on creation for increment and decrement entries.
      */
     @SpeakeasyMetadata()
     @Expose({ name: "amount" })
-    amount: number;
+    amount?: number;
 
     @SpeakeasyMetadata()
     @Expose({ name: "created_at" })
@@ -122,6 +122,20 @@ export class CreditLedgerEntry extends SpeakeasyBase {
     @SpeakeasyMetadata()
     @Expose({ name: "ledger_sequence_number" })
     ledgerSequenceNumber: number;
+
+    /**
+     * User-specified metadata dictionary that's specified when adding a ledger entry. This contains key/value pairs if metadata is specified, but otherwise is an empty dictionary.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "metadata" })
+    metadata: Record<string, any>;
+
+    /**
+     * In the case of an expiration change ledger entry, this represents the expiration time of the new block.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "new_block_expiry_date" })
+    newBlockExpiryDate?: string;
 
     @SpeakeasyMetadata()
     @Expose({ name: "price_id" })

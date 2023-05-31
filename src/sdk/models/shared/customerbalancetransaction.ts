@@ -15,6 +15,18 @@ export enum CustomerBalanceTransactionAction {
 }
 
 /**
+ * The Credit note associated with this transaction. This may appear as the result of a credit note being applied to an invoice and balance is added back to the customer balance or it is being reapplied to the invoice.
+ */
+export class CustomerBalanceTransactionCreditNote extends SpeakeasyBase {
+    /**
+     * The id of the Credit note
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
+}
+
+/**
  * The Invoice associated with this transaction
  */
 export class CustomerBalanceTransactionInvoice extends SpeakeasyBase {
@@ -24,6 +36,11 @@ export class CustomerBalanceTransactionInvoice extends SpeakeasyBase {
     @SpeakeasyMetadata()
     @Expose({ name: "id" })
     id: string;
+}
+
+export enum CustomerBalanceTransactionType {
+    Increment = "increment",
+    Decrement = "decrement",
 }
 
 /**
@@ -51,6 +68,14 @@ export class CustomerBalanceTransaction extends SpeakeasyBase {
     @Expose({ name: "created_at" })
     @Transform(({ value }) => new Date(value), { toClassOnly: true })
     createdAt: Date;
+
+    /**
+     * The Credit note associated with this transaction. This may appear as the result of a credit note being applied to an invoice and balance is added back to the customer balance or it is being reapplied to the invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "credit_note" })
+    @Type(() => CustomerBalanceTransactionCreditNote)
+    creditNote?: CustomerBalanceTransactionCreditNote;
 
     /**
      * An optional description provided for manual customer balance adjustments.
@@ -87,4 +112,8 @@ export class CustomerBalanceTransaction extends SpeakeasyBase {
     @SpeakeasyMetadata()
     @Expose({ name: "starting_balance" })
     startingBalance: string;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "type" })
+    type: CustomerBalanceTransactionType;
 }

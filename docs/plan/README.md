@@ -2,13 +2,14 @@
 
 ## Overview
 
-Actions related to plan management.
+The Plan resource represents a plan that can be subscribed to by a customer. Plans define the amount of credits that a customer will receive, the price of the plan, and the billing interval.
 
 ### Available Operations
 
-* [get](#get) - Retrieve a plan
+* [fetch](#fetch) - Retrieve a plan
+* [list](#list) - List plans
 
-## get
+## fetch
 
 This endpoint is used to fetch [plan](../reference/Orb-API.json/components/schemas/Plan) details given a plan identifier. It returns information about the prices included in the plan and their configuration, as well as the product that the plan is attached to.
 
@@ -24,6 +25,7 @@ Orb supports plan phases, also known as contract ramps. For plans with phases, t
 import { SDK } from "Orb";
 import { GetPlansPlanIdResponse } from "Orb/dist/sdk/models/operations";
 import {
+  DiscountDiscountType,
   PlanPhaseDurationUnit,
   PlanTrialConfigTrialPeriodUnit,
   PriceCadence,
@@ -32,13 +34,46 @@ import {
 
 const sdk = new SDK({
   security: {
-    bearerAuth: "YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
   },
 });
 
-sdk.plan.get({
-  planId: "maxime",
+sdk.plan.fetch({
+  planId: "nobis",
 }).then((res: GetPlansPlanIdResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
+});
+```
+
+## list
+
+This endpoint returns a list of all [plans](../reference/Orb-API.json/components/schemas/Plan) for an account in a list format. 
+
+The list of plans is ordered starting from the most recently created plan. The response also includes [`pagination_metadata`](../api/pagination), which lets the caller retrieve the next page of results if they exist.
+
+
+### Example Usage
+
+```typescript
+import { SDK } from "Orb";
+import { ListPlansResponse } from "Orb/dist/sdk/models/operations";
+import {
+  DiscountDiscountType,
+  PlanPhaseDurationUnit,
+  PlanTrialConfigTrialPeriodUnit,
+  PriceCadence,
+  PriceModelType,
+} from "Orb/dist/sdk/models/shared";
+
+const sdk = new SDK({
+  security: {
+    apiKeyAuth: "YOUR_BEARER_TOKEN_HERE",
+  },
+});
+
+sdk.plan.list().then((res: ListPlansResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }

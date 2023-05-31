@@ -3,7 +3,9 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
-import { Expose } from "class-transformer";
+import { Discount } from "./discount";
+import { MinimumAmount } from "./minimumamount";
+import { Expose, Type } from "class-transformer";
 
 /**
  * Term for this plan, which is the maximum cadence among all component prices
@@ -24,7 +26,8 @@ export class PlanPhase extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "discount" })
-    discount: Record<string, any>;
+    @Type(() => Discount)
+    discount: Discount;
 
     /**
      * How many terms of length `duration_unit` this phase is active for. If null, this phase is evergreen and active indefinitely
@@ -42,7 +45,8 @@ export class PlanPhase extends SpeakeasyBase {
 
     @SpeakeasyMetadata()
     @Expose({ name: "minimum" })
-    minimum: Record<string, any>;
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
     @SpeakeasyMetadata()
     @Expose({ name: "name" })

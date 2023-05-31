@@ -4,6 +4,8 @@
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
 import { RFCDate } from "../../types";
+import { Discount } from "./discount";
+import { MinimumAmount } from "./minimumamount";
 import { Expose, Transform, Type } from "class-transformer";
 
 /**
@@ -117,6 +119,11 @@ export class UpcomingInvoiceLineItems extends SpeakeasyBase {
     @Expose({ name: "amount" })
     amount: string;
 
+    @SpeakeasyMetadata()
+    @Expose({ name: "discount" })
+    @Type(() => Discount)
+    discount: Discount;
+
     /**
      * The end date of the range of time applied for this line item's price.
      */
@@ -132,6 +139,11 @@ export class UpcomingInvoiceLineItems extends SpeakeasyBase {
     @Expose({ name: "grouping" })
     @Type(() => UpcomingInvoiceLineItemsGrouping)
     grouping: UpcomingInvoiceLineItemsGrouping;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "minimum" })
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
     /**
      * The name of the price associated with this line item.
@@ -209,6 +221,18 @@ export class UpcomingInvoice extends SpeakeasyBase {
     @Type(() => UpcomingInvoiceCustomer)
     customer: UpcomingInvoiceCustomer;
 
+    @SpeakeasyMetadata()
+    @Expose({ name: "discount" })
+    @Type(() => Discount)
+    discount: Discount;
+
+    /**
+     * A URL for the invoice portal.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "hosted_invoice_url" })
+    hostedInvoiceUrl: string;
+
     /**
      * The breakdown of prices in this invoice.
      */
@@ -216,6 +240,11 @@ export class UpcomingInvoice extends SpeakeasyBase {
     @Expose({ name: "line_items" })
     @Type(() => UpcomingInvoiceLineItems)
     lineItems: UpcomingInvoiceLineItems[];
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "minimum" })
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
     /**
      * The associated subscription for this invoice.
