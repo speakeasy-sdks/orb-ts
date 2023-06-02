@@ -427,8 +427,19 @@ Using the plan's discount example
 
 ```typescript
 import { SDK } from "Orb";
-import { CreateSubscriptionRawResponse } from "Orb/dist/sdk/models/operations";
 import {
+  CreateSubscriptionApplicationJSONExternalMarketplace,
+  CreateSubscriptionApplicationJSONPriceOverrides1ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides2ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides3ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides4ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides5ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides6ModelType,
+  CreateSubscriptionApplicationJSONPriceOverrides7ModelType,
+  CreateSubscriptionJsonResponse,
+} from "Orb/dist/sdk/models/operations";
+import {
+  CreateDiscountDiscountType,
   CustomerPaymentProvider,
   DiscountDiscountType,
   PlanPhaseDurationUnit,
@@ -437,6 +448,7 @@ import {
   PriceModelType,
   SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
+import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
   security: {
@@ -444,7 +456,102 @@ const sdk = new SDK({
   },
 });
 
-sdk.subscription.create("quis".encode()).then((res: CreateSubscriptionRawResponse) => {
+sdk.subscription.create({
+  alignBillingWithSubscriptionStartDate: false,
+  autoCollection: false,
+  couponRedemptionCode: "quis",
+  customerId: "97DPcZE9hxsbb9Y9",
+  defaultInvoiceMemo: "totam",
+  externalCustomerId: "dignissimos",
+  externalMarketplace: CreateSubscriptionApplicationJSONExternalMarketplace.Google,
+  externalMarketplaceReportingId: "project_number:983410661111",
+  externalPlanId: "eaque",
+  metadata: {
+    "nesciunt": "eos",
+    "perferendis": "dolores",
+  },
+  minimumAmount: "1.23",
+  netTerms: 793698,
+  phaseOverrides: [
+    {
+      discount: {
+        amountDiscount: "dolor",
+        appliesToPriceIds: [
+          "nostrum",
+          "hic",
+          "recusandae",
+          "omnis",
+        ],
+        discountType: DiscountDiscountType.Percentage,
+        percentageDiscount: 0.15,
+        trialAmountDiscount: "facilis",
+        usageDiscount: 5966.56,
+      },
+      minimumAmount: "voluptatem",
+      order: 7836.45,
+    },
+    {
+      discount: {
+        amountDiscount: "consequuntur",
+        appliesToPriceIds: [
+          "error",
+          "eaque",
+          "occaecati",
+        ],
+        discountType: DiscountDiscountType.Percentage,
+        percentageDiscount: 0.15,
+        trialAmountDiscount: "rerum",
+        usageDiscount: 2378.93,
+      },
+      minimumAmount: "asperiores",
+      order: 9342.14,
+    },
+  ],
+  planId: "ZMwNQefe7J3ecf7W",
+  priceOverrides: [
+    {
+      bpsConfig: {
+        bps: 6790.91,
+        perUnitMaximum: "deleniti",
+      },
+      discount: {
+        amountDiscount: "pariatur",
+        discountType: CreateDiscountDiscountType.Usage,
+        percentageDiscount: "nobis",
+        usageDiscount: "libero",
+      },
+      id: "f4863332-3f9b-477f-ba41-00674ebf6928",
+      minimumAmount: "1.23",
+      modelType: CreateSubscriptionApplicationJSONPriceOverrides5ModelType.Bps,
+    },
+    {
+      discount: {
+        amountDiscount: "fugiat",
+        discountType: CreateDiscountDiscountType.Percentage,
+        percentageDiscount: "soluta",
+        usageDiscount: "dolorum",
+      },
+      id: "2dbSXs47wDkmtEME",
+      minimumAmount: "1.23",
+      modelType: CreateSubscriptionApplicationJSONPriceOverrides1ModelType.Tiered,
+      tieredConfig: {
+        tiers: [
+          {
+            firstUnit: "0",
+            lastUnit: "10",
+            unitAmount: "2.5",
+          },
+          {
+            firstUnit: "0",
+            lastUnit: "10",
+            unitAmount: "2.5",
+          },
+        ],
+      },
+    },
+  ],
+  startDate: new RFCDate("2022-01-01"),
+}).then((res: CreateSubscriptionJsonResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -801,19 +908,8 @@ Using the plan's discount example
 
 ```typescript
 import { SDK } from "Orb";
+import { CreateSubscriptionRawResponse } from "Orb/dist/sdk/models/operations";
 import {
-  CreateSubscriptionApplicationJSONExternalMarketplace,
-  CreateSubscriptionApplicationJSONPriceOverrides1ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides2ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides3ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides4ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides5ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides6ModelType,
-  CreateSubscriptionApplicationJSONPriceOverrides7ModelType,
-  CreateSubscriptionJsonResponse,
-} from "Orb/dist/sdk/models/operations";
-import {
-  CreateDiscountDiscountType,
   CustomerPaymentProvider,
   DiscountDiscountType,
   PlanPhaseDurationUnit,
@@ -822,7 +918,6 @@ import {
   PriceModelType,
   SubscriptionStatus,
 } from "Orb/dist/sdk/models/shared";
-import { RFCDate } from "Orb/dist/sdk/types";
 
 const sdk = new SDK({
   security: {
@@ -830,104 +925,7 @@ const sdk = new SDK({
   },
 });
 
-sdk.subscription.create({
-  alignBillingWithSubscriptionStartDate: false,
-  autoCollection: false,
-  couponRedemptionCode: "totam",
-  customerId: "97DPcZE9hxsbb9Y9",
-  defaultInvoiceMemo: "dignissimos",
-  externalCustomerId: "eaque",
-  externalMarketplace: CreateSubscriptionApplicationJSONExternalMarketplace.Google,
-  externalMarketplaceReportingId: "project_number:983410661111",
-  externalPlanId: "quis",
-  metadata: {
-    "eos": "perferendis",
-  },
-  minimumAmount: "1.23",
-  netTerms: 170986,
-  phaseOverrides: [
-    {
-      discount: {
-        amountDiscount: "quam",
-        appliesToPriceIds: [
-          "vero",
-        ],
-        discountType: DiscountDiscountType.Percentage,
-        percentageDiscount: 0.15,
-        trialAmountDiscount: "nostrum",
-        usageDiscount: 9441.2,
-      },
-      minimumAmount: "recusandae",
-      order: 6082.53,
-    },
-    {
-      discount: {
-        amountDiscount: "facilis",
-        appliesToPriceIds: [
-          "voluptatem",
-          "porro",
-          "consequuntur",
-        ],
-        discountType: DiscountDiscountType.Percentage,
-        percentageDiscount: 0.15,
-        trialAmountDiscount: "blanditiis",
-        usageDiscount: 6214.79,
-      },
-      minimumAmount: "eaque",
-      order: 5772.29,
-    },
-    {
-      discount: {
-        amountDiscount: "rerum",
-        appliesToPriceIds: [
-          "asperiores",
-        ],
-        discountType: DiscountDiscountType.Percentage,
-        percentageDiscount: 0.15,
-        trialAmountDiscount: "earum",
-        usageDiscount: 2672.62,
-      },
-      minimumAmount: "iste",
-      order: 6790.91,
-    },
-    {
-      discount: {
-        amountDiscount: "deleniti",
-        appliesToPriceIds: [
-          "provident",
-          "nobis",
-          "libero",
-          "delectus",
-        ],
-        discountType: DiscountDiscountType.Percentage,
-        percentageDiscount: 0.15,
-        trialAmountDiscount: "quaerat",
-        usageDiscount: 5542.42,
-      },
-      minimumAmount: "aliquid",
-      order: 2123.9,
-    },
-  ],
-  planId: "ZMwNQefe7J3ecf7W",
-  priceOverrides: [
-    {
-      discount: {
-        amountDiscount: "qui",
-        discountType: CreateDiscountDiscountType.Percentage,
-        percentageDiscount: "hic",
-        usageDiscount: "excepturi",
-      },
-      fixedPriceQuantity: 739551,
-      id: "77f3a410-0674-4ebf-a928-0d1ba77a89eb",
-      minimumAmount: "1.23",
-      modelType: CreateSubscriptionApplicationJSONPriceOverrides2ModelType.Unit,
-      unitConfig: {
-        unitAmount: "asperiores",
-      },
-    },
-  ],
-  startDate: new RFCDate("2022-01-01"),
-}).then((res: CreateSubscriptionJsonResponse) => {
+sdk.subscription.create("voluptate".encode()).then((res: CreateSubscriptionRawResponse) => {
   if (res.statusCode == 200) {
     // handle response
   }
@@ -960,7 +958,7 @@ const sdk = new SDK({
 });
 
 sdk.subscription.fetch({
-  subscriptionId: "nihil",
+  subscriptionId: "dolorum",
 }).then((res: FetchSubscriptionResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -989,11 +987,11 @@ const sdk = new SDK({
 });
 
 sdk.subscription.fetchCosts({
-  groupBy: "ipsum",
-  subscriptionId: "voluptate",
+  groupBy: "deleniti",
+  subscriptionId: "omnis",
   timeframeEnd: new Date("2022-02-02T05:00:00Z"),
   timeframeStart: new Date("2022-02-02T05:00:00Z"),
-  viewMode: "id",
+  viewMode: "necessitatibus",
 }).then((res: FetchSubscriptionCostsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1018,7 +1016,7 @@ const sdk = new SDK({
 });
 
 sdk.subscription.fetchSchedule({
-  subscriptionId: "saepe",
+  subscriptionId: "distinctio",
 }).then((res: FetchSubscriptionScheduleResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1169,10 +1167,10 @@ const sdk = new SDK({
 });
 
 sdk.subscription.fetchUsage({
-  billableMetricId: "eius",
+  billableMetricId: "asperiores",
   granularity: FetchSubscriptionUsageGranularity.Day,
-  groupBy: "aspernatur",
-  subscriptionId: "perferendis",
+  groupBy: "nihil",
+  subscriptionId: "ipsum",
   timeframeEnd: new Date("2022-02-02T05:00:00Z"),
   timeframeStart: new Date("2022-02-02T05:00:00Z"),
   viewMode: FetchSubscriptionUsageViewMode.Periodic,
@@ -1211,8 +1209,8 @@ const sdk = new SDK({
 });
 
 sdk.subscription.list({
-  customerId: "optio",
-  externalCustomerId: "accusamus",
+  customerId: "id",
+  externalCustomerId: "saepe",
 }).then((res: ListSubscriptionsResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1278,31 +1276,22 @@ sdk.subscription.schedulePlanChange({
     alignBillingWithPlanChangeDate: false,
     changeDate: new Date("2017-07-21T17:32:28Z"),
     changeOption: SchedulePlanChangeRequestBodyChangeOption.RequestedDate,
-    couponRedemptionCode: "saepe",
+    couponRedemptionCode: "aspernatur",
     externalPlanId: "ZMwNQefe7J3ecf7W",
     minimumAmount: "1.23",
     planId: "ZMwNQefe7J3ecf7W",
     priceOverrides: [
       {
-        bpsConfig: {
-          bps: 5883.17,
-          perUnitMaximum: "minima",
-        },
-        id: "d8a0d446-ce2a-4f7a-b3cf-3be453f870b3",
-        minimumAmount: "1.23",
-        modelType: SchedulePlanChangeRequestBodyPriceOverrides5ModelType.Bps,
-      },
-      {
-        id: "6b5a7342-9cdb-41a8-822b-b679d2322715",
+        id: "ce5e6a95-d8a0-4d44-ace2-af7a73cf3be4",
         minimumAmount: "1.23",
         modelType: SchedulePlanChangeRequestBodyPriceOverrides2ModelType.Unit,
         unitConfig: {
-          unitAmount: "nam",
+          unitAmount: "enim",
         },
       },
     ],
   },
-  subscriptionId: "hic",
+  subscriptionId: "dolorem",
 }).then((res: SchedulePlanChangeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1338,7 +1327,7 @@ const sdk = new SDK({
 });
 
 sdk.subscription.unscheduleCancellation({
-  subscriptionId: "voluptatem",
+  subscriptionId: "sapiente",
 }).then((res: UnscheduleCancellationResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1372,7 +1361,7 @@ const sdk = new SDK({
 });
 
 sdk.subscription.unschedulePlanChange({
-  subscriptionId: "cumque",
+  subscriptionId: "totam",
 }).then((res: UnschedulePlanChangeResponse) => {
   if (res.statusCode == 200) {
     // handle response
@@ -1416,10 +1405,10 @@ sdk.subscription.updateFixedFeeQuantity({
   requestBody: {
     changeOption: UpdateFixedFeeQuantityRequestBodyChangeOption.EffectiveDate,
     effectiveDate: new RFCDate(""2022-12-21""),
-    priceId: "soluta",
-    quantity: 7486.64,
+    priceId: "nihil",
+    quantity: 256.62,
   },
-  subscriptionId: "et",
+  subscriptionId: "expedita",
 }).then((res: UpdateFixedFeeQuantityResponse) => {
   if (res.statusCode == 200) {
     // handle response
