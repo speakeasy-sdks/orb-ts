@@ -69,8 +69,8 @@ src/sdk/models/operations/postinvoicesinvoiceidvoid.ts
 src/sdk/models/operations/getplansplanid.ts
 src/sdk/models/operations/listplans.ts
 src/sdk/models/operations/cancelsubscription.ts
-src/sdk/models/operations/createsubscriptionjson.ts
 src/sdk/models/operations/createsubscriptionraw.ts
+src/sdk/models/operations/createsubscriptionjson.ts
 src/sdk/models/operations/fetchsubscription.ts
 src/sdk/models/operations/fetchsubscriptioncosts.ts
 src/sdk/models/operations/fetchsubscriptionschedule.ts

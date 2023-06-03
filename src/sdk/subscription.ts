@@ -5,33 +5,17 @@
 import * as utils from "../internal/utils";
 import * as operations from "./models/operations";
 import * as shared from "./models/shared";
+import { SDKConfiguration } from "./sdk";
 import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 /**
  * The Subscription resource represents a customer's subscription to a plan. Subscriptions are created when a customer subscribes to a plan, and are updated when a customer's plan is changed.
  */
 export class Subscription {
-    _defaultClient: AxiosInstance;
-    _securityClient: AxiosInstance;
-    _serverURL: string;
-    _language: string;
-    _sdkVersion: string;
-    _genVersion: string;
+    private sdkConfiguration: SDKConfiguration;
 
-    constructor(
-        defaultClient: AxiosInstance,
-        securityClient: AxiosInstance,
-        serverURL: string,
-        language: string,
-        sdkVersion: string,
-        genVersion: string
-    ) {
-        this._defaultClient = defaultClient;
-        this._securityClient = securityClient;
-        this._serverURL = serverURL;
-        this._language = language;
-        this._sdkVersion = sdkVersion;
-        this._genVersion = genVersion;
+    constructor(sdkConfig: SDKConfiguration) {
+        this.sdkConfiguration = sdkConfig;
     }
 
     /**
@@ -68,7 +52,10 @@ export class Subscription {
             req = new operations.CancelSubscriptionRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/cancel",
@@ -85,13 +72,14 @@ export class Subscription {
             }
         }
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -474,33 +462,33 @@ export class Subscription {
      * ```
      */
     async create(
-        req: operations.CreateSubscriptionApplicationJSON,
+        req: Uint8Array,
         config?: AxiosRequestConfig
-    ): Promise<operations.CreateSubscriptionJsonResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.CreateSubscriptionApplicationJSON(req);
-        }
-
-        const baseURL: string = this._serverURL;
+    ): Promise<operations.CreateSubscriptionRawResponse> {
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = baseURL.replace(/\/$/, "") + "/subscriptions";
 
         let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
 
         try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "raw");
         } catch (e: unknown) {
             if (e instanceof Error) {
                 throw new Error(`Error serializing request body, cause: ${e.message}`);
             }
         }
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -517,8 +505,8 @@ export class Subscription {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.CreateSubscriptionJsonResponse =
-            new operations.CreateSubscriptionJsonResponse({
+        const res: operations.CreateSubscriptionRawResponse =
+            new operations.CreateSubscriptionRawResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -883,29 +871,37 @@ export class Subscription {
      * ```
      */
     async create(
-        req: Uint8Array,
+        req: operations.CreateSubscriptionApplicationJSON,
         config?: AxiosRequestConfig
-    ): Promise<operations.CreateSubscriptionRawResponse> {
-        const baseURL: string = this._serverURL;
+    ): Promise<operations.CreateSubscriptionJsonResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.CreateSubscriptionApplicationJSON(req);
+        }
+
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = baseURL.replace(/\/$/, "") + "/subscriptions";
 
         let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
 
         try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "raw");
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
         } catch (e: unknown) {
             if (e instanceof Error) {
                 throw new Error(`Error serializing request body, cause: ${e.message}`);
             }
         }
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -922,8 +918,8 @@ export class Subscription {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.CreateSubscriptionRawResponse =
-            new operations.CreateSubscriptionRawResponse({
+        const res: operations.CreateSubscriptionJsonResponse =
+            new operations.CreateSubscriptionJsonResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -953,16 +949,20 @@ export class Subscription {
             req = new operations.FetchSubscriptionRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(baseURL, "/subscriptions/{subscription_id}", req);
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1011,21 +1011,25 @@ export class Subscription {
             req = new operations.FetchSubscriptionCostsRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/costs",
             req
         );
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         const queryParams: string = utils.serializeQueryParams(req);
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1075,20 +1079,24 @@ export class Subscription {
             req = new operations.FetchSubscriptionScheduleRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/schedule",
             req
         );
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1259,21 +1267,25 @@ export class Subscription {
             req = new operations.FetchSubscriptionUsageRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/usage",
             req
         );
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         const queryParams: string = utils.serializeQueryParams(req);
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1325,17 +1337,21 @@ export class Subscription {
             req = new operations.ListSubscriptionsRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = baseURL.replace(/\/$/, "") + "/subscriptions";
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         const queryParams: string = utils.serializeQueryParams(req);
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1402,7 +1418,10 @@ export class Subscription {
             req = new operations.SchedulePlanChangeRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/schedule_plan_change",
@@ -1419,13 +1438,14 @@ export class Subscription {
             }
         }
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1475,20 +1495,24 @@ export class Subscription {
             req = new operations.UnscheduleCancellationRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/unschedule_cancellation",
             req
         );
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1535,20 +1559,24 @@ export class Subscription {
             req = new operations.UnschedulePlanChangeRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/unschedule_pending_plan_changes",
             req
         );
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
@@ -1601,7 +1629,10 @@ export class Subscription {
             req = new operations.UpdateFixedFeeQuantityRequest(req);
         }
 
-        const baseURL: string = this._serverURL;
+        const baseURL: string = utils.templateUrl(
+            this.sdkConfiguration.serverURL,
+            this.sdkConfiguration.serverDefaults
+        );
         const url: string = utils.generateURL(
             baseURL,
             "/subscriptions/{subscription_id}/update_fixed_fee_quantity",
@@ -1618,13 +1649,14 @@ export class Subscription {
             }
         }
 
-        const client: AxiosInstance = this._securityClient || this._defaultClient;
+        const client: AxiosInstance =
+            this.sdkConfiguration.securityClient || this.sdkConfiguration.defaultClient;
 
         const headers = { ...reqBodyHeaders, ...config?.headers };
         headers["Accept"] = "application/json";
         headers[
             "user-agent"
-        ] = `speakeasy-sdk/${this._language} ${this._sdkVersion} ${this._genVersion}`;
+        ] = `speakeasy-sdk/${this.sdkConfiguration.language} ${this.sdkConfiguration.sdkVersion} ${this.sdkConfiguration.genVersion}`;
 
         const httpRes: AxiosResponse = await client.request({
             validateStatus: () => true,
