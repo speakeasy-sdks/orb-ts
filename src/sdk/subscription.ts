@@ -462,9 +462,13 @@ export class Subscription {
      * ```
      */
     async create(
-        req: Uint8Array,
+        req: operations.CreateSubscriptionApplicationJSON,
         config?: AxiosRequestConfig
-    ): Promise<operations.CreateSubscriptionRawResponse> {
+    ): Promise<operations.CreateSubscriptionJsonResponse> {
+        if (!(req instanceof utils.SpeakeasyBase)) {
+            req = new operations.CreateSubscriptionApplicationJSON(req);
+        }
+
         const baseURL: string = utils.templateUrl(
             this.sdkConfiguration.serverURL,
             this.sdkConfiguration.serverDefaults
@@ -474,7 +478,7 @@ export class Subscription {
         let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
 
         try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "raw");
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
         } catch (e: unknown) {
             if (e instanceof Error) {
                 throw new Error(`Error serializing request body, cause: ${e.message}`);
@@ -505,8 +509,8 @@ export class Subscription {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.CreateSubscriptionRawResponse =
-            new operations.CreateSubscriptionRawResponse({
+        const res: operations.CreateSubscriptionJsonResponse =
+            new operations.CreateSubscriptionJsonResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,
@@ -871,13 +875,9 @@ export class Subscription {
      * ```
      */
     async create(
-        req: operations.CreateSubscriptionApplicationJSON,
+        req: Uint8Array,
         config?: AxiosRequestConfig
-    ): Promise<operations.CreateSubscriptionJsonResponse> {
-        if (!(req instanceof utils.SpeakeasyBase)) {
-            req = new operations.CreateSubscriptionApplicationJSON(req);
-        }
-
+    ): Promise<operations.CreateSubscriptionRawResponse> {
         const baseURL: string = utils.templateUrl(
             this.sdkConfiguration.serverURL,
             this.sdkConfiguration.serverDefaults
@@ -887,7 +887,7 @@ export class Subscription {
         let [reqBodyHeaders, reqBody]: [object, any] = [{}, {}];
 
         try {
-            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "json");
+            [reqBodyHeaders, reqBody] = utils.serializeRequestBody(req, "request", "raw");
         } catch (e: unknown) {
             if (e instanceof Error) {
                 throw new Error(`Error serializing request body, cause: ${e.message}`);
@@ -918,8 +918,8 @@ export class Subscription {
             throw new Error(`status code not found in response: ${httpRes}`);
         }
 
-        const res: operations.CreateSubscriptionJsonResponse =
-            new operations.CreateSubscriptionJsonResponse({
+        const res: operations.CreateSubscriptionRawResponse =
+            new operations.CreateSubscriptionRawResponse({
                 statusCode: httpRes.status,
                 contentType: contentType,
                 rawResponse: httpRes,

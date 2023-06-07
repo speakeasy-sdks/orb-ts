@@ -56,8 +56,8 @@ export class SDKConfiguration {
     serverURL: string;
     serverDefaults: any;
     language = "typescript";
-    sdkVersion = "0.17.0";
-    genVersion = "2.35.3";
+    sdkVersion = "0.17.1";
+    genVersion = "2.35.9";
 
     public constructor(init?: Partial<SDKConfiguration>) {
         Object.assign(this, init);
@@ -65,7 +65,7 @@ export class SDKConfiguration {
 }
 
 /**
- * Orb powers usage-based billing for the fastest-growing software companies.
+ * API Reference: Orb powers usage-based billing for the fastest-growing software companies.
  *
  * @remarks
  * Orb's API is built with the following principles in mind:
