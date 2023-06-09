@@ -1,15 +1,16 @@
 configVersion: 1.0.0
 management:
-  docChecksum: 7dcd1bb0903bbc5deea5fbbd3a2ec5b0
+  docChecksum: c745009093cf88882dcc029a356f0b00
   docVersion: "1.0"
-  speakeasyVersion: 1.19.3
-  generationVersion: 2.16.7
+  speakeasyVersion: 1.45.2
+  generationVersion: 2.37.2
 generation:
-  telemetryEnabled: false
   sdkClassName: SDK
   sdkFlattening: true
   singleTagPerOp: false
+  telemetryEnabled: false
 typescript:
-  version: ""
+  version: 0.1.0
   author: Orb
+  maxMethodParams: 0
   packageName: Orb
