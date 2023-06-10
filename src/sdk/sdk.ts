@@ -4,45 +4,69 @@
 
 import * as utils from "../internal/utils";
 import { Availability } from "./availability";
-import { Credits } from "./credits";
+import { Coupon } from "./coupon";
+import { Credit } from "./credit";
+import { CreditNote } from "./creditnote";
 import { Customer } from "./customer";
 import { Event } from "./event";
 import { Invoice } from "./invoice";
 import * as shared from "./models/shared";
 import { Plan } from "./plan";
 import { Subscription } from "./subscription";
-import axios, { AxiosInstance } from "axios";
+import axios from "axios";
+import { AxiosInstance } from "axios";
 
 /**
  * Contains the list of servers available to the SDK
  */
 export const ServerList = [
-  /**
-   * Production server
-   */
-  "https://api.billwithorb.com/v1",
+    /**
+     * Production server
+     */
+    "https://api.withorb.com/v1",
 ] as const;
 
 /**
  * The available configuration options for the SDK
  */
 export type SDKProps = {
-  /**
-   * The security details required to authenticate the SDK
-   */
-  security?: shared.Security;
-  /**
-   * Allows overriding the default axios client used by the SDK
-   */
-  defaultClient?: AxiosInstance;
-  /**
-   * Allows overriding the default server URL used by the SDK
-   */
-  serverURL?: string;
+    /**
+     * The security details required to authenticate the SDK
+     */
+    security?: shared.Security;
+    /**
+     * Allows overriding the default axios client used by the SDK
+     */
+    defaultClient?: AxiosInstance;
+
+    /**
+     * Allows overriding the default server used by the SDK
+     */
+    serverIdx?: number;
+
+    /**
+     * Allows overriding the default server URL used by the SDK
+     */
+    serverURL?: string;
 };
 
+export class SDKConfiguration {
+    defaultClient: AxiosInstance;
+    securityClient: AxiosInstance;
+    serverURL: string;
+    serverDefaults: any;
+    language = "typescript";
+    openapiDocVersion = "1.0";
+    sdkVersion = "0.1.0";
+    genVersion = "2.39.0";
+
+    public constructor(init?: Partial<SDKConfiguration>) {
+        Object.assign(this, init);
+    }
+}
+
 /**
- * Orb powers usage-based billing for the fastest-growing software companies.
+ * API Reference: Orb powers usage-based billing for the fastest-growing software companies.
  *
  * @remarks
  * Orb's API is built with the following principles in mind:
@@ -52,121 +76,78 @@ export type SDKProps = {
  * 3. **Flexibility at the forefront**: Features like timezone localization and the ability to amend historical usage show the flexible nature of the platform.
  */
 export class SDK {
-  /**
-   * Actions related to API availability.
-   */
-  public availability: Availability;
-  /**
-   * Actions related to credit management.
-   */
-  public credits: Credits;
-  /**
-   * Actions related to customer management.
-   */
-  public customer: Customer;
-  /**
-   * Actions related to event management.
-   */
-  public event: Event;
-  /**
-   * Actions related to invoice management.
-   */
-  public invoice: Invoice;
-  /**
-   * Actions related to plan management.
-   */
-  public plan: Plan;
-  /**
-   * Actions related to subscription mangement.
-   */
-  public subscription: Subscription;
+    /**
+     * The Availability resource represents a customer's availability. Availability is created when a customer's invoice is paid, and is updated when a customer's transaction is refunded.
+     */
+    public availability: Availability;
+    /**
+     * The Coupon resource represents a discount that can be applied to a customer's invoice. Coupons can be applied to a customer's invoice either by the customer or by the Orb API.
+     */
+    public coupon: Coupon;
+    /**
+     * The Credits resource represents a customer's credits. Credits are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
+     */
+    public credit: Credit;
+    /**
+     * The Credit Note resource represents a credit note that has been generated for a customer. Credit Notes are generated when a customer's billing interval has elapsed, and are updated when a customer's invoice is paid.
+     */
+    public creditNote: CreditNote;
+    /**
+     * The Customer resource represents a customer of your service. Customers are created when a customer is created in your service, and are updated when a customer's information is updated in your service.
+     */
+    public customer: Customer;
+    /**
+     * The Event resource represents an event that has been created for a customer. Events are created when a customer's invoice is paid, and are updated when a customer's transaction is refunded.
+     */
+    public event: Event;
+    /**
+     * The Invoice resource represents an invoice that has been generated for a customer. Invoices are generated when a customer's billing interval has elapsed, and are updated when a customer's invoice is paid.
+     */
+    public invoice: Invoice;
+    /**
+     * The Plan resource represents a plan that can be subscribed to by a customer. Plans define the amount of credits that a customer will receive, the price of the plan, and the billing interval.
+     */
+    public plan: Plan;
+    /**
+     * The Subscription resource represents a customer's subscription to a plan. Subscriptions are created when a customer subscribes to a plan, and are updated when a customer's plan is changed.
+     */
+    public subscription: Subscription;
 
-  public _defaultClient: AxiosInstance;
-  public _securityClient: AxiosInstance;
-  public _serverURL: string;
-  private _language = "typescript";
-  private _sdkVersion = "1.0.1";
-  private _genVersion = "2.16.7";
-  private _globals: any;
+    private sdkConfiguration: SDKConfiguration;
 
-  constructor(props?: SDKProps) {
-    this._serverURL = props?.serverURL ?? ServerList[0];
+    constructor(props?: SDKProps) {
+        let serverURL = props?.serverURL;
+        const serverIdx = props?.serverIdx ?? 0;
 
-    this._defaultClient =
-      props?.defaultClient ?? axios.create({ baseURL: this._serverURL });
-    if (props?.security) {
-      let security: shared.Security = props.security;
-      if (!(props.security instanceof utils.SpeakeasyBase))
-        security = new shared.Security(props.security);
-      this._securityClient = utils.createSecurityClient(
-        this._defaultClient,
-        security
-      );
-    } else {
-      this._securityClient = this._defaultClient;
+        if (!serverURL) {
+            serverURL = ServerList[serverIdx];
+        }
+
+        const defaultClient = props?.defaultClient ?? axios.create({ baseURL: serverURL });
+        let securityClient = defaultClient;
+
+        if (props?.security) {
+            let security: shared.Security = props.security;
+            if (!(props.security instanceof utils.SpeakeasyBase)) {
+                security = new shared.Security(props.security);
+            }
+            securityClient = utils.createSecurityClient(defaultClient, security);
+        }
+
+        this.sdkConfiguration = new SDKConfiguration({
+            defaultClient: defaultClient,
+            securityClient: securityClient,
+            serverURL: serverURL,
+        });
+
+        this.availability = new Availability(this.sdkConfiguration);
+        this.coupon = new Coupon(this.sdkConfiguration);
+        this.credit = new Credit(this.sdkConfiguration);
+        this.creditNote = new CreditNote(this.sdkConfiguration);
+        this.customer = new Customer(this.sdkConfiguration);
+        this.event = new Event(this.sdkConfiguration);
+        this.invoice = new Invoice(this.sdkConfiguration);
+        this.plan = new Plan(this.sdkConfiguration);
+        this.subscription = new Subscription(this.sdkConfiguration);
     }
-
-    this.availability = new Availability(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.credits = new Credits(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.customer = new Customer(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.event = new Event(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.invoice = new Invoice(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.plan = new Plan(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-
-    this.subscription = new Subscription(
-      this._defaultClient,
-      this._securityClient,
-      this._serverURL,
-      this._language,
-      this._sdkVersion,
-      this._genVersion
-    );
-  }
 }

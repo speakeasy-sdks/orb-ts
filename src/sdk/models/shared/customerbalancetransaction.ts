@@ -8,83 +8,112 @@ import { Expose, Transform, Type } from "class-transformer";
 /**
  * Describes the reason that this transaction took place.
  */
-export enum CustomerBalanceTransactionActionEnum {
-  AppliedToInvoice = "applied_to_invoice",
-  ProratedRefund = "prorated_refund",
-  ManualAdjustment = "manual_adjustment",
+export enum CustomerBalanceTransactionAction {
+    AppliedToInvoice = "applied_to_invoice",
+    ProratedRefund = "prorated_refund",
+    ManualAdjustment = "manual_adjustment",
+}
+
+/**
+ * The Credit note associated with this transaction. This may appear as the result of a credit note being applied to an invoice and balance is added back to the customer balance or it is being reapplied to the invoice.
+ */
+export class CustomerBalanceTransactionCreditNote extends SpeakeasyBase {
+    /**
+     * The id of the Credit note
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 }
 
 /**
  * The Invoice associated with this transaction
  */
 export class CustomerBalanceTransactionInvoice extends SpeakeasyBase {
-  /**
-   * The Invoice id
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    /**
+     * The Invoice id
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
+}
+
+export enum CustomerBalanceTransactionType {
+    Increment = "increment",
+    Decrement = "decrement",
 }
 
 /**
  * A single change to the customer balance. All amounts are in the customer's currency.
  */
 export class CustomerBalanceTransaction extends SpeakeasyBase {
-  /**
-   * Describes the reason that this transaction took place.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "action" })
-  action: CustomerBalanceTransactionActionEnum;
+    /**
+     * Describes the reason that this transaction took place.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "action" })
+    action: CustomerBalanceTransactionAction;
 
-  /**
-   * The value of the amount changed in the transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "amount" })
-  amount: string;
+    /**
+     * The value of the amount changed in the transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "amount" })
+    amount: string;
 
-  /**
-   * The creation time of this transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+    /**
+     * The creation time of this transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
 
-  /**
-   * An optional description provided for manual customer balance adjustments.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "description" })
-  description: string;
+    /**
+     * The Credit note associated with this transaction. This may appear as the result of a credit note being applied to an invoice and balance is added back to the customer balance or it is being reapplied to the invoice.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "credit_note" })
+    @Type(() => CustomerBalanceTransactionCreditNote)
+    creditNote?: CustomerBalanceTransactionCreditNote;
 
-  /**
-   * The new value of the customer's balance prior to the transaction, in the customer's currency.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "ending_balance" })
-  endingBalance: string;
+    /**
+     * An optional description provided for manual customer balance adjustments.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "description" })
+    description: string;
 
-  /**
-   * A unique id for this transaction.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    /**
+     * The new value of the customer's balance prior to the transaction, in the customer's currency.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "ending_balance" })
+    endingBalance: string;
 
-  /**
-   * The Invoice associated with this transaction
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoice" })
-  @Type(() => CustomerBalanceTransactionInvoice)
-  invoice: CustomerBalanceTransactionInvoice;
+    /**
+     * A unique id for this transaction.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  /**
-   * The original value of the customer's balance prior to the transaction, in the customer's currency.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "starting_balance" })
-  startingBalance: string;
+    /**
+     * The Invoice associated with this transaction
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoice" })
+    @Type(() => CustomerBalanceTransactionInvoice)
+    invoice: CustomerBalanceTransactionInvoice;
+
+    /**
+     * The original value of the customer's balance prior to the transaction, in the customer's currency.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "starting_balance" })
+    startingBalance: string;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "type" })
+    type: CustomerBalanceTransactionType;
 }

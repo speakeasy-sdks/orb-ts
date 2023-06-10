@@ -30,48 +30,19 @@ yarn add https://github.com/speakeasy-sdks/orb-ts
 ## SDK Example Usage
 <!-- Start SDK Example Usage -->
 ```typescript
-import {
-  PostCustomersRequestBody,
-  PostCustomersResponse,
-  PostCustomersRequestBodyPaymentProviderEnum,
-} from "Orb/dist/sdk/models/operations";
-
-import { AxiosError } from "axios";
 import { SDK } from "Orb";
+import { PingResponse } from "Orb/dist/sdk/models/operations";
+
 const sdk = new SDK({
   security: {
-    bearerAuth: "Bearer YOUR_BEARER_TOKEN_HERE",
+    apiKeyAuth: "",
   },
 });
 
-const req: PostCustomersRequestBody = {
-  billingAddress: {
-    city: "Laruecester",
-    country: "US",
-    line1: "quibusdam",
-    line2: "unde",
-    postalCode: "58466-3428",
-    state: "ipsa",
-  },
-  currency: "delectus",
-  email: "Geraldine_Kreiger52@gmail.com",
-  externalCustomerId: "iusto",
-  name: "excepturi",
-  paymentProvider: PostCustomersRequestBodyPaymentProviderEnum.BillCom,
-  paymentProviderId: "recusandae",
-  shippingAddress: {
-    city: "Belleville",
-    country: "US",
-    line1: "quis",
-    line2: "veritatis",
-    postalCode: "03897-1889",
-    state: "molestiae",
-  },
-  timezone: "Etc/UTC",
-};
-
-sdk.customer.create(req).then((res: PostCustomersResponse | AxiosError) => {
-   // handle response
+sdk.availability.ping().then((res: PingResponse) => {
+  if (res.statusCode == 200) {
+    // handle response
+  }
 });
 ```
 <!-- End SDK Example Usage -->
@@ -80,58 +51,85 @@ sdk.customer.create(req).then((res: PostCustomersResponse | AxiosError) => {
 ## Available Resources and Operations
 
 
-### availability
+### [availability](docs/sdks/availability/README.md)
 
-* `ping` - Check availability
+* [ping](docs/sdks/availability/README.md#ping) - Check availability
 
-### credits
+### [coupon](docs/sdks/coupon/README.md)
 
-* `create` - Add credit ledger entry
-* `getCredits` - Retrieve credit balance
-* `getCreditsLedger` - View credits ledger
+* [archive](docs/sdks/coupon/README.md#archive) - Archive a coupon
+* [create](docs/sdks/coupon/README.md#create) - Create a coupon
+* [fetch](docs/sdks/coupon/README.md#fetch) - Retrieve a coupon
+* [list](docs/sdks/coupon/README.md#list) - List coupons
+* [listSubscriptions](docs/sdks/coupon/README.md#listsubscriptions) - List subscriptions for a coupon
 
-### customer
+### [credit](docs/sdks/credit/README.md)
 
-* `create` - Create customer
-* `get` - Retrieve a customer
-* `getBalance` - Get customer balance transactions
-* `getByExternalId` - Retrieve a customer by external ID
-* `getCosts` - View customer costs
-* `getCostsByExternalId` - View customer costs by external customer ID
-* `list` - List customers
-* `update` - Update customer
-* `updateByExternalId` - Update a customer by external ID
-* `updateUsage` - Amend customer usage
-* `updateUsageByExternalId` - Amend customer usage by external ID
+* [addByExternalId](docs/sdks/credit/README.md#addbyexternalid) - Add credit ledger entry by external customer ID
+* [create](docs/sdks/credit/README.md#create) - Add credit ledger entry
+* [fetch](docs/sdks/credit/README.md#fetch) - Retrieve credit balance
+* [fetchByExternalId](docs/sdks/credit/README.md#fetchbyexternalid) - Retrieve credit balance by external customer ID
+* [fetchLedger](docs/sdks/credit/README.md#fetchledger) - View credits ledger
+* [fetchLedgerByExternalId](docs/sdks/credit/README.md#fetchledgerbyexternalid) - View credits ledger by external customer ID
 
-### event
+### [creditNote](docs/sdks/creditnote/README.md)
 
-* `deprecate` - Deprecate single event
-* `ingest` - Ingest events
-* `search` - Search events
-* `update` - Amend single event
+* [list](docs/sdks/creditnote/README.md#list) - List credit notes
 
-### invoice
+### [customer](docs/sdks/customer/README.md)
 
-* `get` - Retrieve an Invoice
-* `getUpcoming` - Retrieve upcoming invoice
-* `list` - List invoices
+* [amend](docs/sdks/customer/README.md#amend) - Amend customer usage
+* [amendByExternalId](docs/sdks/customer/README.md#amendbyexternalid) - Amend customer usage by external ID
+* [create](docs/sdks/customer/README.md#create) - Create customer
+* [createTransaction](docs/sdks/customer/README.md#createtransaction) - Create a customer balance transaction
+* [delete](docs/sdks/customer/README.md#delete) - Delete a customer
+* [fetch](docs/sdks/customer/README.md#fetch) - Retrieve a customer
+* [fetchByExternalId](docs/sdks/customer/README.md#fetchbyexternalid) - Retrieve a customer by external ID
+* [fetchCosts](docs/sdks/customer/README.md#fetchcosts) - View customer costs
+* [fetchCostsByExternalId](docs/sdks/customer/README.md#fetchcostsbyexternalid) - View customer costs by external customer ID
+* [fetchTransactions](docs/sdks/customer/README.md#fetchtransactions) - Get customer balance transactions
+* [list](docs/sdks/customer/README.md#list) - List customers
+* [updateByExternalId](docs/sdks/customer/README.md#updatebyexternalid) - Update a customer by external ID
+* [updateCustomer](docs/sdks/customer/README.md#updatecustomer) - Update customer
 
-### plan
+### [event](docs/sdks/event/README.md)
 
-* `get` - Retrieve a plan
+* [amend](docs/sdks/event/README.md#amend) - Amend single event
+* [closeBackfill](docs/sdks/event/README.md#closebackfill) - Close a backfill
+* [create](docs/sdks/event/README.md#create) - Create a backfill
+* [deprecateEvent](docs/sdks/event/README.md#deprecateevent) - Deprecate single event
+* [ingest](docs/sdks/event/README.md#ingest) - Ingest events
+* [listBackfills](docs/sdks/event/README.md#listbackfills) - List backfills
+* [revertBackfill](docs/sdks/event/README.md#revertbackfill) - Revert a backfill
+* [search](docs/sdks/event/README.md#search) - Search events
 
-### subscription
+### [invoice](docs/sdks/invoice/README.md)
 
-* `cancel` - Cancel subscription
-* `changeSchedule` - Schedule plan change
-* `create` - Create subscription
-* `get` - Retrieve a subscription
-* `getCost` - View subscription costs
-* `getSchedule` - View subscription schedule
-* `getUsage` - View subscription usage
-* `list` - List subscriptions
-* `unschedule` - Unschedule pending plan changes
+* [create](docs/sdks/invoice/README.md#create) - Create invoice line item
+* [fetch](docs/sdks/invoice/README.md#fetch) - Retrieve an Invoice
+* [fetchUpcoming](docs/sdks/invoice/README.md#fetchupcoming) - Retrieve upcoming invoice
+* [list](docs/sdks/invoice/README.md#list) - List invoices
+* [void](docs/sdks/invoice/README.md#void) - Void an invoice
+
+### [plan](docs/sdks/plan/README.md)
+
+* [fetch](docs/sdks/plan/README.md#fetch) - Retrieve a plan
+* [list](docs/sdks/plan/README.md#list) - List plans
+
+### [subscription](docs/sdks/subscription/README.md)
+
+* [cancel](docs/sdks/subscription/README.md#cancel) - Cancel subscription
+* [create](docs/sdks/subscription/README.md#create) - Create subscription
+* [create](docs/sdks/subscription/README.md#create) - Create subscription
+* [fetch](docs/sdks/subscription/README.md#fetch) - Retrieve a subscription
+* [fetchCosts](docs/sdks/subscription/README.md#fetchcosts) - View subscription costs
+* [fetchSchedule](docs/sdks/subscription/README.md#fetchschedule) - View subscription schedule
+* [fetchUsage](docs/sdks/subscription/README.md#fetchusage) - View subscription usage
+* [list](docs/sdks/subscription/README.md#list) - List subscriptions
+* [schedulePlanChange](docs/sdks/subscription/README.md#scheduleplanchange) - Schedule plan change
+* [unscheduleCancellation](docs/sdks/subscription/README.md#unschedulecancellation) - Unschedule pending cancellation
+* [unschedulePlanChange](docs/sdks/subscription/README.md#unscheduleplanchange) - Unschedule pending plan changes
+* [updateFixedFeeQuantity](docs/sdks/subscription/README.md#updatefixedfeequantity) - Update fixed fee quantity
 <!-- End SDK Available Operations -->
 
 ### Maturity

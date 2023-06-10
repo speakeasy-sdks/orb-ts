@@ -7,25 +7,23 @@ import * as shared from "../shared";
 import { AxiosResponse } from "axios";
 
 export class GetPlansPlanIdRequest extends SpeakeasyBase {
-  @SpeakeasyMetadata({
-    data: "pathParam, style=simple;explode=false;name=plan_id",
-  })
-  planId: string;
+    @SpeakeasyMetadata({ data: "pathParam, style=simple;explode=false;name=plan_id" })
+    planId: string;
 }
 
 export class GetPlansPlanIdResponse extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  contentType: string;
+    @SpeakeasyMetadata()
+    contentType: string;
 
-  /**
-   * OK
-   */
-  @SpeakeasyMetadata()
-  plan?: shared.Plan;
+    /**
+     * OK
+     */
+    @SpeakeasyMetadata()
+    plan?: shared.Plan;
 
-  @SpeakeasyMetadata()
-  statusCode: number;
+    @SpeakeasyMetadata()
+    statusCode: number;
 
-  @SpeakeasyMetadata()
-  rawResponse?: AxiosResponse;
+    @SpeakeasyMetadata()
+    rawResponse?: AxiosResponse;
 }

@@ -1,0 +1,11 @@
+# Ingest400ApplicationJSON
+
+Bad Request
+
+
+## Fields
+
+| Field                                                                                                                                        | Type                                                                                                                                         | Required                                                                                                                                     | Description                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `debug`                                                                                                                                      | [Ingest400ApplicationJSONDebug](../../models/operations/ingest400applicationjsondebug.md)                                                    | :heavy_minus_sign:                                                                                                                           | Optional debug information (only present when debug=true is passed to the endpoint). Contains ingested and duplicate event idempotency keys. |
+| `validationFailed`                                                                                                                           | [Ingest400ApplicationJSONValidationFailed](../../models/operations/ingest400applicationjsonvalidationfailed.md)[]                            | :heavy_check_mark:                                                                                                                           | Contains all failing validation events. In the case of a 400, there will be at least one entry in this array.                                |
