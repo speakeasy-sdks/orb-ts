@@ -1,0 +1,12 @@
+# AmendUsageResponse
+
+
+## Fields
+
+| Field                                                                                   | Type                                                                                    | Required                                                                                | Description                                                                             |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `contentType`                                                                           | *string*                                                                                | :heavy_check_mark:                                                                      | N/A                                                                                     |
+| `statusCode`                                                                            | *number*                                                                                | :heavy_check_mark:                                                                      | N/A                                                                                     |
+| `rawResponse`                                                                           | [AxiosResponse>](https://axios-http.com/docs/res_schema)                                | :heavy_minus_sign:                                                                      | N/A                                                                                     |
+| `amendUsage200ApplicationJSONObject`                                                    | [AmendUsage200ApplicationJSON](../../models/operations/amendusage200applicationjson.md) | :heavy_minus_sign:                                                                      | OK                                                                                      |
+| `amendUsage400ApplicationJSONObject`                                                    | [AmendUsage400ApplicationJSON](../../models/operations/amendusage400applicationjson.md) | :heavy_minus_sign:                                                                      | Bad Request                                                                             |
