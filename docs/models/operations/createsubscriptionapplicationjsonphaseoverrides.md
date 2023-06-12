@@ -1,0 +1,10 @@
+# CreateSubscriptionApplicationJSONPhaseOverrides
+
+
+## Fields
+
+| Field                                                                                                 | Type                                                                                                  | Required                                                                                              | Description                                                                                           |
+| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `discount`                                                                                            | [shared.Discount](../../models/shared/discount.md)                                                    | :heavy_minus_sign:                                                                                    | N/A                                                                                                   |
+| `minimumAmount`                                                                                       | *string*                                                                                              | :heavy_minus_sign:                                                                                    | The new minimum amount for the phase. Providing `null` will clear the existing minimum, if it exists. |
+| `order`                                                                                               | *number*                                                                                              | :heavy_minus_sign:                                                                                    | The phase order that is being modified.                                                               |

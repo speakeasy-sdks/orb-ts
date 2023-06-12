@@ -1,0 +1,12 @@
+# IngestResponse
+
+
+## Fields
+
+| Field                                                                           | Type                                                                            | Required                                                                        | Description                                                                     |
+| ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `contentType`                                                                   | *string*                                                                        | :heavy_check_mark:                                                              | N/A                                                                             |
+| `statusCode`                                                                    | *number*                                                                        | :heavy_check_mark:                                                              | N/A                                                                             |
+| `rawResponse`                                                                   | [AxiosResponse>](https://axios-http.com/docs/res_schema)                        | :heavy_minus_sign:                                                              | N/A                                                                             |
+| `ingest200ApplicationJSONObject`                                                | [Ingest200ApplicationJSON](../../models/operations/ingest200applicationjson.md) | :heavy_minus_sign:                                                              | OK                                                                              |
+| `ingest400ApplicationJSONObject`                                                | [Ingest400ApplicationJSON](../../models/operations/ingest400applicationjson.md) | :heavy_minus_sign:                                                              | Bad Request                                                                     |

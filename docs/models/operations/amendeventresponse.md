@@ -1,0 +1,12 @@
+# AmendEventResponse
+
+
+## Fields
+
+| Field                                                                                   | Type                                                                                    | Required                                                                                | Description                                                                             |
+| --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `contentType`                                                                           | *string*                                                                                | :heavy_check_mark:                                                                      | N/A                                                                                     |
+| `statusCode`                                                                            | *number*                                                                                | :heavy_check_mark:                                                                      | N/A                                                                                     |
+| `rawResponse`                                                                           | [AxiosResponse>](https://axios-http.com/docs/res_schema)                                | :heavy_minus_sign:                                                                      | N/A                                                                                     |
+| `amendEvent200ApplicationJSONObject`                                                    | [AmendEvent200ApplicationJSON](../../models/operations/amendevent200applicationjson.md) | :heavy_minus_sign:                                                                      | OK                                                                                      |
+| `amendEvent400ApplicationJSONObject`                                                    | [AmendEvent400ApplicationJSON](../../models/operations/amendevent400applicationjson.md) | :heavy_minus_sign:                                                                      | Bad Request                                                                             |

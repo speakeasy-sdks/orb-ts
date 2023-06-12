@@ -1,0 +1,9 @@
+# MinimumAmount
+
+
+## Fields
+
+| Field                                                                                                                | Type                                                                                                                 | Required                                                                                                             | Description                                                                                                          |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `appliesToPriceIds`                                                                                                  | *string*[]                                                                                                           | :heavy_check_mark:                                                                                                   | List of price_ids that this minimum amount applies to. For plan/plan phase minimums, this can be a subset of prices. |
+| `minimumAmount`                                                                                                      | *string*                                                                                                             | :heavy_check_mark:                                                                                                   | Minimum amount applied                                                                                               |

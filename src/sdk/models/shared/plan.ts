@@ -3,116 +3,159 @@
  */
 
 import { SpeakeasyBase, SpeakeasyMetadata } from "../../../internal/utils";
+import { Discount } from "./discount";
+import { MinimumAmount } from "./minimumamount";
 import { PlanPhase } from "./planphase";
 import { Price } from "./price";
 import { Expose, Transform, Type } from "class-transformer";
 
-export class PlanProduct extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+/**
+ * The parent plan if the given plan was created by overriding one or more of the parent's prices
+ */
+export class PlanBasePlan extends SpeakeasyBase {
+    @SpeakeasyMetadata()
+    @Expose({ name: "external_plan_id" })
+    externalPlanId?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name?: string;
 }
 
-export enum PlanTrialConfigTrialPeriodUnitEnum {
-  Days = "days",
+export class PlanProduct extends SpeakeasyBase {
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name: string;
+}
+
+export enum PlanTrialConfigTrialPeriodUnit {
+    Days = "days",
 }
 
 export class PlanTrialConfig extends SpeakeasyBase {
-  @SpeakeasyMetadata()
-  @Expose({ name: "trial_period" })
-  trialPeriod?: number;
+    @SpeakeasyMetadata()
+    @Expose({ name: "trial_period" })
+    trialPeriod?: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "trial_period_unit" })
-  trialPeriodUnit: PlanTrialConfigTrialPeriodUnitEnum;
+    @SpeakeasyMetadata()
+    @Expose({ name: "trial_period_unit" })
+    trialPeriodUnit: PlanTrialConfigTrialPeriodUnit;
 }
 
 /**
  * OK
  */
 export class Plan extends SpeakeasyBase {
-  /**
-   * The parent plan id if the given plan was created by overriding one or more of the parent's prices
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "base_plan_id" })
-  basePlanId?: string;
+    /**
+     * The parent plan if the given plan was created by overriding one or more of the parent's prices
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "base_plan" })
+    @Type(() => PlanBasePlan)
+    basePlan?: PlanBasePlan;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "created_at" })
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
-  createdAt: Date;
+    /**
+     * The parent plan id if the given plan was created by overriding one or more of the parent's prices
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "base_plan_id" })
+    basePlanId?: string;
 
-  /**
-   * An ISO 4217 currency string or custom pricing unit (`credits`) for this plan's prices.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "currency" })
-  currency: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "created_at" })
+    @Transform(({ value }) => new Date(value), { toClassOnly: true })
+    createdAt: Date;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "description" })
-  description: string;
+    /**
+     * An ISO 4217 currency string or custom pricing unit (`credits`) for this plan's prices.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "currency" })
+    currency: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "discount" })
-  discount: Record<string, any>;
+    /**
+     * The default memo text on the invoices corresponding to subscriptions on this plan. Note that each subscription may configure its own memo.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "default_invoice_memo" })
+    defaultInvoiceMemo?: string;
 
-  /**
-   * An optional user-defined ID for this plan resource, used throughout the system as an alias for this Plan. Use this field to identify a plan by an existing identifier in your system.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "external_plan_id" })
-  externalPlanId?: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "description" })
+    description: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "id" })
-  id: string;
+    @SpeakeasyMetadata()
+    @Expose({ name: "discount" })
+    @Type(() => Discount)
+    discount: Discount;
 
-  /**
-   * An ISO 4217 currency string for which this plan is billed in. Matches `currency` unless `currency` is a custom pricing unit.
-   */
-  @SpeakeasyMetadata()
-  @Expose({ name: "invoicing_currency" })
-  invoicingCurrency: string;
+    /**
+     * An optional user-defined ID for this plan resource, used throughout the system as an alias for this Plan. Use this field to identify a plan by an existing identifier in your system.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "external_plan_id" })
+    externalPlanId?: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "minimum" })
-  minimum: Record<string, any>;
+    @SpeakeasyMetadata()
+    @Expose({ name: "id" })
+    id: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "name" })
-  name: string;
+    /**
+     * An ISO 4217 currency string for which this plan is billed in. Matches `currency` unless `currency` is a custom pricing unit.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "invoicing_currency" })
+    invoicingCurrency: string;
 
-  @SpeakeasyMetadata({ elemType: PlanPhase })
-  @Expose({ name: "plan_phases" })
-  @Type(() => PlanPhase)
-  planPhases?: PlanPhase[];
+    @SpeakeasyMetadata()
+    @Expose({ name: "minimum" })
+    @Type(() => MinimumAmount)
+    minimum: MinimumAmount;
 
-  /**
-   * Prices for this plan. If the plan has phases, this includes prices across all phases of the plan.
-   */
-  @SpeakeasyMetadata({ elemType: Price })
-  @Expose({ name: "prices" })
-  @Type(() => Price)
-  prices: Price[];
+    @SpeakeasyMetadata()
+    @Expose({ name: "name" })
+    name: string;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "product" })
-  @Type(() => PlanProduct)
-  product: PlanProduct;
+    /**
+     * Determines the difference between the invoice issue date and the due date. A value of "0" here signifies that invoices are due on issue, whereas a value of "30" means that the customer has a month to pay the invoice before its overdue. Note that individual subscriptions or invoices may set a different net terms configuration.
+     */
+    @SpeakeasyMetadata()
+    @Expose({ name: "net_terms" })
+    netTerms?: number;
 
-  @SpeakeasyMetadata()
-  @Expose({ name: "trial_config" })
-  @Type(() => PlanTrialConfig)
-  trialConfig?: PlanTrialConfig;
+    @SpeakeasyMetadata({ elemType: PlanPhase })
+    @Expose({ name: "plan_phases" })
+    @Type(() => PlanPhase)
+    planPhases?: PlanPhase[];
+
+    /**
+     * Prices for this plan. If the plan has phases, this includes prices across all phases of the plan.
+     */
+    @SpeakeasyMetadata({ elemType: Price })
+    @Expose({ name: "prices" })
+    @Type(() => Price)
+    prices: Price[];
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "product" })
+    @Type(() => PlanProduct)
+    product: PlanProduct;
+
+    @SpeakeasyMetadata()
+    @Expose({ name: "trial_config" })
+    @Type(() => PlanTrialConfig)
+    trialConfig?: PlanTrialConfig;
 }
